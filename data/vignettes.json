@@ -1,0 +1,1936 @@
+{
+  "vignettes": [
+    {
+      "id": "CASE_ECG_ROOM",
+      "department": "ECG room",
+      "tileIndex": 1,
+      "correspondsTo": "mediterranean avenue",
+      "title": "58yo F with Atrial Fibrillation and Rapid Ventricular Response",
+      "patient": {
+        "name": "Evelyn R.",
+        "age": 58,
+        "gender": "F",
+        "sbp": 128,
+        "hr": 134,
+        "egfr": 65,
+        "hba1c": 6.8,
+        "lvef": 48,
+        "troponin": "Negative",
+        "symptoms": "Palpitations, lightheadedness for 4 hours",
+        "ischemia": "None",
+        "anatomy": "Normal coronary anatomy"
+      },
+      "ecg": {
+        "summary": "Atrial Fibrillation with RVR, Ventricular rate 134 bpm, no ST elevation",
+        "rate": 134,
+        "rhythm": "Atrial Fibrillation with RVR"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 65, "contrastRisk": "Low", "note": "Renal function preserved" },
+        "endocrinology": { "flag": false, "hba1c": 6.8, "indication": "Pre-diabetes lifestyle counselling" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Guideline Rate & Anticoagulation (DOAC + Beta-Blocker)",
+          "description": "Initiate IV Metoprolol for rate control, calculate CHA2DS2-VASc (=2), and start direct oral anticoagulant (Apixaban).",
+          "gdmtPoints": 14,
+          "rvuPoints": 120,
+          "wastePoints": -40,
+          "margin": 350,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "AFFIRM / RACE II trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Immediate Urgent Transesophageal Echo & Synchronized Cardioversion",
+          "description": "Sedate in acute suite, perform transesophageal echocardiography, and deliver 200J synchronized biphasic shock.",
+          "gdmtPoints": 3,
+          "rvuPoints": 1450,
+          "wastePoints": 550,
+          "margin": 1800,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Moderate",
+          "trialReference": "EAST-AFNET 4 rhythm approach"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Outpatient Oral Rate Control & Observation",
+          "description": "Prescribe generic oral diltiazem, observe in short-stay for 2 hours, and discharge to clinic follow-up.",
+          "gdmtPoints": 6,
+          "rvuPoints": 180,
+          "wastePoints": 10,
+          "margin": 2400,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Ambulatory AF Pathway"
+        }
+      }
+    },
+    {
+      "id": "CASE_CONSULTATION_ROOM",
+      "department": "Consultation room",
+      "tileIndex": 3,
+      "correspondsTo": "baltic avenue",
+      "title": "64yo M with Resistant Hypertension and Microalbuminuria",
+      "patient": {
+        "name": "Marcus L.",
+        "age": 64,
+        "gender": "M",
+        "sbp": 168,
+        "hr": 68,
+        "egfr": 52,
+        "hba1c": 7.9,
+        "lvef": 55,
+        "troponin": "Negative",
+        "symptoms": "Occipital morning headaches, fatigue",
+        "ischemia": "None",
+        "anatomy": "Mild diffuse atheroma"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, Sokolow-Lyon LVH index 38mm with strain pattern",
+        "rate": 68,
+        "rhythm": "Sinus Rhythm with LVH"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 52, "contrastRisk": "Moderate", "note": "Stage 3a CKD with microalbuminuria UACR 180 mg/g" },
+        "endocrinology": { "flag": true, "hba1c": 7.9, "indication": "SGLT2 inhibitor (Empagliflozin/Dapagliflozin) for cardiorenal protection" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Triple GDMT Anti-Hypertensive & SGLT2i Initiation",
+          "description": "Add Spironolactone 25mg, optimize ARB/CCB, and add SGLT2i for renal and blood pressure control.",
+          "gdmtPoints": 16,
+          "rvuPoints": 90,
+          "wastePoints": -60,
+          "margin": 320,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "PATHWAY-2 / DAPA-CKD trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Catheter-Based Renal Denervation (RDN)",
+          "description": "Transfer to cath lab for radiofrequency renal artery sympathetic denervation under fluoroscopy.",
+          "gdmtPoints": 2,
+          "rvuPoints": 2200,
+          "wastePoints": 950,
+          "margin": 2600,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "SPYRAL HTN-ON MED trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Generic Hydrochlorothiazide & Sodium Restriction Protocol",
+          "description": "Prescribe generic thiazide, dietary salt restriction counseling, and home BP tele-monitoring.",
+          "gdmtPoints": 7,
+          "rvuPoints": 110,
+          "wastePoints": 20,
+          "margin": 2100,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "JNC-8 Primary Care Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_TREADMILL_ROOM",
+      "department": "Treadmill room",
+      "tileIndex": 6,
+      "correspondsTo": "oriental avenue",
+      "title": "61yo M with Post-PCI Submaximal ST Depression on Exercise",
+      "patient": {
+        "name": "David W.",
+        "age": 61,
+        "gender": "M",
+        "sbp": 138,
+        "hr": 122,
+        "egfr": 70,
+        "hba1c": 6.5,
+        "lvef": 52,
+        "troponin": "Negative",
+        "symptoms": "Mild chest tightness at Stage 3 of Bruce protocol (7.4 METs)",
+        "ischemia": "Mild",
+        "anatomy": "Prior patent LAD stent, 50% non-flow limiting OM1 lesion"
+      },
+      "ecg": {
+        "summary": "1.2mm horizontal ST depression in II, III, aVF during peak exercise, normalizes in recovery",
+        "rate": 122,
+        "rhythm": "Sinus Tachycardia on Exercise"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 70, "contrastRisk": "Low", "note": "Renal function stable" },
+        "endocrinology": { "flag": false, "hba1c": 6.5, "indication": "HbA1c on target" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 8, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Uptitrate Anti-Anginal GDMT (Carvedilol & Ranolazine)",
+          "description": "Uptitrate beta-blocker to target resting HR 55-60 bpm, add secondary anti-anginal agent, continue structured cardiac rehab.",
+          "gdmtPoints": 15,
+          "rvuPoints": 110,
+          "wastePoints": -45,
+          "margin": 400,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "ISCHEMIA Trial exercise arm"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Repeat Coronary Angiogram & Stenting of 50% OM1",
+          "description": "Immediate invasive cath to deploy a drug-eluting stent in the intermediate OM1 without functional physiology.",
+          "gdmtPoints": 1,
+          "rvuPoints": 1650,
+          "wastePoints": 800,
+          "margin": 1950,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "ORBITA-2 oculostenotic arm"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Structured Phase II Outpatient Cardiac Rehabilitation",
+          "description": "Prescribe 12 weeks of supervised aerobic conditioning and behavioral lifestyle modification.",
+          "gdmtPoints": 9,
+          "rvuPoints": 220,
+          "wastePoints": 15,
+          "margin": 2700,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "AHA Exercise Guidelines"
+        }
+      }
+    },
+    {
+      "id": "CASE_CPET_LAB",
+      "department": "CPET lab",
+      "tileIndex": 8,
+      "correspondsTo": "vermont avenue",
+      "title": "55yo F with Unexplained Dyspnea and Depressed Peak VO2",
+      "patient": {
+        "name": "Grace K.",
+        "age": 55,
+        "gender": "F",
+        "sbp": 130,
+        "hr": 115,
+        "egfr": 58,
+        "hba1c": 6.2,
+        "lvef": 48,
+        "troponin": "Negative",
+        "symptoms": "Progressive exertional breathlessness, peak VO2 14.1 mL/kg/min",
+        "ischemia": "None",
+        "anatomy": "Non-obstructive coronary disease"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm with P-mitrale and minor non-specific repolarization changes",
+        "rate": 115,
+        "rhythm": "Sinus Rhythm with LA Abnormality"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 58, "contrastRisk": "Low", "note": "Near normal cardiorenal clearance" },
+        "endocrinology": { "flag": false, "hba1c": 6.2, "indication": "Metabolic assessment normal" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Initiate HFmrEF Quadruple GDMT (ARNI + SGLT2i + BB + MRA)",
+          "description": "Guideline-directed medical therapy for mildly reduced ejection fraction to improve peak aerobic capacity.",
+          "gdmtPoints": 17,
+          "rvuPoints": 140,
+          "wastePoints": -50,
+          "margin": 450,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "EMPEROR-Preserved / DELIVER"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Right and Left Heart Catheterization with Exercise Hemodynamics",
+          "description": "Perform invasive rest and exercise pulmonary artery catheterization with pressure-volume loops.",
+          "gdmtPoints": 3,
+          "rvuPoints": 1750,
+          "wastePoints": 720,
+          "margin": 2100,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Moderate",
+          "trialReference": "Invasive Hemodynamic Profiling"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Outpatient Loop Diuretic Titration & Salt Management",
+          "description": "Prescribe low-dose oral furosemide, sodium restriction, and outpatient cardiopulmonary follow-up.",
+          "gdmtPoints": 8,
+          "rvuPoints": 130,
+          "wastePoints": 20,
+          "margin": 2300,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Ambulatory Dyspnea Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_6MIN_WALK",
+      "department": "6-minute walk test",
+      "tileIndex": 9,
+      "correspondsTo": "connecticut avenue",
+      "title": "72yo M with Class III Heart Failure and Left Bundle Branch Block",
+      "patient": {
+        "name": "Arthur B.",
+        "age": 72,
+        "gender": "M",
+        "sbp": 118,
+        "hr": 88,
+        "egfr": 38,
+        "hba1c": 7.4,
+        "lvef": 26,
+        "troponin": "Negative",
+        "symptoms": "Walks only 210 meters before severe fatigue and dyspnea",
+        "ischemia": "None",
+        "anatomy": "Diffuse ischemic cardiomyopathy"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, complete Left Bundle Branch Block (LBBB) with QRS duration 158 ms",
+        "rate": 88,
+        "rhythm": "Sinus Rhythm with Wide LBBB"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 38, "contrastRisk": "High", "note": "Stage 3b CKD - Avoid iodinated contrast; requires volume preservation" },
+        "endocrinology": { "flag": true, "hba1c": 7.4, "indication": "SGLT2i (Dapagliflozin) strongly indicated for HFrEF & CKD" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 14, "heartTeamRequired": true, "cabgPreferred": false, "note": "Heart Team & EP consult for CRT-D biventricular pacing" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Full Four-Pillar GDMT Optimization (ARNI, SGLT2i, Beta-Blocker, MRA)",
+          "description": "Uptitrate Sacubitril/Valsartan and Dapagliflozin with close potassium/creatinine monitoring.",
+          "gdmtPoints": 18,
+          "rvuPoints": 130,
+          "wastePoints": -70,
+          "margin": 420,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "PARADIGM-HF / DAPA-HF"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Electrophysiology Cardiac Resynchronization Therapy Defibrillator (CRT-D)",
+          "description": "Implant transvenous biventricular pacing CRT-D system with coronary sinus lead placement.",
+          "gdmtPoints": 8,
+          "rvuPoints": 2800,
+          "wastePoints": 600,
+          "margin": 3800,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "COMPANION / MADIT-CRT"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Submaximal Ambulatory Telehealth Program & Generic Diuretic Titration",
+          "description": "Enroll in home wireless weight monitoring, generic ACEi/carvedilol, and virtual nurse titration.",
+          "gdmtPoints": 10,
+          "rvuPoints": 200,
+          "wastePoints": 30,
+          "margin": 2600,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Remote HF Monitoring"
+        }
+      }
+    },
+    {
+      "id": "CASE_TROPONIN_CUBICLE",
+      "department": "Troponin cubicle",
+      "tileIndex": 11,
+      "correspondsTo": "st. charles place",
+      "title": "66yo F with Dynamic High-Sensitivity Troponin I and Chest Pressure",
+      "patient": {
+        "name": "Maria C.",
+        "age": 66,
+        "gender": "F",
+        "sbp": 142,
+        "hr": 80,
+        "egfr": 41,
+        "hba1c": 8.8,
+        "lvef": 45,
+        "troponin": "840 ng/L (Delta +520 ng/L in 2h)",
+        "symptoms": "Retrosternal tightness radiating to left mandible",
+        "ischemia": "Moderate",
+        "anatomy": "Culprit circumflex or LAD lesion suspected"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, 1.0mm horizontal ST depression in V4-V6 with T wave inversions",
+        "rate": 80,
+        "rhythm": "Sinus Rhythm with Lateral ST-T Changes"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 41, "contrastRisk": "High", "note": "Stage 3b CKD - eGFR 41 requires low-osmolar iso-contrast and pre-hydration" },
+        "endocrinology": { "flag": true, "hba1c": 8.8, "indication": "Severe hyperglycemia; initiate sliding-scale insulin, hold metformin" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 16, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Aggressive Acute Coronary Syndrome GDMT Protocol",
+          "description": "Administer Aspirin 300mg, Ticagrelor 180mg, High-intensity Atorvastatin 80mg, and IV Enoxaparin.",
+          "gdmtPoints": 16,
+          "rvuPoints": 220,
+          "wastePoints": -40,
+          "margin": 600,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "PLATO / ESC NACS Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Urgent Coronary Angiography and Culprit Stenting with Contrast Hydration",
+          "description": "Urgent cath lab transfer, minimal contrast volume protocol (<100 mL), and DES deployment in culprit vessel.",
+          "gdmtPoints": 5,
+          "rvuPoints": 2100,
+          "wastePoints": 820,
+          "margin": 2400,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "TIMI / OASIS Trials"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Observation Unit Telemetry, Serial Troponins & Conservative Escalation",
+          "description": "Bedside observation in short-stay unit with oral antiplatelets, awaiting troponin trajectory stabilization.",
+          "gdmtPoints": 7,
+          "rvuPoints": 350,
+          "wastePoints": 40,
+          "margin": 2900,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "Observation Unit ACS Pathway"
+        }
+      }
+    },
+    {
+      "id": "CASE_TELEMETRY_BED",
+      "department": "Telemetry bed",
+      "tileIndex": 13,
+      "correspondsTo": "states avenue",
+      "title": "70yo M with Non-Sustained Ventricular Tachycardia Runs",
+      "patient": {
+        "name": "Howard S.",
+        "age": 70,
+        "gender": "M",
+        "sbp": 126,
+        "hr": 76,
+        "egfr": 60,
+        "hba1c": 6.4,
+        "lvef": 32,
+        "troponin": "Negative",
+        "symptoms": "Lightheadedness during telemetry alarms",
+        "ischemia": "Mild",
+        "anatomy": "Prior anterior infarction"
+      },
+      "ecg": {
+        "summary": "Baseline sinus rhythm with runs of monomorphic VT (8-12 beats, 170 bpm)",
+        "rate": 76,
+        "rhythm": "Sinus Rhythm with Repetitive NSVT"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 60, "contrastRisk": "Low", "note": "Renal clearance adequate" },
+        "endocrinology": { "flag": false, "hba1c": 6.4, "indication": "Electrolyte panel: K+ 3.8 mEq/L, Mg2+ 1.8 mg/dL" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 12, "heartTeamRequired": true, "cabgPreferred": false, "note": "EP consult for secondary prevention ICD evaluation" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Aggressive Electrolyte Repletion & Beta-Blocker Titration",
+          "description": "Replete potassium to >4.5 mEq/L and magnesium to >2.2 mg/dL; optimize Carvedilol to maximum tolerated dose.",
+          "gdmtPoints": 15,
+          "rvuPoints": 140,
+          "wastePoints": -50,
+          "margin": 380,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "AHA/ACC VT Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Invasive VT Substrate Mapping & Catheter Ablation",
+          "description": "3D electro-anatomical voltage mapping (CARTO/EnSite) and radiofrequency ablation of scar border zone.",
+          "gdmtPoints": 4,
+          "rvuPoints": 2600,
+          "wastePoints": 880,
+          "margin": 3200,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Moderate",
+          "trialReference": "VANISH Trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Oral Amiodarone Loading & Telemetry Step-Down",
+          "description": "Start oral amiodarone loading, step down to general ward, and arrange outpatient Holter review.",
+          "gdmtPoints": 8,
+          "rvuPoints": 210,
+          "wastePoints": 30,
+          "margin": 2500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Hospital Cost-Containment Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_SYNCOPE_SURVEILLANCE",
+      "department": "Syncope surveillance",
+      "tileIndex": 14,
+      "correspondsTo": "virginia avenue",
+      "title": "78yo F with Recurrent Postural Falls and Sinus Pauses",
+      "patient": {
+        "name": "Beatrice T.",
+        "age": 78,
+        "gender": "F",
+        "sbp": 112,
+        "hr": 48,
+        "egfr": 44,
+        "hba1c": 6.1,
+        "lvef": 60,
+        "troponin": "Negative",
+        "symptoms": "3 syncopal episodes in the past month without prodrome",
+        "ischemia": "None",
+        "anatomy": "Normal epicardial coronaries"
+      },
+      "ecg": {
+        "summary": "Marked sinus bradycardia (48 bpm) with documented episodic sinus pause of 3.4 seconds",
+        "rate": 48,
+        "rhythm": "Sinus Bradycardia with Sick Sinus Syndrome"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 44, "contrastRisk": "High", "note": "Stage 3b CKD - eGFR 44 requires contrast caution" },
+        "endocrinology": { "flag": false, "hba1c": 6.1, "indication": "Thyroid panel: TSH normal" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 0, "heartTeamRequired": true, "cabgPreferred": false, "note": "EP consult for dual-chamber permanent pacemaker" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Deprescribe Nodal Blocking Agents & Orthostatic Rehabilitation",
+          "description": "Discontinue offending beta-blocker/diltiazem, initiate compression stockings, and hydrate aggressively.",
+          "gdmtPoints": 14,
+          "rvuPoints": 100,
+          "wastePoints": -40,
+          "margin": 300,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "ACC/AHA Syncope Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Dual-Chamber Permanent Pacemaker Implantation (PPM)",
+          "description": "Implant right atrial and right ventricular active fixation leads under local anesthesia and fluoroscopy.",
+          "gdmtPoints": 6,
+          "rvuPoints": 2300,
+          "wastePoints": 500,
+          "margin": 3100,
+          "complicationRisk": "Low",
+          "auditRisk": "Low",
+          "trialReference": "DANPACE / ESC Pacing Guidelines"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Subcutaneous Implantable Loop Recorder (ILR)",
+          "description": "Mini-invasive insertion of an injectable cardiac monitor to verify correlation before device therapy.",
+          "gdmtPoints": 9,
+          "rvuPoints": 850,
+          "wastePoints": 80,
+          "margin": 2700,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Ambulatory Syncope Diagnostic Pathway"
+        }
+      }
+    },
+    {
+      "id": "CASE_FEMORAL_SANDBAG",
+      "department": "Femoral sandbag space",
+      "tileIndex": 16,
+      "correspondsTo": "st. james place",
+      "title": "68yo M Post-Cath with Expanding Groin Swelling and Bruit",
+      "patient": {
+        "name": "Raymond P.",
+        "age": 68,
+        "gender": "M",
+        "sbp": 105,
+        "hr": 98,
+        "egfr": 49,
+        "hba1c": 7.1,
+        "lvef": 45,
+        "troponin": "Negative",
+        "symptoms": "Severe right groin pain, pulsatile mass 4 hours post-femoral puncture",
+        "ischemia": "None",
+        "anatomy": "Femoral access site pseudoaneurysm (3.2 cm)"
+      },
+      "ecg": {
+        "summary": "Sinus tachycardia, rate 98 bpm, non-specific T wave changes",
+        "rate": 98,
+        "rhythm": "Sinus Tachycardia"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 49, "contrastRisk": "Moderate", "note": "Maintain IV fluids, avoid contrast re-exposure" },
+        "endocrinology": { "flag": false, "hba1c": 7.1, "indication": "Metabolic stability" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 0, "heartTeamRequired": true, "cabgPreferred": false, "note": "Vascular surgery on standby if percutaneous thrombin fails" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Ultrasound-Guided Mechanical Compression & Bed Rest",
+          "description": "Continuous ultrasound transducer compression over pseudoaneurysm neck with pressure bandage and 6h immobilization.",
+          "gdmtPoints": 13,
+          "rvuPoints": 180,
+          "wastePoints": -30,
+          "margin": 410,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Vascular Complication Conservative Protocol"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Ultrasound-Guided Percutaneous Thrombin Injection",
+          "description": "Direct needle puncture of pseudoaneurysm sac under duplex ultrasound and injection of 500-1000 IU bovine/human thrombin.",
+          "gdmtPoints": 5,
+          "rvuPoints": 1400,
+          "wastePoints": 420,
+          "margin": 2200,
+          "complicationRisk": "Low",
+          "auditRisk": "Low",
+          "trialReference": "SCAI Vascular Closure Consensus"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Femoral Sandbag Pressure & Prolonged Observation",
+          "description": "Apply weighted 5kg femoral sandbag, strict supine bed rest, and serial hemoglobin checks.",
+          "gdmtPoints": 6,
+          "rvuPoints": 120,
+          "wastePoints": 10,
+          "margin": 1900,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "Nursing Short-Stay Conservative Bundle"
+        }
+      }
+    },
+    {
+      "id": "CASE_RADIAL_RECOVERY",
+      "department": "Radial recovery lounge",
+      "tileIndex": 18,
+      "correspondsTo": "tennessee avenue",
+      "title": "63yo F with Severe Radial Artery Spasm and Forearm Pain Post-PCI",
+      "patient": {
+        "name": "Elena V.",
+        "age": 63,
+        "gender": "F",
+        "sbp": 134,
+        "hr": 72,
+        "egfr": 56,
+        "hba1c": 6.9,
+        "lvef": 54,
+        "troponin": "Normal baseline",
+        "symptoms": "Severe burning pain in right forearm, difficult TR-band deflation",
+        "ischemia": "None",
+        "anatomy": "Radial artery spasm post-6Fr sheath removal"
+      },
+      "ecg": {
+        "summary": "Normal sinus rhythm, HR 72 bpm, no ischemic changes",
+        "rate": 72,
+        "rhythm": "Normal Sinus Rhythm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 56, "contrastRisk": "Low", "note": "Contrast clearance progressing normally" },
+        "endocrinology": { "flag": false, "hba1c": 6.9, "indication": "Pre-diabetes" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Intra-Arterial / Sublingual Vasodilator Cocktail & Warm Compress",
+          "description": "Administer sublingual nitroglycerin, warm blanket wrap to the forearm, and gentle incremental TR-band weaning.",
+          "gdmtPoints": 15,
+          "rvuPoints": 90,
+          "wastePoints": -40,
+          "margin": 320,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "RIVAL Trial Radial Protocol"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Emergency Brachial Arteriogram and Hydrophilic Sheath Recannulation",
+          "description": "Transfer back to cath lab table, perform upper extremity angiography, and inject verapamil under cine fluoroscopy.",
+          "gdmtPoints": 2,
+          "rvuPoints": 1350,
+          "wastePoints": 700,
+          "margin": 1750,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "Invasive Radial Spasm Protocol"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Gradual TR Band Titration & Outpatient Lounge Discharge",
+          "description": "Controlled slow release of TR band air (2 mL every 15 min), oral analgesia, and same-day discharge.",
+          "gdmtPoints": 8,
+          "rvuPoints": 150,
+          "wastePoints": 15,
+          "margin": 2600,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Same-Day Radial Discharge Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_HYDRATION_CUBICLE",
+      "department": "Hydration cubicle",
+      "tileIndex": 19,
+      "correspondsTo": "new york avenue",
+      "title": "74yo M with Advanced CKD (eGFR 29) Scheduled for Angiography",
+      "patient": {
+        "name": "Walter H.",
+        "age": 74,
+        "gender": "M",
+        "sbp": 148,
+        "hr": 66,
+        "egfr": 29,
+        "hba1c": 8.2,
+        "lvef": 40,
+        "troponin": "Negative",
+        "symptoms": "Stable CCS Class II exertional angina, referred for elective cath",
+        "ischemia": "Moderate",
+        "anatomy": "Suspected two-vessel CAD"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, LVH with secondary repolarization changes",
+        "rate": 66,
+        "rhythm": "Sinus Rhythm with LVH"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 29, "contrastRisk": "High", "note": "Stage 4 CKD - Extreme risk of Contrast-Induced Nephropathy (CIN) and dialysis" },
+        "endocrinology": { "flag": true, "hba1c": 8.2, "indication": "Diabetic nephropathy; hold SGLT2i temporarily if dehydration risk" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 22, "heartTeamRequired": true, "cabgPreferred": false, "note": "Consider Heart Team non-contrast ischemia testing" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Optimal Anti-Anginal Medical Therapy & Contrast Sparing",
+          "description": "Maximize Ranolazine, Isosorbide Mononitrate, and low-dose Metoprolol; defer elective iodinated contrast.",
+          "gdmtPoints": 18,
+          "rvuPoints": 100,
+          "wastePoints": -80,
+          "margin": 450,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "PRESERVE Trial / KDIGO Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Ultra-Low Contrast Invasive Angiography with IVUS Guidance",
+          "description": "Perform angiography using intravascular ultrasound (IVUS) guidance with total contrast strictly < 15 mL.",
+          "gdmtPoints": 6,
+          "rvuPoints": 2200,
+          "wastePoints": 900,
+          "margin": 2800,
+          "complicationRisk": "High",
+          "auditRisk": "Moderate",
+          "trialReference": "MOZART / Ultra-Low Contrast PCI"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Pre-Procedure Normal Saline Infusion (1 mL/kg/h) & Observation",
+          "description": "Standard 12-hour isotonic saline hydration protocol, nephrology observation cubicle stay.",
+          "gdmtPoints": 10,
+          "rvuPoints": 240,
+          "wastePoints": 25,
+          "margin": 2400,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "AMACING Hydration Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_DIAPHRAGMATIC_ARTIFACT",
+      "department": "Diaphragmatic artifact area",
+      "tileIndex": 21,
+      "correspondsTo": "kentucky avenue",
+      "title": "59yo Obese M with Questionable Inferior Wall SPECT Perfusion Defect",
+      "patient": {
+        "name": "Kenneth O.",
+        "age": 59,
+        "gender": "M",
+        "sbp": 140,
+        "hr": 78,
+        "egfr": 72,
+        "hba1c": 7.5,
+        "lvef": 56,
+        "troponin": "Negative",
+        "symptoms": "Atypical epigastric burning after large meals, BMI 34",
+        "ischemia": "Mild",
+        "anatomy": "Equivocal inferior wall defect, likely diaphragmatic attenuation"
+      },
+      "ecg": {
+        "summary": "Normal sinus rhythm, non-specific T wave flattening in III and aVF",
+        "rate": 78,
+        "rhythm": "Normal Sinus Rhythm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 72, "contrastRisk": "Low", "note": "Normal kidney function" },
+        "endocrinology": { "flag": true, "hba1c": 7.5, "indication": "GLP-1 receptor agonist indicated for cardiometabolic weight loss and T2D" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Prone SPECT Confirmation & GLP-1 Receptor Agonist Initiation",
+          "description": "Repeat SPECT acquisition in prone position to clear diaphragmatic artifact; start Semaglutide for metabolic risk.",
+          "gdmtPoints": 16,
+          "rvuPoints": 150,
+          "wastePoints": -50,
+          "margin": 420,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "SELECT Trial / ASNC Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Immediate Diagnostic Cath & Ad-Hoc Stenting of Right Coronary Artery",
+          "description": "Take to cath lab based on unconfirmed inferior defect; deploy drug-eluting stent in 40% luminal irregularity.",
+          "gdmtPoints": 1,
+          "rvuPoints": 1850,
+          "wastePoints": 880,
+          "margin": 2300,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "AUC Unindicated PCI Audit"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Trial of Proton Pump Inhibitor & Outpatient Lifestyle Counseling",
+          "description": "Prescribe generic Omeprazole for reflux, dietary counseling, and cancel invasive testing.",
+          "gdmtPoints": 8,
+          "rvuPoints": 120,
+          "wastePoints": 15,
+          "margin": 2700,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Chest Pain Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_SPECT_GANTRY",
+      "department": "SPECT gantry",
+      "tileIndex": 23,
+      "correspondsTo": "indiana avenue",
+      "title": "67yo F with Extensive Anterior Wall Reversible Ischemia (18%)",
+      "patient": {
+        "name": "Dorothy N.",
+        "age": 67,
+        "gender": "F",
+        "sbp": 150,
+        "hr": 82,
+        "egfr": 64,
+        "hba1c": 8.0,
+        "lvef": 46,
+        "troponin": "Borderline 35 ng/L",
+        "symptoms": "Exertional dyspnea and jaw pain walking 100 meters",
+        "ischemia": "Severe",
+        "anatomy": "Severe reversible perfusion defect in LAD distribution (18% LV myocardium)"
+      },
+      "ecg": {
+        "summary": "1.8mm planar ST depression in V2-V5 during Regadenoson stress testing",
+        "rate": 82,
+        "rhythm": "Sinus Rhythm with Anterior Ischemic ST Depression"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 64, "contrastRisk": "Low", "note": "Renal clearance preserved" },
+        "endocrinology": { "flag": true, "hba1c": 8.0, "indication": "SGLT2i + Metformin indicated for cardiovascular risk" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 24, "heartTeamRequired": true, "cabgPreferred": false, "note": "Proximal LAD vs multi-vessel involvement warrants Heart Team review" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Intensive Anti-Ischemic Quadruple Medical Therapy",
+          "description": "High-intensity statin, dual anti-anginal (Metoprolol + Amlodipine), Aspirin, and close clinical monitoring.",
+          "gdmtPoints": 14,
+          "rvuPoints": 160,
+          "wastePoints": -30,
+          "margin": 450,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "ISCHEMIA Severe Ischemia Sub-study"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Invasive Coronary Angiogram & Physiology-Guided DES Stenting",
+          "description": "Coronary angiography with FFR/iFR assessment and drug-eluting stent implantation for severe ischemia.",
+          "gdmtPoints": 8,
+          "rvuPoints": 2350,
+          "wastePoints": 500,
+          "margin": 3100,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "FAME-2 Trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Submaximal Outpatient Anti-Ischemic Bundle & Remote Monitoring",
+          "description": "Prescribe generic Isosorbide Mononitrate, wearable pulse oximetry, and scheduled 30-day review.",
+          "gdmtPoints": 7,
+          "rvuPoints": 220,
+          "wastePoints": 35,
+          "margin": 2800,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "Cost-Containment Ischemia Pathway"
+        }
+      }
+    },
+    {
+      "id": "CASE_ATTENUATION_AREA",
+      "department": "Attenuation area",
+      "tileIndex": 24,
+      "correspondsTo": "illinois avenue",
+      "title": "62yo F with Breast Tissue Attenuation on Stress Myocardial Perfusion",
+      "patient": {
+        "name": "Clara S.",
+        "age": 62,
+        "gender": "F",
+        "sbp": 128,
+        "hr": 70,
+        "egfr": 68,
+        "hba1c": 5.9,
+        "lvef": 62,
+        "troponin": "Negative",
+        "symptoms": "Atypical sharp fleeting chest twinges, pre-test probability <10%",
+        "ischemia": "None",
+        "anatomy": "Anterolateral fixed reduction due to overlying breast attenuation"
+      },
+      "ecg": {
+        "summary": "Normal resting ECG, normal response to exercise",
+        "rate": 70,
+        "rhythm": "Normal Sinus Rhythm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 68, "contrastRisk": "Low", "note": "Kidney function normal" },
+        "endocrinology": { "flag": false, "hba1c": 5.9, "indication": "Normal glucose tolerance" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Reassurance, Attenuation Correction Review & Reassurance",
+          "description": "Apply computed tomography attenuation correction (CTAC) to prove artifact; avoid downstream invasive tests.",
+          "gdmtPoints": 16,
+          "rvuPoints": 80,
+          "wastePoints": -60,
+          "margin": 350,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Choosing Wisely Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Defensive Coronary Angiogram to Exclude LCx Disease",
+          "description": "Send patient to cath lab for diagnostic angiogram despite high likelihood of soft tissue artifact.",
+          "gdmtPoints": 1,
+          "rvuPoints": 1500,
+          "wastePoints": 850,
+          "margin": 2000,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "Overutilization Audit Flag"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Direct Primary Care Reassurance & Discharge",
+          "description": "Discharge from specialist care back to general practitioner with reassurance and symptom diary.",
+          "gdmtPoints": 9,
+          "rvuPoints": 100,
+          "wastePoints": 10,
+          "margin": 2800,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Primary Care Reassurance"
+        }
+      }
+    },
+    {
+      "id": "CASE_SALINE_BUBBLE",
+      "department": "Saline bubble room",
+      "tileIndex": 26,
+      "correspondsTo": "atlantic avenue",
+      "title": "46yo M with Cryptogenic Stroke and Patent Foramen Ovale (PFO)",
+      "patient": {
+        "name": "Brian J.",
+        "age": 46,
+        "gender": "M",
+        "sbp": 124,
+        "hr": 68,
+        "egfr": 85,
+        "hba1c": 5.6,
+        "lvef": 60,
+        "troponin": "Negative",
+        "symptoms": "Transient right-sided weakness, MRI confirmed embolic MCA infarct",
+        "ischemia": "None",
+        "anatomy": "Grade 3 right-to-left shunt with atrial septal aneurysm"
+      },
+      "ecg": {
+        "summary": "Normal sinus rhythm, prolonged 30-day monitor ruled out atrial fibrillation",
+        "rate": 68,
+        "rhythm": "Normal Sinus Rhythm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 85, "contrastRisk": "Low", "note": "Renal clearance robust" },
+        "endocrinology": { "flag": false, "hba1c": 5.6, "indication": "Normal metabolic status" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 0, "heartTeamRequired": true, "cabgPreferred": false, "note": "Neuro-cardiology Heart Team evaluation for PFO device closure" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Dual Antiplatelet Therapy (DAPT) & Stroke Prevention GDMT",
+          "description": "Prescribe Aspirin 100mg + Clopidogrel 75mg for 3 months, then high-dose statin long-term.",
+          "gdmtPoints": 14,
+          "rvuPoints": 110,
+          "wastePoints": -35,
+          "margin": 380,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "CLOSE / REDUCE Medical Arms"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Percutaneous Transcatheter PFO Device Closure",
+          "description": "Deploy an occluder disc (Amplatzer/Gore) across the PFO under intracardiac echocardiography.",
+          "gdmtPoints": 7,
+          "rvuPoints": 2500,
+          "wastePoints": 450,
+          "margin": 3500,
+          "complicationRisk": "Low",
+          "auditRisk": "Low",
+          "trialReference": "RESPECT / CLOSE Trials"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Single Antiplatelet Monotherapy & Outpatient Follow-up",
+          "description": "Prescribe generic Aspirin 100mg once daily and routine neurology clinic surveillance.",
+          "gdmtPoints": 7,
+          "rvuPoints": 140,
+          "wastePoints": 20,
+          "margin": 2600,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Stroke Prevention"
+        }
+      }
+    },
+    {
+      "id": "CASE_DIASTOLIC_CONFUSION",
+      "department": "Diastolic confusion area",
+      "tileIndex": 27,
+      "correspondsTo": "ventnor avenue",
+      "title": "71yo F with HFpEF, Grade II Diastolic Dysfunction and High E/e'",
+      "patient": {
+        "name": "Florence G.",
+        "age": 71,
+        "gender": "F",
+        "sbp": 155,
+        "hr": 74,
+        "egfr": 43,
+        "hba1c": 7.8,
+        "lvef": 55,
+        "troponin": "Negative",
+        "symptoms": "Exertional orthopnea, bilateral ankle swelling, NT-proBNP 1450 pg/mL",
+        "ischemia": "None",
+        "anatomy": "Non-obstructive coronary vessels, concentric LV remodeling"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, left atrial enlargement, non-specific T wave changes",
+        "rate": 74,
+        "rhythm": "Sinus Rhythm with LA Enlargement"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 43, "contrastRisk": "High", "note": "Stage 3b CKD (eGFR 43) - Cardiorenal metabolic phenotype" },
+        "endocrinology": { "flag": true, "hba1c": 7.8, "indication": "SGLT2 inhibitor (Empagliflozin) Class I recommendation for HFpEF & T2D" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Empagliflozin 10mg + Spironolactone 25mg GDMT Protocol",
+          "description": "Initiate proven SGLT2 inhibitor and mineralocorticoid receptor antagonist for HFpEF guideline therapy.",
+          "gdmtPoints": 18,
+          "rvuPoints": 120,
+          "wastePoints": -60,
+          "margin": 420,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "EMPEROR-Preserved / DELIVER Trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Transcatheter Interatrial Shunt Device (IASD) Placement",
+          "description": "Perform transeptal puncture and implant an interatrial shunt to decompress left atrial pressure.",
+          "gdmtPoints": 2,
+          "rvuPoints": 2400,
+          "wastePoints": 950,
+          "margin": 2700,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "REDUCE LAP-HF II Trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Generic Furosemide Titration & Fluid Restriction",
+          "description": "Prescribe generic Furosemide 40mg, strict 1.5L fluid restriction, and outpatient heart failure clinic.",
+          "gdmtPoints": 8,
+          "rvuPoints": 150,
+          "wastePoints": 25,
+          "margin": 2500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Standard Ambulatory Diuretic Care"
+        }
+      }
+    },
+    {
+      "id": "CASE_COLD_GEL",
+      "department": "Cold gel space",
+      "tileIndex": 29,
+      "correspondsTo": "marvin gardens",
+      "title": "76yo M with Severe Symptomatic Aortic Stenosis (AVA 0.7 cm²)",
+      "patient": {
+        "name": "Gerald M.",
+        "age": 76,
+        "gender": "M",
+        "sbp": 118,
+        "hr": 70,
+        "egfr": 58,
+        "hba1c": 6.3,
+        "lvef": 52,
+        "troponin": "Negative",
+        "symptoms": "Exertional syncope and angina climbing one flight of stairs",
+        "ischemia": "Severe AS",
+        "anatomy": "Severe calcific aortic stenosis, mean gradient 49 mmHg, peak velocity 4.4 m/s"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, severe LVH with secondary ST-T depression and inverted T waves in I, aVL, V5-V6",
+        "rate": 70,
+        "rhythm": "Sinus Rhythm with Severe LVH Strain"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 58, "contrastRisk": "Low", "note": "Renal clearance adequate for CT angiography" },
+        "endocrinology": { "flag": false, "hba1c": 6.3, "indication": "HbA1c normal" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 0, "heartTeamRequired": true, "cabgPreferred": false, "note": "Mandatory Multidisciplinary Heart Team evaluation (TAVR vs SAVR)" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Conservative Medical Stabilization & Pre-Op Optimization",
+          "description": "Cautious symptom stabilization, avoid vasodilators, optimize volume status pending valve replacement.",
+          "gdmtPoints": 12,
+          "rvuPoints": 140,
+          "wastePoints": -20,
+          "margin": 450,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "AHA/ACC Valvular Disease Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Transcatheter Aortic Valve Replacement (TAVR)",
+          "description": "Transfemoral delivery and deployment of a balloon-expandable or self-expanding bioprosthetic aortic valve.",
+          "gdmtPoints": 9,
+          "rvuPoints": 3200,
+          "wastePoints": 400,
+          "margin": 4200,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "PARTNER 3 / Evolut Low Risk"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Balloon Aortic Valvuloplasty (BAV) Bridge to Decision",
+          "description": "Percutaneous balloon dilatation of the calcified valve as an economical palliative bridge.",
+          "gdmtPoints": 5,
+          "rvuPoints": 1600,
+          "wastePoints": 350,
+          "margin": 2800,
+          "complicationRisk": "High",
+          "auditRisk": "Moderate",
+          "trialReference": "Valvuloplasty Registry"
+        }
+      }
+    },
+    {
+      "id": "CASE_FULL_METAL_JACKET",
+      "department": "Full metal jacket room",
+      "tileIndex": 31,
+      "correspondsTo": "pacific avenue",
+      "title": "65yo Diabetic M with Diffuse 3-Vessel CAD and High SYNTAX Score (36)",
+      "patient": {
+        "name": "Harold F.",
+        "age": 65,
+        "gender": "M",
+        "sbp": 144,
+        "hr": 74,
+        "egfr": 40,
+        "hba1c": 9.2,
+        "lvef": 42,
+        "troponin": "52 ng/L",
+        "symptoms": "CCS Class III exertional angina, severe multi-vessel disease",
+        "ischemia": "Severe",
+        "anatomy": "Diffuse LAD, LCx, and RCA calcification; SYNTAX score 36"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, inferior Q waves, horizontal ST depression in lateral leads",
+        "rate": 74,
+        "rhythm": "Sinus Rhythm with Multi-Lead Ischemia"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 40, "contrastRisk": "High", "note": "Stage 3b CKD (eGFR 40) - Contrast alert; heavy stent burden risks CIN" },
+        "endocrinology": { "flag": true, "hba1c": 9.2, "indication": "Poor glycemic control; insulin management required" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 36, "heartTeamRequired": true, "cabgPreferred": true, "note": "SYNTAX score 36 with diabetes: Class I indication for CABG over PCI" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Pre-CABG Guideline Medical Optimization & Glycemic Control",
+          "description": "Aspirin, beta-blocker, high-potency statin, and insulin infusion to prepare for surgical revascularization.",
+          "gdmtPoints": 16,
+          "rvuPoints": 160,
+          "wastePoints": -60,
+          "margin": 500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "SYNTAX / FREEDOM Trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Multi-Vessel 'Full Metal Jacket' PCI (6 Stents)",
+          "description": "Attempt complete percutaneous revascularization deploying 6 overlapping drug-eluting stents across all 3 vessels.",
+          "gdmtPoints": 1,
+          "rvuPoints": 3600,
+          "wastePoints": 1400,
+          "margin": 3800,
+          "complicationRisk": "High",
+          "auditRisk": "High",
+          "trialReference": "FREEDOM / SYNTAX trial PCI arm"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Cardiothoracic Heart Team Surgical Transfer (CABG)",
+          "description": "Admit to surgical service for multi-vessel coronary artery bypass grafting to optimize long-term survival.",
+          "gdmtPoints": 12,
+          "rvuPoints": 2400,
+          "wastePoints": 200,
+          "margin": 4500,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "ACC/AHA Revascularization Guidelines"
+        }
+      }
+    },
+    {
+      "id": "CASE_OCULOSTENOTIC",
+      "department": "Oculostenotic space",
+      "tileIndex": 32,
+      "correspondsTo": "north carolina avenue",
+      "title": "62yo M with 75% Mid-LAD Stenosis, FFR 0.83, and Mild CCS II Angina",
+      "patient": {
+        "name": "Robert T.",
+        "age": 62,
+        "gender": "M",
+        "sbp": 146,
+        "hr": 72,
+        "egfr": 42,
+        "hba1c": 8.6,
+        "lvef": 52,
+        "troponin": "Negative",
+        "symptoms": "Mild angina only on rapid stair climbing, relieved by rest",
+        "ischemia": "Mild",
+        "anatomy": "Visual 75% mid-LAD stenosis, physiological FFR 0.83 (>0.80)"
+      },
+      "ecg": {
+        "summary": "Normal sinus rhythm, 0.8mm non-specific ST depression in V4-V6",
+        "rate": 72,
+        "rhythm": "Sinus Rhythm with Non-Specific Repolarization"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 42, "contrastRisk": "High", "note": "Stage 3b CKD (eGFR 42) - Contrast-induced nephropathy alert" },
+        "endocrinology": { "flag": true, "hba1c": 8.6, "indication": "T2D with poor control; initiate SGLT2i and lifestyle modification" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 11, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Guideline-Directed Medical Therapy (GDMT)",
+          "description": "Optimize quadruple medical therapy (Beta-blocker, Statin, ACEi/ARB, SGLT2i); avoid stent given negative FFR.",
+          "gdmtPoints": 18,
+          "rvuPoints": 120,
+          "wastePoints": -60,
+          "margin": 450,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "ISCHEMIA / DEFER / FAME Trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Oculostenotic Immediate Stenting (DES)",
+          "description": "Deploy a drug-eluting stent based on eyeballed visual angiographic severity despite negative FFR 0.83.",
+          "gdmtPoints": 1,
+          "rvuPoints": 1950,
+          "wastePoints": 950,
+          "margin": 2400,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "ORBITA / FFR Benchmark Audit"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Outpatient Lifestyle and Generic Anti-Anginal Bundle",
+          "description": "Generic Metoprolol Tartrate + Atorvastatin, discharge from cath holding unit, avoid procedural costs.",
+          "gdmtPoints": 9,
+          "rvuPoints": 180,
+          "wastePoints": 20,
+          "margin": 2900,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Value-Based Healthcare Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_EYEBALL_AREA",
+      "department": "Eyeball area",
+      "tileIndex": 34,
+      "correspondsTo": "pennsylvania avenue",
+      "title": "69yo F with 60% Intermediate Circumflex Lesion without Physiology",
+      "patient": {
+        "name": "Margaret E.",
+        "age": 69,
+        "gender": "F",
+        "sbp": 136,
+        "hr": 76,
+        "egfr": 62,
+        "hba1c": 6.7,
+        "lvef": 58,
+        "troponin": "Negative",
+        "symptoms": "Atypical chest tightness during emotional stress",
+        "ischemia": "Indeterminate",
+        "anatomy": "Intermediate 60% tubular lesion in mid-circumflex"
+      },
+      "ecg": {
+        "summary": "Normal sinus rhythm, flattened T waves in aVL and V6",
+        "rate": 76,
+        "rhythm": "Normal Sinus Rhythm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 62, "contrastRisk": "Low", "note": "Renal clearance normal" },
+        "endocrinology": { "flag": false, "hba1c": 6.7, "indication": "Pre-diabetes" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 9, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Physiological Assessment (iFR/FFR) or Deferral to Medical Therapy",
+          "description": "Wire vessel with pressure wire; defer stenting if iFR > 0.89 and treat with high-dose statin and lifestyle.",
+          "gdmtPoints": 16,
+          "rvuPoints": 450,
+          "wastePoints": -40,
+          "margin": 520,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "DEFINE-FLAIR / iFR-SWEDEHEART"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Eyeball Routine Stenting ('Looks Tight, Stent It')",
+          "description": "Proceed directly to balloon dilatation and stent implantation without functional physiological assessment.",
+          "gdmtPoints": 1,
+          "rvuPoints": 1750,
+          "wastePoints": 850,
+          "margin": 2200,
+          "complicationRisk": "Moderate",
+          "auditRisk": "High",
+          "trialReference": "ACC/AHA Appropriate Use Criteria"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Same-Day Cath Discharge & Generic Medical Regimen",
+          "description": "Aspirin 81mg, Atorvastatin 40mg, discharge within 2 hours of sheath removal, follow up in primary clinic.",
+          "gdmtPoints": 8,
+          "rvuPoints": 160,
+          "wastePoints": 15,
+          "margin": 2700,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Ambulatory Cath Care Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_TRIPLE_PRESSOR",
+      "department": "Triple-pressor area",
+      "tileIndex": 37,
+      "correspondsTo": "park place",
+      "title": "73yo M in Refractory Cardiogenic Shock on Norepi, Vaso, & Dobutamine",
+      "patient": {
+        "name": "Vincent K.",
+        "age": 73,
+        "gender": "M",
+        "sbp": 82,
+        "hr": 118,
+        "egfr": 32,
+        "hba1c": 7.2,
+        "lvef": 18,
+        "troponin": "4800 ng/L",
+        "symptoms": "Profound cardiogenic shock post-massive anterior STEMI, cold extremities, anuria",
+        "ischemia": "Severe",
+        "anatomy": "Proximal LAD occlusion with TIMI 0-1 flow"
+      },
+      "ecg": {
+        "summary": "Sinus tachycardia, 4mm ST elevation in V1-V4 with Q waves and ventricular ectopy",
+        "rate": 118,
+        "rhythm": "Sinus Tachycardia with Acute Anterior STEMI"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 32, "contrastRisk": "High", "note": "Stage 4 Acute Cardiorenal Syndrome (eGFR 32) - Anuria and severe acidosis" },
+        "endocrinology": { "flag": false, "hba1c": 7.2, "indication": "Stress hyperglycemia" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 28, "heartTeamRequired": true, "cabgPreferred": false, "note": "SCAI Shock Stage D: Heart Team emergency MCS (Impella / VA-ECMO)" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Invasive Hemodynamic Guiding & Protocolized Inodilator De-escalation",
+          "description": "Place pulmonary artery catheter (Swan-Ganz), optimize cardiac power output, wean vasoconstrictors.",
+          "gdmtPoints": 15,
+          "rvuPoints": 500,
+          "wastePoints": -50,
+          "margin": 650,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "National Cardiogenic Shock Initiative"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Emergency Percutaneous Mechanical Circulatory Support (Impella CP)",
+          "description": "Insert transvalvular axial microaxial flow pump via femoral artery to unload left ventricle and maintain perfusion.",
+          "gdmtPoints": 8,
+          "rvuPoints": 4200,
+          "wastePoints": 800,
+          "margin": 5200,
+          "complicationRisk": "High",
+          "auditRisk": "Low",
+          "trialReference": "DanGer Shock Trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Standard Medical Vasopressor Escalation & CCU Protocol",
+          "description": "Titrate Norepinephrine and Epinephrine without mechanical device insertion, monitor arterial line.",
+          "gdmtPoints": 5,
+          "rvuPoints": 600,
+          "wastePoints": 150,
+          "margin": 3200,
+          "complicationRisk": "High",
+          "auditRisk": "None",
+          "trialReference": "Standard CCU Medical Shock Care"
+        }
+      }
+    },
+    {
+      "id": "CASE_PALLIATIVE_REALITY",
+      "department": "Palliative reality room",
+      "tileIndex": 39,
+      "correspondsTo": "boardwalk",
+      "title": "88yo F with End-Stage Heart Failure, NYHA IV, and Frailty",
+      "patient": {
+        "name": "Genevieve A.",
+        "age": 88,
+        "gender": "F",
+        "sbp": 94,
+        "hr": 64,
+        "egfr": 22,
+        "hba1c": 6.5,
+        "lvef": 15,
+        "troponin": "Chronic baseline elevation (65 ng/L)",
+        "symptoms": "Rest dyspnea, severe fatigue, bedbound, 5 admissions in 6 months",
+        "ischemia": "End-stage",
+        "anatomy": "Burnt-out ischemic cardiomyopathy, severe mitral regurgitation"
+      },
+      "ecg": {
+        "summary": "Low voltage QRS complexes, atrial fibrillation with controlled ventricular response, intraventricular conduction delay",
+        "rate": 64,
+        "rhythm": "Atrial Fibrillation with Low Voltage"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 22, "contrastRisk": "High", "note": "Stage 4-5 CKD (eGFR 22) - Cardiorenal burnout; contrast is strictly contraindicated" },
+        "endocrinology": { "flag": false, "hba1c": 6.5, "indication": "Nutritional frailty" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 0, "heartTeamRequired": true, "cabgPreferred": false, "note": "Ineligible for LVAD / transplant; multidisciplinary palliative care goals" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Palliative Comfort GDMT, Low-Dose Oral Inotrope & Symptom Relief",
+          "description": "Align treatment with patient values: low-dose sublingual morphine for dyspnea, oral Metolazone + Lasix, home hospice support.",
+          "gdmtPoints": 18,
+          "rvuPoints": 120,
+          "wastePoints": -90,
+          "margin": 500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "SWEDEHEART / Palliative Cardiology Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Futility Transcatheter Edge-to-Edge Mitral Repair (TEER / MitraClip)",
+          "description": "Attempt complex transseptal mitral clip procedure despite severe multi-organ frailty and bedbound status.",
+          "gdmtPoints": 1,
+          "rvuPoints": 3800,
+          "wastePoints": 1800,
+          "margin": 4100,
+          "complicationRisk": "High",
+          "auditRisk": "High",
+          "trialReference": "Clinical Futility Audit Review"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Inpatient Hospice Transfer & Goal-Concordant Comfort Care",
+          "description": "Avoid non-beneficial invasive interventions; transfer to dedicated inpatient hospice suite with family counseling.",
+          "gdmtPoints": 12,
+          "rvuPoints": 200,
+          "wastePoints": 10,
+          "margin": 3600,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "End-of-Life Value-Based Care Bundle"
+        }
+      }
+    },
+    {
+      "id": "CASE_UA_AREA",
+      "department": "UA area",
+      "tileIndex": 5,
+      "correspondsTo": "reading railroad",
+      "title": "57yo M with Crescendo Rest Angina and Normal Serial Troponins",
+      "patient": {
+        "name": "Carl D.",
+        "age": 57,
+        "gender": "M",
+        "sbp": 140,
+        "hr": 84,
+        "egfr": 74,
+        "hba1c": 6.9,
+        "lvef": 55,
+        "troponin": "Negative (<6 ng/L at 0h, 2h)",
+        "symptoms": "3 episodes of rest chest burning over 24 hours, increasing in duration",
+        "ischemia": "Moderate",
+        "anatomy": "Unstable plaque suspected in LAD or LCx"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, dynamic symmetrical T-wave inversions in leads I, aVL, V5",
+        "rate": 84,
+        "rhythm": "Sinus Rhythm with Dynamic T Inversion"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 74, "contrastRisk": "Low", "note": "Normal kidney function" },
+        "endocrinology": { "flag": false, "hba1c": 6.9, "indication": "Metabolic counseling indicated" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 10, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Unstable Angina Dual Antiplatelet & High-Intensity Statin Therapy",
+          "description": "Aspirin 300mg + Ticagrelor 180mg, Atorvastatin 80mg, oral Metoprolol, and therapeutic enoxaparin.",
+          "gdmtPoints": 16,
+          "rvuPoints": 180,
+          "wastePoints": -40,
+          "margin": 440,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "CURE / PLATO Trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Urgent Diagnostic Angiography & Culprit Lesion Stenting",
+          "description": "Transfer to cath lab within 24 hours for coronary angiography and lesion stabilization.",
+          "gdmtPoints": 6,
+          "rvuPoints": 2000,
+          "wastePoints": 650,
+          "margin": 2600,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "TACTICS-TIMI 18"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Short-Stay Telemetry Observation & Outpatient Stress Echo",
+          "description": "24-hour observation on oral nitrates and beta-blocker, defer invasive cath for non-invasive stress imaging.",
+          "gdmtPoints": 8,
+          "rvuPoints": 260,
+          "wastePoints": 30,
+          "margin": 2800,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Chest Pain Unit Cost-Effectiveness Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_SPASM_LOUNGE",
+      "department": "Spasm lounge",
+      "tileIndex": 15,
+      "correspondsTo": "pennsylvania railroad",
+      "title": "49yo F with Nocturnal Rest Angina and Normal Coronary Arteries",
+      "patient": {
+        "name": "Nadia Y.",
+        "age": 49,
+        "gender": "F",
+        "sbp": 122,
+        "hr": 68,
+        "egfr": 82,
+        "hba1c": 5.4,
+        "lvef": 62,
+        "troponin": "Negative",
+        "symptoms": "Severe squeezing chest pressure awakening patient at 4 AM, relieved by sublingual nitro in 3 mins",
+        "ischemia": "Transient epicardial vasospasm",
+        "anatomy": "Clean smooth epicardial coronaries without obstructive atherosclerosis"
+      },
+      "ecg": {
+        "summary": "Transient 2mm ST elevation in II, III, aVF during spontaneous spasm episode, normalizes completely",
+        "rate": 68,
+        "rhythm": "Transient Inferior ST Elevation Spasm"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 82, "contrastRisk": "Low", "note": "Kidney function normal" },
+        "endocrinology": { "flag": false, "hba1c": 5.4, "indication": "Normal glucose profile" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Dual Calcium Channel Blocker + Long-Acting Nitrate GDMT",
+          "description": "Prescribe Diltiazem 240mg daily + Amlodipine 5mg; avoid non-selective beta-blockers which worsen vasospasm.",
+          "gdmtPoints": 17,
+          "rvuPoints": 100,
+          "wastePoints": -50,
+          "margin": 390,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "JCS Vasospastic Angina Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Invasive Acetylcholine Provocation Testing & Diagnostic Angiography",
+          "description": "Selective coronary catheterization with graded intracoronary acetylcholine infusion to reproduce spasm.",
+          "gdmtPoints": 5,
+          "rvuPoints": 1600,
+          "wastePoints": 550,
+          "margin": 2100,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Moderate",
+          "trialReference": "CorMicA Trial Protocol"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Sublingual Nitroglycerin As-Needed & Smoking Cessation",
+          "description": "Prescribe generic sublingual nitro tablets, intensive smoking cessation counseling, and outpatient diary.",
+          "gdmtPoints": 8,
+          "rvuPoints": 130,
+          "wastePoints": 15,
+          "margin": 2500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Primary Care Vasospasm Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_NSTEMI_SIDETRACK",
+      "department": "NSTEMI sidetrack",
+      "tileIndex": 25,
+      "correspondsTo": "b and o railroad",
+      "title": "64yo M with High-Risk NSTEMI (GRACE Score 148, Trop 1450 ng/L)",
+      "patient": {
+        "name": "Samuel B.",
+        "age": 64,
+        "gender": "M",
+        "sbp": 150,
+        "hr": 88,
+        "egfr": 44,
+        "hba1c": 8.4,
+        "lvef": 42,
+        "troponin": "1450 ng/L (Markedly elevated)",
+        "symptoms": "Ongoing heavy retrosternal pressure at rest, diaphoretic",
+        "ischemia": "Severe",
+        "anatomy": "Culprit circumflex or LAD occlusion"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, widespread 2mm horizontal ST depression in I, aVL, V3-V6, reciprocal ST elevation in aVR",
+        "rate": 88,
+        "rhythm": "Sinus Rhythm with Multi-Lead Ischemic Depressions"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 44, "contrastRisk": "High", "note": "Stage 3b CKD (eGFR 44) - Pre-procedure hydration with 0.9% saline required" },
+        "endocrinology": { "flag": true, "hba1c": 8.4, "indication": "T2D with poor control; initiate SGLT2i and insulin protocol" },
+        "cardiothoracic": { "flag": true, "syntaxScore": 22, "heartTeamRequired": true, "cabgPreferred": false, "note": "Heart Team standby if left main or 3-vessel disease uncovered" }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Intensive Medical Stabilization (DAPT + Anticoagulation + High-Intensity Statin)",
+          "description": "Ticagrelor 180mg, Aspirin 300mg, IV Heparin infusion titrated to aPTT 60-80s, Rosuvastatin 40mg.",
+          "gdmtPoints": 15,
+          "rvuPoints": 240,
+          "wastePoints": -40,
+          "margin": 520,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "ESC NSTE-ACS Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Early Invasive Catheterization (<24h) & Culprit Stenting",
+          "description": "Transfer to cath lab within 24 hours, perform coronary angiogram and drug-eluting stent implantation.",
+          "gdmtPoints": 7,
+          "rvuPoints": 2400,
+          "wastePoints": 750,
+          "margin": 3200,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "TIMACS / RIDDLE-NSTEMI"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Ischemia-Guided Conservative Strategy in CCU",
+          "description": "CCU medical stabilization; invasive angiography only if recurrent refractory chest pain or instability.",
+          "gdmtPoints": 8,
+          "rvuPoints": 420,
+          "wastePoints": 50,
+          "margin": 3000,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "Conservative NSTEMI Management"
+        }
+      }
+    },
+    {
+      "id": "CASE_STEMI_EXPRESSWAY",
+      "department": "STEMI expressway",
+      "tileIndex": 35,
+      "correspondsTo": "short line",
+      "title": "56yo M with Acute Inferior STEMI within 60 Minutes of Symptom Onset",
+      "patient": {
+        "name": "Anthony V.",
+        "age": 56,
+        "gender": "M",
+        "sbp": 110,
+        "hr": 58,
+        "egfr": 78,
+        "hba1c": 6.1,
+        "lvef": 48,
+        "troponin": "Pending acute admission",
+        "symptoms": "Severe crushing chest pain, diaphoresis, nausea, onset 45 min ago",
+        "ischemia": "Transmural acute infarction",
+        "anatomy": "Acute RCA thrombotic occlusion"
+      },
+      "ecg": {
+        "summary": "Sinus bradycardia, 3.5mm hyperacute ST elevation in II, III, aVF with reciprocal ST depression in I, aVL",
+        "rate": 58,
+        "rhythm": "Sinus Bradycardia with Acute Inferior STEMI"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 78, "contrastRisk": "Low", "note": "Renal function intact" },
+        "endocrinology": { "flag": false, "hba1c": 6.1, "indication": "Normal glucose profile" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 14, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Pharmacoinvasive Strategy (IV Tenecteplase + Dual Antiplatelets)",
+          "description": "Full-dose weight-adjusted IV Tenecteplase bolus, Aspirin 300mg, Clopidogrel 300mg, Enoxaparin bolus.",
+          "gdmtPoints": 14,
+          "rvuPoints": 600,
+          "wastePoints": -20,
+          "margin": 800,
+          "complicationRisk": "Moderate",
+          "auditRisk": "None",
+          "trialReference": "STREAM Trial"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Direct Primary Percutaneous Coronary Intervention (PPCI)",
+          "description": "Immediate cath lab activation: door-to-balloon <60 mins, balloon angioplasty, thrombus aspiration, DES.",
+          "gdmtPoints": 10,
+          "rvuPoints": 3400,
+          "wastePoints": 450,
+          "margin": 4500,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Low",
+          "trialReference": "ACC/AHA Class I STEMI Revascularization"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Low-Cost Generic Fibrinolysis (Streptokinase) & Medical CCU Bed",
+          "description": "Administer generic Streptokinase 1.5 million units IV over 60 mins and observe in general CCU.",
+          "gdmtPoints": 6,
+          "rvuPoints": 450,
+          "wastePoints": 40,
+          "margin": 2600,
+          "complicationRisk": "High",
+          "auditRisk": "None",
+          "trialReference": "ISIS-2 Historical Fibrinolysis Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_CARDIOVERSION_COMPANY",
+      "department": "Cardioversion Company",
+      "tileIndex": 12,
+      "correspondsTo": "electric company",
+      "title": "60yo M with New-Onset Symptomatic Typical Atrial Flutter (2:1 AV block)",
+      "patient": {
+        "name": "Patrick Q.",
+        "age": 60,
+        "gender": "M",
+        "sbp": 120,
+        "hr": 150,
+        "egfr": 66,
+        "hba1c": 6.0,
+        "lvef": 50,
+        "troponin": "Negative",
+        "symptoms": "Palpitations, lightheadedness, fatigue for 24 hours",
+        "ischemia": "None",
+        "anatomy": "Cavotricuspid isthmus (CTI) dependent flutter circuit"
+      },
+      "ecg": {
+        "summary": "Typical counterclockwise atrial flutter, 'sawtooth' negative flutter waves in II, III, aVF at 300 bpm, 2:1 conduction at 150 bpm",
+        "rate": 150,
+        "rhythm": "Typical Atrial Flutter 2:1 AV Block"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": false, "egfr": 66, "contrastRisk": "Low", "note": "Renal function preserved" },
+        "endocrinology": { "flag": false, "hba1c": 6.0, "indication": "Normal glucose profile" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 0, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Therapeutic Anticoagulation & AV Nodal Blocking GDMT",
+          "description": "Start DOAC (Rivaroxaban 20mg), IV Diltiazem for rate control, and schedule elective outpatient cardioversion.",
+          "gdmtPoints": 15,
+          "rvuPoints": 110,
+          "wastePoints": -40,
+          "margin": 380,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "AHA/ACC/HRS AF/AFL Guidelines"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Same-Day Direct Current Synchronized Cardioversion (DCCV 100J)",
+          "description": "IV Propofol procedural sedation and 100J biphasic synchronized shock to restore sinus rhythm instantly.",
+          "gdmtPoints": 5,
+          "rvuPoints": 1500,
+          "wastePoints": 420,
+          "margin": 2400,
+          "complicationRisk": "Low",
+          "auditRisk": "Low",
+          "trialReference": "Synchronized Cardioversion Protocol"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Oral Beta-Blocker Weaning & Ambulatory Observation",
+          "description": "Oral Bisoprolol 5mg, observe in short-stay chair for 3 hours, discharge with 48h ECG Holter.",
+          "gdmtPoints": 7,
+          "rvuPoints": 140,
+          "wastePoints": 15,
+          "margin": 2300,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Ambulatory Rate Control Protocol"
+        }
+      }
+    },
+    {
+      "id": "CASE_LASIX_WORKS",
+      "department": "Lasix Works",
+      "tileIndex": 28,
+      "correspondsTo": "water works",
+      "title": "69yo M with Acute Decompensated Biventricular Heart Failure (4+ Edema)",
+      "patient": {
+        "name": "Walter Z.",
+        "age": 69,
+        "gender": "M",
+        "sbp": 138,
+        "hr": 86,
+        "egfr": 39,
+        "hba1c": 7.6,
+        "lvef": 25,
+        "troponin": "Mild chronic elevation 28 ng/L",
+        "symptoms": "Severe orthopnea, 4+ pitting pedal edema, 8kg fluid overload, elevated JVP +12cm",
+        "ischemia": "Chronic cardiorenal congestion",
+        "anatomy": "Dilated ischemic cardiomyopathy"
+      },
+      "ecg": {
+        "summary": "Sinus rhythm, low voltage in limb leads, poor R wave progression V1-V3",
+        "rate": 86,
+        "rhythm": "Sinus Rhythm with Congestion Low Voltage"
+      },
+      "crossDiscipline": {
+        "nephrology": { "flag": true, "egfr": 39, "contrastRisk": "High", "note": "Cardiorenal syndrome (eGFR 39 < 45) - Requires decongestion to restore renal perfusion pressure" },
+        "endocrinology": { "flag": true, "hba1c": 7.6, "indication": "SGLT2i (Empagliflozin 10mg) dual benefit for osmotic diuresis and HF outcomes" },
+        "cardiothoracic": { "flag": false, "syntaxScore": 14, "heartTeamRequired": false, "cabgPreferred": false }
+      },
+      "choices": {
+        "CHOICE_GDMT": {
+          "id": "CHOICE_GDMT",
+          "title": "Synergistic Sequential Nephron Blockade & SGLT2i Initiation",
+          "description": "Continuous IV Furosemide infusion + Oral Metolazone 5mg + Empagliflozin 10mg for synergistic diuresis.",
+          "gdmtPoints": 18,
+          "rvuPoints": 150,
+          "wastePoints": -70,
+          "margin": 480,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "DOSE / ADVOR / EMPULSE Trials"
+        },
+        "CHOICE_INTERVENTION": {
+          "id": "CHOICE_INTERVENTION",
+          "title": "Peripheral Venovenous Ultrafiltration (Aquapheresis)",
+          "description": "Insert dual-lumen catheter and run mechanical aquapheresis fluid extraction at 200 mL/hour.",
+          "gdmtPoints": 3,
+          "rvuPoints": 2200,
+          "wastePoints": 850,
+          "margin": 2800,
+          "complicationRisk": "Moderate",
+          "auditRisk": "Moderate",
+          "trialReference": "CARRESS-HF Trial"
+        },
+        "CHOICE_COST_CONTAINMENT": {
+          "id": "CHOICE_COST_CONTAINMENT",
+          "title": "Standard Intermittent IV Furosemide Boluses & Strict 1L Fluid Limit",
+          "description": "Furosemide 80mg IV twice daily, strict fluid restriction, daily morning weight charts in step-down bed.",
+          "gdmtPoints": 9,
+          "rvuPoints": 180,
+          "wastePoints": 20,
+          "margin": 2500,
+          "complicationRisk": "Low",
+          "auditRisk": "None",
+          "trialReference": "Standard Ward Decongestion Bundle"
+        }
+      }
+    }
+  ]
+}

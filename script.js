@@ -1261,8 +1261,104 @@ function formatConsequences(sbpDelta, bmiDelta, wpDelta) {
   return `SBP: ${fmt(sbpDelta, " mmHg")}, BMI: ${fmt(bmiDelta, " units")}, and Waste: ${fmt(wpDelta, " WP")}`;
 }
 
+/**
+ * Clinical Case Encounter & Vignette Decision Handler
+ * Triggered whenever a player lands on a property tile.
+ */
+async function handleClinicalEncounter(player, tile) {
+  let scenario = null;
+  if (typeof CardiopolyVignettes !== "undefined" && typeof CardiopolyVignettes.getVignetteForTile === "function") {
+    scenario = CardiopolyVignettes.getVignetteForTile(tile);
+  } else if (typeof getVignetteForTile === "function") {
+    scenario = getVignetteForTile(tile);
+  } else if (typeof CardiopolyVignettes !== "undefined" && typeof CardiopolyVignettes.getVignetteByDepartment === "function") {
+    scenario = CardiopolyVignettes.getVignetteByDepartment(tile.name);
+  }
+
+  if (!scenario) return;
+
+  const currentRegime = (typeof gameState !== "undefined" && gameState.currentRegime) ? gameState.currentRegime : "SINGAPORE";
+
+  if (player.isBot) {
+    const getBotChoiceFn = (typeof CardiopolyVignettes !== "undefined" && CardiopolyVignettes.getBotVignetteChoice) || (typeof getBotVignetteChoice === "function" ? getBotVignetteChoice : null);
+    const resolveDecisionFn = (typeof CardiopolyVignettes !== "undefined" && CardiopolyVignettes.resolveVignetteDecision) || (typeof resolveVignetteDecision === "function" ? resolveVignetteDecision : null);
+
+    const botChoiceId = getBotChoiceFn ? getBotChoiceFn(scenario, player, currentRegime) : "CHOICE_GDMT";
+    const decision = resolveDecisionFn ? resolveDecisionFn(scenario, botChoiceId, player.factionId || (player.faction && player.faction.id), currentRegime) : null;
+
+    if (decision) {
+      applyClinicalDecisionToPlayer(player, decision, scenario);
+
+      if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+        CardiopolyToasts.showToast({
+          title: "CLINICAL ENCOUNTER",
+          message: `<strong>${player.name}</strong> at <strong>${tile.name}</strong>: chose <em>${decision.choiceTitle}</em>. ${decision.summary}`,
+          theme: decision.theme || "info",
+          durationMs: 2500
+        });
+      }
+    }
+  } else {
+    // Human player: Show frosted-glass encounter modal
+    const showModalFn = (typeof CardiopolyVignettes !== "undefined" && CardiopolyVignettes.showVignetteModal) || (typeof showVignetteModal === "function" ? showVignetteModal : null);
+    if (typeof showModalFn === "function") {
+      const result = await showModalFn(scenario, player, currentRegime);
+      if (result && result.decision) {
+        applyClinicalDecisionToPlayer(player, result.decision, scenario);
+
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "CLINICAL DECISION RECORDED",
+            message: `You selected <strong>${result.decision.choiceTitle}</strong> at ${tile.name}! ${result.decision.summary}`,
+            theme: result.decision.theme || "success",
+            durationMs: 3000
+          });
+        }
+      }
+    }
+  }
+}
+
+function applyClinicalDecisionToPlayer(player, decision, scenario) {
+  if (!player || !decision) return;
+
+  // 1. Update basic physiological and financial metrics
+  if (typeof decision.wastePoints === "number") {
+    player.wp = Math.max(0, player.wp + decision.wastePoints);
+  }
+  if (typeof decision.sbpDelta === "number") {
+    player.sbp = Math.max(90, Math.min(240, player.sbp + decision.sbpDelta));
+  }
+
+  // 2. Update faction metrics via recordFactionAction
+  if (typeof recordFactionAction === "function") {
+    if (decision.choiceId === "CHOICE_GDMT") {
+      recordFactionAction(player, "GDMT_PRESCRIBED", {
+        delta: decision.gdmtPoints || 3,
+        complication: decision.complicationOccurred
+      });
+    } else if (decision.choiceId === "CHOICE_INTERVENTION") {
+      recordFactionAction(player, "STENT_DEPLOYED", {
+        rvu: decision.rvuPoints || 1500,
+        sanction: decision.auditFlag || decision.nephroContrastAlert
+      });
+    } else if (decision.choiceId === "CHOICE_COST_CONTAINMENT") {
+      recordFactionAction(player, "DEPARTMENT_ACQUIRED", {
+        margin: decision.margin || 1000
+      });
+    }
+  }
+
+  // 3. Update board ticker and views
+  const tickerAlert = decision.nephroContrastAlert ? " [CIN CONTRAST ALERT]" : (decision.auditFlag ? " [AUDIT SCRUTINY]" : "");
+  setBoardTicker(`${player.shortName} resolved ${scenario.department}: ${decision.choiceTitle}${tickerAlert}`);
+  refreshAllViews();
+}
+
 async function resolveLandedTile(player, tile) {
   if (tile.type === "PROPERTY") {
+    await handleClinicalEncounter(player, tile);
+
     if (tile.ownerId === null) {
       await handleUnownedPropertyLanding(player, tile);
       return;
@@ -2394,6 +2490,20 @@ async function initGame() {
   gameState.cards.chance = parsedCards.chance;
   gameState.cards.communityChest = parsedCards.communityChest;
   gameState.milestonesData = parseMilestonesCSV(milestonesText);
+
+  // Load dynamic clinical vignettes if available
+  try {
+    const vignRes = await fetch("data/vignettes.json", { cache: "no-store" });
+    if (vignRes.ok) {
+      const data = await vignRes.json();
+      window.__CARDIOPOLY_VIGNETTES__ = Array.isArray(data) ? data : (data.vignettes || []);
+      if (typeof CardiopolyVignettes !== "undefined" && typeof CardiopolyVignettes.loadVignettes === "function") {
+        CardiopolyVignettes.loadVignettes();
+      }
+    }
+  } catch (err) {
+    // Falls back to embedded vignettes
+  }
 
   renderThumbnailBoard();
   refreshAllViews();
