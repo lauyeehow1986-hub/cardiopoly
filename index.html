@@ -117,6 +117,43 @@
        ==================================================================== -->
   <main id="game-app" class="game-container">
 
+    <!-- TOP TELEMETRY DASHBOARD BAR (Real-time ECG & Physiological Telemetry) -->
+    <header id="telemetry-dashboard" class="panel telemetry-dashboard" aria-label="Physiological Telemetry and Clinical Command Center">
+      <div class="telemetry-header-row">
+        <div class="telemetry-indicator">
+          <span class="telemetry-pulse-dot"></span>
+          <span class="telemetry-status-label">SYS TELEMETRY // LIVE</span>
+        </div>
+        <div class="telemetry-faction-wrap">
+          <span class="faction-label">FACTION:</span>
+          <span id="telemetry-faction-badge" class="faction-badge">ACADEMIC CLINICIAN</span>
+        </div>
+      </div>
+
+      <div class="telemetry-body-row">
+        <div class="telemetry-canvas-wrap">
+          <canvas id="ecg-canvas" width="280" height="48" class="ecg-canvas"></canvas>
+        </div>
+
+        <div class="telemetry-vitals-grid">
+          <div class="telemetry-vital-card vital-hr">
+            <span class="vital-label">HEART RATE</span>
+            <div class="vital-value-wrap">
+              <span id="telemetry-hr-val" class="vital-value">72</span>
+              <span class="vital-unit">BPM</span>
+            </div>
+          </div>
+          <div class="telemetry-vital-card vital-bp">
+            <span class="vital-label">BLOOD PRESSURE</span>
+            <div class="vital-value-wrap">
+              <span id="telemetry-bp-val" class="vital-value">120/80</span>
+              <span class="vital-unit">mmHg</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
     <!-- SECTION 1: TWO DICE IN A BOX (At the very top of the game) -->
     <section id="dice-section" class="panel dice-box-panel" aria-label="Dice Box">
       <div class="dice-box-top-row">
@@ -306,6 +343,7 @@
     </div>
   </div>
 
+  <script src="src/components/telemetry.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1032,12 +1032,50 @@ function updateTurnIndicator() {
   }
 }
 
+
+// ============================================================================
+// PHYSIOLOGICAL TELEMETRY & COMMAND CENTER CONTROLLER
+// ============================================================================
+
+function initTelemetryController() {
+  if (typeof window === "undefined") return;
+  const canvasEl = (typeof document !== "undefined") ? document.getElementById("ecg-canvas") : null;
+  if (typeof CardiopolyTelemetry !== "undefined" && typeof CardiopolyTelemetry.initTelemetryCanvas === "function") {
+    window.telemetryController = CardiopolyTelemetry.initTelemetryCanvas(canvasEl, { sbp: 120, dbp: 80 });
+  }
+}
+
+function updateTelemetryVitals() {
+  if (typeof window === "undefined" || !window.telemetryController) return;
+  const player = (gameState && gameState.players && gameState.players[0]) || null;
+  if (!player) return;
+
+  const sbp = typeof player.sbp === "number" ? player.sbp : 120;
+  const dbp = Math.round(sbp * 0.67);
+  window.telemetryController.update({ sbp: sbp, dbp: dbp });
+
+  if (typeof document !== "undefined") {
+    const hrEl = document.getElementById("telemetry-hr-val");
+    const bpEl = document.getElementById("telemetry-bp-val");
+    if (hrEl) {
+      const hr = (typeof CardiopolyTelemetry !== "undefined" && typeof CardiopolyTelemetry.computePulseRate === "function")
+        ? CardiopolyTelemetry.computePulseRate(sbp)
+        : Math.round(72 + (sbp - 120) * 0.6);
+      hrEl.textContent = hr;
+    }
+    if (bpEl) {
+      bpEl.textContent = `${Math.round(sbp)}/${Math.round(dbp)}`;
+    }
+  }
+}
+
 function refreshAllViews() {
   updateThumbnailOwnershipFrames();
   renderUserCloseup();
   renderScores();
   renderOwnedProperties();
   updateTurnIndicator();
+  updateTelemetryVitals();
 }
 
 // ============================================================================
@@ -2094,6 +2132,7 @@ function wireEventListeners() {
 }
 
 async function initGame() {
+  initTelemetryController();
   initDieElement(document.getElementById("die-1"));
   initDieElement(document.getElementById("die-2"));
   renderDieFace(document.getElementById("die-1"), 1);
