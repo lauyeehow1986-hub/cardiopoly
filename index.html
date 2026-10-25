@@ -168,6 +168,7 @@
           <span id="turn-status-text">Your Turn — Tap Dice Box to Roll</span>
         </div>
         <div class="dice-controls-mini">
+          <button id="multiplayer-btn" class="btn-chip btn-multiplayer" type="button" title="Multiplayer & Global Leaderboards">🌐 Multiplayer</button>
           <button id="rules-reopen-btn" class="btn-chip" type="button" title="View Rules">Rules</button>
           <button id="rig-toggle-btn" class="btn-chip hidden" type="button" title="Configure Dice Roll Control">
             Roll: <span id="rig-mode-label">Director</span>
@@ -355,11 +356,148 @@
   <!-- Clinical Case Vignette Decision Encounter Modal -->
   <div id="vignette-modal" class="vignette-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true"></div>
 
+  <!-- WebRTC Multiplayer & Supabase Global Leaderboards Modal -->
+  <div id="multiplayer-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="multiplayer-modal-title">
+    <div class="multiplayer-modal-window">
+      <div class="multiplayer-modal-header">
+        <div class="multiplayer-header-title-group">
+          <span class="multiplayer-badge">WEBRTC MESH &amp; SUPABASE CLOUD</span>
+          <h2 id="multiplayer-modal-title">Cardiology Network Command</h2>
+        </div>
+        <button id="multiplayer-close-btn" class="multiplayer-close-btn" type="button" aria-label="Close Multiplayer Dialog">✕</button>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div class="multiplayer-tabs" role="tablist">
+        <button class="multiplayer-tab-btn active" data-tab="tab-host" role="tab" aria-selected="true">Host Lobby</button>
+        <button class="multiplayer-tab-btn" data-tab="tab-join" role="tab" aria-selected="false">Join Lobby</button>
+        <button class="multiplayer-tab-btn" data-tab="tab-peers" role="tab" aria-selected="false">Connected Peers (<span id="mesh-peer-count">0</span>)</button>
+        <button class="multiplayer-tab-btn" data-tab="tab-leaderboard" role="tab" aria-selected="false">Leaderboard</button>
+      </div>
+
+      <!-- Tab 1: Host Room -->
+      <div id="tab-host" class="multiplayer-tab-content active" role="tabpanel">
+        <div class="host-section">
+          <p class="tab-description">Create a direct peer-to-peer WebRTC room to host fellow cardiologists and hospital administrators.</p>
+          <div class="room-code-display-box">
+            <span class="room-code-label">YOUR ROOM CODE</span>
+            <div id="host-room-code-val" class="room-code-val">CARDIO-882</div>
+            <button id="copy-room-code-btn" class="btn-copy-code" type="button">Copy Code</button>
+          </div>
+          <div class="multiplayer-form-row">
+            <label for="host-player-name">Your Display Name:</label>
+            <input type="text" id="host-player-name" class="modal-input" value="Dr. You" maxlength="24" />
+          </div>
+          <div class="multiplayer-actions-row">
+            <button id="btn-start-hosting" class="btn btn-primary" type="button">Start Hosting Room</button>
+            <button id="btn-stop-hosting" class="btn btn-danger hidden" type="button">Close Room</button>
+          </div>
+          <div id="host-status-msg" class="multiplayer-status-msg">Ready to host. Click 'Start Hosting Room' to open your lobby.</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Join Room -->
+      <div id="tab-join" class="multiplayer-tab-content hidden" role="tabpanel">
+        <div class="join-section">
+          <p class="tab-description">Enter an active room code shared by the host to connect directly via WebRTC data channel.</p>
+          <div class="multiplayer-form-row">
+            <label for="join-room-code-input">Room Code (e.g. CARDIO-882):</label>
+            <input type="text" id="join-room-code-input" class="modal-input" placeholder="CARDIO-XXX" maxlength="12" />
+          </div>
+          <div class="multiplayer-form-row">
+            <label for="join-player-name">Your Display Name:</label>
+            <input type="text" id="join-player-name" class="modal-input" value="Guest Clinician" maxlength="24" />
+          </div>
+          <div class="multiplayer-actions-row">
+            <button id="btn-join-room" class="btn btn-success" type="button">Connect to Room</button>
+            <button id="btn-leave-room" class="btn btn-secondary hidden" type="button">Disconnect</button>
+          </div>
+          <div id="join-status-msg" class="multiplayer-status-msg">Enter a valid room code to connect.</div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Connected Peers -->
+      <div id="tab-peers" class="multiplayer-tab-content hidden" role="tabpanel">
+        <div class="peers-section">
+          <div class="peers-header-meta">
+            <div class="mesh-status-indicator">
+              <span id="mesh-status-dot" class="mesh-status-dot offline"></span>
+              <span id="mesh-status-label" class="mesh-status-label">P2P Mesh: Disconnected</span>
+            </div>
+            <button id="btn-refresh-mesh" class="btn-chip" type="button">Ping Mesh</button>
+          </div>
+          <div id="connected-peers-list" class="connected-peers-list">
+            <div class="empty-peers-hint">No peers currently connected. Host or join a room to sync game state.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Global Leaderboards -->
+      <div id="tab-leaderboard" class="multiplayer-tab-content hidden" role="tabpanel">
+        <div class="leaderboard-section">
+          <div class="leaderboard-filters-row">
+            <div class="filter-group">
+              <label for="lb-country-filter">Country:</label>
+              <select id="lb-country-filter" class="modal-select">
+                <option value="ALL">All Nations</option>
+                <option value="SG">🇸🇬 Singapore 3M</option>
+                <option value="US">🇺🇸 United States</option>
+                <option value="FR">🇫🇷 France</option>
+                <option value="JP">🇯🇵 Japan</option>
+                <option value="DE">🇩🇪 Germany</option>
+                <option value="IT">🇮🇹 Italy</option>
+                <option value="UK">🇬🇧 United Kingdom</option>
+                <option value="AU">🇦🇺 Australia</option>
+                <option value="CH">🇨🇭 Switzerland</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="lb-faction-filter">Faction:</label>
+              <select id="lb-faction-filter" class="modal-select">
+                <option value="ALL">All Factions</option>
+                <option value="ACADEMIC_CLINICIAN">Academic Clinician</option>
+                <option value="INTERVENTIONALIST">Interventionalist</option>
+                <option value="HOSPITAL_CEO">Hospital CEO</option>
+                <option value="REGULATORY_AUDITOR">Regulatory Auditor</option>
+              </select>
+            </div>
+            <button id="lb-refresh-btn" class="btn-chip" type="button">↻ Refresh</button>
+          </div>
+          <div class="leaderboard-table-wrap">
+            <table id="leaderboard-table" class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Clinician</th>
+                  <th>Nation</th>
+                  <th>Faction</th>
+                  <th>Score</th>
+                  <th>GDMT %</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="multiplayer-modal-footer">
+        <span class="db-sync-indicator" id="db-sync-indicator">⚡ Offline persistence active (Local Storage Fallback)</span>
+        <button id="multiplayer-modal-done-btn" class="btn btn-primary" type="button">Back to Game</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="src/components/telemetry.js"></script>
   <script src="src/engine/factions.js"></script>
   <script src="src/engine/policies.js"></script>
   <script src="src/components/toasts.js"></script>
   <script src="src/components/vignetteModal.js"></script>
+  <script src="src/network/supabaseClient.js"></script>
+  <script src="src/network/p2pSync.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1102,7 +1102,9 @@ function updateTelemetryVitals() {
       bpEl.textContent = `${Math.round(sbp)}/${Math.round(dbp)}`;
     }
 
-    const regimeBadgeEl = document.getElementById("telemetry-regime-badge");
+    initMultiplayerController();
+
+  const regimeBadgeEl = document.getElementById("telemetry-regime-badge");
     if (regimeBadgeEl && typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegime === "function") {
       const currentReg = CardiopolyPolicies.getRegime(gameState.currentRegime || "SINGAPORE");
       regimeBadgeEl.textContent = `${currentReg.flag} ${currentReg.name}`;
@@ -1223,6 +1225,18 @@ async function executeTurnRoll() {
   renderDiceBox(d1, d2, player.shortName);
   setBoardTicker(`${player.shortName} rolled ${d1} + ${d2} = ${totalSteps}!`);
 
+  // Broadcast roll action to P2P network
+  if (typeof CardiopolyP2P !== "undefined" && window.cardiopolyNetwork && (window.cardiopolyNetwork.status === 'HOSTING' || window.cardiopolyNetwork.status === 'JOINED')) {
+    try {
+      window.cardiopolyNetwork.broadcastAction({
+        type: 'ROLL_DICE',
+        playerIndex: player.id,
+        dice: [d1, d2],
+        newPosition: (player.position + totalSteps) % 40
+      });
+    } catch (e) {}
+  }
+
   const stepDelay = player.isBot ? BOT_TOKEN_STEP_MS : USER_TOKEN_STEP_MS;
 
   // Move sequentially tile-by-tile with distinct stops on each tile
@@ -1321,6 +1335,34 @@ async function handleClinicalEncounter(player, tile) {
 
 function applyClinicalDecisionToPlayer(player, decision, scenario) {
   if (!player || !decision) return;
+
+  // Supabase analytics log & P2P broadcast for clinical decisions
+  if (typeof CardiopolyDB !== "undefined") {
+    try {
+      const db = (window.cardiopolyDBInstance = window.cardiopolyDBInstance || new CardiopolyDB());
+      db.logClinicalDecision({
+        vignetteId: scenario ? scenario.id : "VIG-UNKNOWN",
+        playerIndex: player.id,
+        factionId: player.factionId,
+        choiceSelected: decision.choiceTitle || decision.choiceId,
+        adherent: decision.choiceId === "CHOICE_GDMT",
+        clinicalScore: decision.gdmtPoints || 80
+      });
+    } catch (e) {}
+  }
+
+  if (typeof CardiopolyP2P !== "undefined" && window.cardiopolyNetwork && (window.cardiopolyNetwork.status === 'HOSTING' || window.cardiopolyNetwork.status === 'JOINED')) {
+    try {
+      window.cardiopolyNetwork.broadcastAction({
+        type: 'CLINICAL_DECISION',
+        playerIndex: player.id,
+        vignetteId: scenario ? scenario.id : "VIG-UNKNOWN",
+        choiceLabel: decision.choiceTitle || decision.choiceId,
+        adherent: decision.choiceId === "CHOICE_GDMT",
+        effects: { sbp: decision.sbpDelta || 0, wp: decision.wastePoints || 0 }
+      });
+    } catch (e) {}
+  }
 
   // 1. Update basic physiological and financial metrics
   if (typeof decision.wastePoints === "number") {
@@ -1531,6 +1573,18 @@ function assignPropertyToPlayer(player, tile, wpCost, reasonLabel) {
 
   setBoardTicker(`${player.shortName} ${reasonLabel} ${tile.name} for ${Math.round(wpCost)} WP!`);
   refreshAllViews();
+
+  // Broadcast property acquisition to P2P network
+  if (typeof CardiopolyP2P !== "undefined" && window.cardiopolyNetwork && (window.cardiopolyNetwork.status === 'HOSTING' || window.cardiopolyNetwork.status === 'JOINED')) {
+    try {
+      window.cardiopolyNetwork.broadcastAction({
+        type: 'PROPERTY_ACQUIRED',
+        playerIndex: player.id,
+        propertyIndex: tile.index != null ? tile.index : (tile.tileIndex || 0),
+        cost: Math.round(wpCost)
+      });
+    } catch (e) {}
+  }
 }
 
 /**
@@ -2059,6 +2113,26 @@ async function checkAndTriggerMilestones() {
               refreshAllViews();
 
               if (milestone.significance === "GameEnds") {
+                // Save game session to Supabase / offline DB on terminal milestone
+                if (typeof CardiopolyDB !== "undefined") {
+                  try {
+                    const db = (window.cardiopolyDBInstance = window.cardiopolyDBInstance || new CardiopolyDB());
+                    db.saveGameSession({
+                      countryId: gameState.activeCountryId || "SG",
+                      winnerFaction: p.factionId || "TERMINAL_MILESTONE",
+                      winnerPlayerName: p.name || "Player",
+                      totalTurns: gameState.turnCounter || 10,
+                      scores: { sbp: p.sbp, bmi: p.bmi, wp: p.wp },
+                      clinicalMetrics: {
+                        gdmtScore: p.gdmtScore || 70,
+                        encountersCompleted: p.encounters || 10,
+                        complicationsCount: p.complications || 0
+                      }
+                    });
+                  } catch (e) {
+                    console.warn("[CardiopolyDB] Save session error:", e);
+                  }
+                }
                 await showEventPopupModal(
                   "GAME OVER — CLINICAL MILESTONE",
                   p,
@@ -2120,6 +2194,27 @@ async function checkFactionWins() {
 
       setBoardTicker(`🏆 ${winnerPrefix} won the game as ${factionName}!`);
       refreshAllViews();
+
+      // Save game session to Supabase / offline DB on faction victory
+      if (typeof CardiopolyDB !== "undefined") {
+        try {
+          const db = (window.cardiopolyDBInstance = window.cardiopolyDBInstance || new CardiopolyDB());
+          db.saveGameSession({
+            countryId: gameState.activeCountryId || "SG",
+            winnerFaction: player.factionId || "ACADEMIC_CLINICIAN",
+            winnerPlayerName: player.name || "Player",
+            totalTurns: gameState.turnCounter || 12,
+            scores: { sbp: player.sbp, bmi: player.bmi, wp: player.wp },
+            clinicalMetrics: {
+              gdmtScore: player.gdmtScore || 85,
+              encountersCompleted: player.encounters || player.encountersCompleted || 12,
+              complicationsCount: player.complications || 0
+            }
+          });
+        } catch (e) {
+          console.warn("[CardiopolyDB] Save session error:", e);
+        }
+      }
 
       await showEventPopupModal(
         title,
@@ -2459,6 +2554,17 @@ function wireEventListeners() {
         }
         setBoardTicker(shift.announcement);
         refreshAllViews();
+
+        // Broadcast regime shift to P2P network
+        if (typeof CardiopolyP2P !== "undefined" && window.cardiopolyNetwork && (window.cardiopolyNetwork.status === 'HOSTING' || window.cardiopolyNetwork.status === 'JOINED')) {
+          try {
+            window.cardiopolyNetwork.broadcastAction({
+              type: 'REGIME_SHIFT',
+              countryId: gameState.activeCountryId || (shift.regime && shift.regime.id),
+              regimeName: shift.regime ? shift.regime.name : shift.announcement
+            });
+          } catch (e) {}
+        }
       }
     });
   }
@@ -2550,3 +2656,312 @@ async function initGame() {
 }
 
 window.addEventListener("DOMContentLoaded", initGame);
+
+
+// ============================================================================
+// P2P WEBRTC MULTIPLAYER & SUPABASE CLOUD PERSISTENCE CONTROLLER
+// ============================================================================
+
+function initMultiplayerController() {
+  if (typeof CardiopolyDB !== "undefined" && !window.cardiopolyDBInstance) {
+    window.cardiopolyDBInstance = new CardiopolyDB();
+  }
+
+  if (typeof CardiopolyP2P !== "undefined" && !window.cardiopolyNetwork) {
+    window.cardiopolyNetwork = new CardiopolyP2P({
+      localPlayerInfo: {
+        name: "Dr. You",
+        factionId: gameState.players[0] ? gameState.players[0].factionId : "ACADEMIC_CLINICIAN"
+      }
+    });
+
+    // Wire up incoming action dispatcher
+    window.cardiopolyNetwork.onAction((action, senderId) => {
+      if (typeof handleIncomingAction === "function") {
+        handleIncomingAction(action, gameState);
+        refreshAllViews();
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "NETWORK SYNC",
+            message: `Remote event [${action.type}] synced across WebRTC mesh.`,
+            theme: "info",
+            durationMs: 2500
+          });
+        }
+      }
+    });
+
+    // Wire up peer mesh updates
+    window.cardiopolyNetwork.onPeersChanged((peers) => {
+      renderMeshPeers(peers);
+    });
+  }
+
+  // UI Event bindings
+  const multiplayerBtn = document.getElementById("multiplayer-btn");
+  const multiplayerModal = document.getElementById("multiplayer-modal");
+  const closeBtn = document.getElementById("multiplayer-close-btn");
+  const doneBtn = document.getElementById("multiplayer-modal-done-btn");
+
+  if (multiplayerBtn && multiplayerModal) {
+    multiplayerBtn.addEventListener("click", () => {
+      multiplayerModal.classList.remove("hidden");
+      multiplayerModal.classList.add("active");
+      renderLeaderboardsTable();
+    });
+  }
+
+  const closeModal = () => {
+    if (multiplayerModal) {
+      multiplayerModal.classList.add("hidden");
+      multiplayerModal.classList.remove("active");
+    }
+  };
+
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (doneBtn) doneBtn.addEventListener("click", closeModal);
+
+  // Tabs switching
+  const tabBtns = document.querySelectorAll(".multiplayer-tab-btn");
+  tabBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      tabBtns.forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+
+      const targetTabId = btn.getAttribute("data-tab");
+      document.querySelectorAll(".multiplayer-tab-content").forEach((panel) => {
+        panel.classList.add("hidden");
+        panel.classList.remove("active");
+      });
+      const activePanel = document.getElementById(targetTabId);
+      if (activePanel) {
+        activePanel.classList.remove("hidden");
+        activePanel.classList.add("active");
+      }
+
+      if (targetTabId === "tab-leaderboard") {
+        renderLeaderboardsTable();
+      } else if (targetTabId === "tab-peers" && window.cardiopolyNetwork) {
+        renderMeshPeers(window.cardiopolyNetwork.getPeers());
+      }
+    });
+  });
+
+  // Host tab controls
+  const hostRoomCodeVal = document.getElementById("host-room-code-val");
+  const copyRoomCodeBtn = document.getElementById("copy-room-code-btn");
+  const btnStartHosting = document.getElementById("btn-start-hosting");
+  const btnStopHosting = document.getElementById("btn-stop-hosting");
+  const hostStatusMsg = document.getElementById("host-status-msg");
+  const hostPlayerNameInput = document.getElementById("host-player-name");
+
+  if (hostRoomCodeVal && typeof generateRoomCode === "function") {
+    hostRoomCodeVal.textContent = generateRoomCode();
+  }
+
+  if (copyRoomCodeBtn && hostRoomCodeVal) {
+    copyRoomCodeBtn.addEventListener("click", () => {
+      const code = hostRoomCodeVal.textContent.trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          copyRoomCodeBtn.textContent = "Copied!";
+          setTimeout(() => { copyRoomCodeBtn.textContent = "Copy Code"; }, 1800);
+        });
+      }
+    });
+  }
+
+  if (btnStartHosting && window.cardiopolyNetwork) {
+    btnStartHosting.addEventListener("click", () => {
+      const roomCode = hostRoomCodeVal ? hostRoomCodeVal.textContent.trim() : "CARDIO-882";
+      const playerName = hostPlayerNameInput ? hostPlayerNameInput.value.trim() : "Host Clinician";
+      window.cardiopolyNetwork.initHost(roomCode, { playerName: playerName });
+      btnStartHosting.classList.add("hidden");
+      if (btnStopHosting) btnStopHosting.classList.remove("hidden");
+      if (hostStatusMsg) {
+        hostStatusMsg.innerHTML = `<span style="color:#38bdf8;">Hosting room <strong>${roomCode}</strong>. Waiting for peers to join...</span>`;
+      }
+      updateMeshIndicator(true, `Hosting Room: ${roomCode}`);
+    });
+  }
+
+  if (btnStopHosting && window.cardiopolyNetwork) {
+    btnStopHosting.addEventListener("click", () => {
+      window.cardiopolyNetwork.disconnect();
+      btnStopHosting.classList.add("hidden");
+      if (btnStartHosting) btnStartHosting.classList.remove("hidden");
+      if (hostStatusMsg) {
+        hostStatusMsg.textContent = "Lobby closed. Ready to host again.";
+      }
+      updateMeshIndicator(false, "P2P Mesh: Disconnected");
+    });
+  }
+
+  // Join tab controls
+  const joinRoomCodeInput = document.getElementById("join-room-code-input");
+  const joinPlayerNameInput = document.getElementById("join-player-name");
+  const btnJoinRoom = document.getElementById("btn-join-room");
+  const btnLeaveRoom = document.getElementById("btn-leave-room");
+  const joinStatusMsg = document.getElementById("join-status-msg");
+
+  if (btnJoinRoom && window.cardiopolyNetwork) {
+    btnJoinRoom.addEventListener("click", () => {
+      const code = joinRoomCodeInput ? joinRoomCodeInput.value.trim().toUpperCase() : "";
+      if (!code || (typeof isValidRoomCode === "function" && !isValidRoomCode(code))) {
+        if (joinStatusMsg) {
+          joinStatusMsg.innerHTML = '<span style="color:#ef4444;">Please enter a valid room code (e.g. CARDIO-882).</span>';
+        }
+        return;
+      }
+      const playerName = joinPlayerNameInput ? joinPlayerNameInput.value.trim() : "Guest Clinician";
+      try {
+        window.cardiopolyNetwork.joinRoom(code, { playerName: playerName });
+        btnJoinRoom.classList.add("hidden");
+        if (btnLeaveRoom) btnLeaveRoom.classList.remove("hidden");
+        if (joinStatusMsg) {
+          joinStatusMsg.innerHTML = `<span style="color:#10b981;">Connected to room <strong>${code}</strong> as ${playerName}!</span>`;
+        }
+        updateMeshIndicator(true, `Joined Room: ${code}`);
+      } catch (err) {
+        if (joinStatusMsg) {
+          joinStatusMsg.innerHTML = `<span style="color:#ef4444;">Connection failed: ${err.message}</span>`;
+        }
+      }
+    });
+  }
+
+  if (btnLeaveRoom && window.cardiopolyNetwork) {
+    btnLeaveRoom.addEventListener("click", () => {
+      window.cardiopolyNetwork.disconnect();
+      btnLeaveRoom.classList.add("hidden");
+      if (btnJoinRoom) btnJoinRoom.classList.remove("hidden");
+      if (joinStatusMsg) {
+        joinStatusMsg.textContent = "Disconnected. Enter a room code to join.";
+      }
+      updateMeshIndicator(false, "P2P Mesh: Disconnected");
+    });
+  }
+
+  // Connected Peers Tab controls
+  const btnRefreshMesh = document.getElementById("btn-refresh-mesh");
+  if (btnRefreshMesh && window.cardiopolyNetwork) {
+    btnRefreshMesh.addEventListener("click", () => {
+      renderMeshPeers(window.cardiopolyNetwork.getPeers());
+      if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+        CardiopolyToasts.showToast({
+          title: "MESH PING",
+          message: `Active connected peers: ${window.cardiopolyNetwork.getPeerCount()}`,
+          theme: "info",
+          durationMs: 1500
+        });
+      }
+    });
+  }
+
+  // Leaderboard filters
+  const lbCountryFilter = document.getElementById("lb-country-filter");
+  const lbFactionFilter = document.getElementById("lb-faction-filter");
+  const lbRefreshBtn = document.getElementById("lb-refresh-btn");
+
+  if (lbCountryFilter) lbCountryFilter.addEventListener("change", renderLeaderboardsTable);
+  if (lbFactionFilter) lbFactionFilter.addEventListener("change", renderLeaderboardsTable);
+  if (lbRefreshBtn) lbRefreshBtn.addEventListener("click", renderLeaderboardsTable);
+}
+
+function updateMeshIndicator(online, label) {
+  const dot = document.getElementById("mesh-status-dot");
+  const lbl = document.getElementById("mesh-status-label");
+  if (dot) {
+    dot.className = online ? "mesh-status-dot online" : "mesh-status-dot offline";
+  }
+  if (lbl) {
+    lbl.textContent = label;
+  }
+}
+
+function renderMeshPeers(peers) {
+  const container = document.getElementById("connected-peers-list");
+  const countEl = document.getElementById("mesh-peer-count");
+  if (countEl) countEl.textContent = peers ? peers.length : 0;
+  if (!container) return;
+
+  if (!peers || peers.length === 0) {
+    container.innerHTML = '<div class="empty-peers-hint">No peers currently connected. Host or join a room to sync game state.</div>';
+    return;
+  }
+
+  let html = "";
+  peers.forEach((peer) => {
+    html += `
+      <div class="peer-card">
+        <div class="peer-card-left">
+          <span class="mesh-status-dot online"></span>
+          <div>
+            <div class="peer-name">${peer.name || "Peer"}</div>
+            <span class="peer-role-badge">${peer.factionId || "CLINICIAN"}</span>
+          </div>
+        </div>
+        <div class="peer-latency">${peer.latency || 24}ms</div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
+function renderLeaderboardsTable() {
+  const tbody = document.getElementById("leaderboard-tbody");
+  if (!tbody || typeof CardiopolyDB === "undefined") return;
+
+  const db = (window.cardiopolyDBInstance = window.cardiopolyDBInstance || new CardiopolyDB());
+  const countryFilterEl = document.getElementById("lb-country-filter");
+  const factionFilterEl = document.getElementById("lb-faction-filter");
+
+  const countryId = (countryFilterEl && countryFilterEl.value !== "ALL") ? countryFilterEl.value : undefined;
+  const factionId = (factionFilterEl && factionFilterEl.value !== "ALL") ? factionFilterEl.value : undefined;
+
+  const records = db.fetchGlobalLeaderboards({ countryId: countryId, factionId: factionId });
+
+  const countryFlags = {
+    SG: "🇸🇬 SG",
+    US: "🇺🇸 US",
+    FR: "🇫🇷 FR",
+    JP: "🇯🇵 JP",
+    DE: "🇩🇪 DE",
+    IT: "🇮🇹 IT",
+    UK: "🇬🇧 UK",
+    AU: "🇦🇺 AU",
+    CH: "🇨🇭 CH"
+  };
+
+  const medals = ["🥇", "🥈", "🥉"];
+
+  if (records.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:18px; color:#94a3b8;">No matching clinician records found.</td></tr>';
+    return;
+  }
+
+  let rowsHtml = "";
+  records.forEach((rec, idx) => {
+    const medalOrRank = idx < 3 ? medals[idx] : `#${rec.rank}`;
+    const rankClass = idx === 0 ? "rank-gold" : (idx === 1 ? "rank-silver" : (idx === 2 ? "rank-bronze" : ""));
+    const flag = countryFlags[rec.countryId] || rec.countryId || "🌐";
+    const factionLabel = (typeof FACTIONS !== "undefined" && FACTIONS[rec.factionId]) ? FACTIONS[rec.factionId].name : rec.factionId;
+
+    rowsHtml += `
+      <tr>
+        <td><span class="rank-badge ${rankClass}">${medalOrRank}</span></td>
+        <td><strong>${rec.playerName}</strong></td>
+        <td>${flag}</td>
+        <td><span class="peer-role-badge">${factionLabel}</span></td>
+        <td style="color:#38bdf8; font-weight:700;">${(rec.score || 0).toLocaleString()}</td>
+        <td style="color:#10b981; font-weight:700;">${rec.gdmtScore || 80}%</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = rowsHtml;
+}

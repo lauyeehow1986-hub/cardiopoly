@@ -2140,3 +2140,393 @@ html, body {
 .btn-cost:hover {
   background: #facc15;
 }
+
+
+/* ============================================================================
+   WEBRTC MULTIPLAYER & SUPABASE GLOBAL LEADERBOARD MODAL
+   ============================================================================ */
+
+.btn-multiplayer {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(16, 185, 129, 0.25));
+  border: 1px solid rgba(6, 182, 212, 0.5) !important;
+  color: #38bdf8 !important;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.btn-multiplayer:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(16, 185, 129, 0.4));
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+
+.multiplayer-modal-window {
+  width: 94%;
+  max-width: 580px;
+  max-height: 88vh;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 24px rgba(6, 182, 212, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #f8fafc;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.multiplayer-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.multiplayer-header-title-group h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin: 3px 0 0;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+}
+
+.multiplayer-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(6, 182, 212, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+
+.multiplayer-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.multiplayer-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+/* Tabs */
+.multiplayer-tabs {
+  display: flex;
+  background: rgba(15, 23, 42, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-x: auto;
+}
+
+.multiplayer-tab-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.multiplayer-tab-btn:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.multiplayer-tab-btn.active {
+  color: #38bdf8;
+  border-bottom-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.06);
+}
+
+/* Tab Panels */
+.multiplayer-tab-content {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.tab-description {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 0;
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+
+/* Host Room Box */
+.room-code-display-box {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px dashed rgba(56, 189, 248, 0.5);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.room-code-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.room-code-val {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+
+.btn-copy-code {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-code:hover {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+/* Inputs & Form Rows */
+.multiplayer-form-row {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.multiplayer-form-row label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.modal-input, .modal-select {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #f8fafc;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.modal-input:focus, .modal-select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.multiplayer-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.multiplayer-status-msg {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Connected Peers List */
+.peers-header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.mesh-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mesh-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #64748b;
+  display: inline-block;
+}
+
+.mesh-status-dot.online {
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.mesh-status-dot.offline {
+  background: #ef4444;
+}
+
+.mesh-status-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.connected-peers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.peer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.peer-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.peer-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.peer-role-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.peer-latency {
+  font-size: 0.72rem;
+  color: #10b981;
+  font-family: monospace;
+}
+
+.empty-peers-hint {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+  padding: 24px 10px;
+}
+
+/* Leaderboards */
+.leaderboard-filters-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.filter-group label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.leaderboard-table-wrap {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background: rgba(30, 41, 59, 0.85);
+  color: #94a3b8;
+  font-weight: 800;
+  padding: 8px 10px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.leaderboard-table tr:hover td {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.rank-badge {
+  font-weight: 800;
+  display: inline-block;
+  min-width: 22px;
+}
+
+.rank-gold { color: #facc15; }
+.rank-silver { color: #e2e8f0; }
+.rank-bronze { color: #f97316; }
+
+/* Modal Footer */
+.multiplayer-modal-footer {
+  padding: 12px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.db-sync-indicator {
+  font-size: 0.7rem;
+  color: #10b981;
+}
