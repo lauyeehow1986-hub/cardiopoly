@@ -124,9 +124,15 @@
           <span class="telemetry-pulse-dot"></span>
           <span class="telemetry-status-label">SYS TELEMETRY // LIVE</span>
         </div>
-        <div class="telemetry-faction-wrap">
-          <span class="faction-label">FACTION:</span>
-          <span id="telemetry-faction-badge" class="faction-badge">ACADEMIC CLINICIAN</span>
+        <div class="telemetry-badges-group">
+          <div class="telemetry-regime-wrap">
+            <span class="regime-label">REGIME:</span>
+            <span id="telemetry-regime-badge" class="regime-badge" title="National Healthcare Policy Regime: Singapore 3M">🇸🇬 Singapore</span>
+          </div>
+          <div class="telemetry-faction-wrap">
+            <span class="faction-label">FACTION:</span>
+            <span id="telemetry-faction-badge" class="faction-badge">ACADEMIC CLINICIAN</span>
+          </div>
         </div>
       </div>
 
@@ -348,6 +354,7 @@
 
   <script src="src/components/telemetry.js"></script>
   <script src="src/engine/factions.js"></script>
+  <script src="src/engine/policies.js"></script>
   <script src="src/components/toasts.js"></script>
   <script src="script.js"></script>
 </body>

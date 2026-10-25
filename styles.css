@@ -343,6 +343,49 @@ html, body {
   text-shadow: 0 0 8px var(--neon-cyan-glow);
 }
 
+.telemetry-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.telemetry-regime-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.regime-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.04em;
+}
+
+.regime-badge {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.64rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.regime-badge:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.45);
+  transform: translateY(-1px);
+}
+
 .telemetry-faction-wrap {
   display: flex;
   align-items: center;

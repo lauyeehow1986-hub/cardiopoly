@@ -427,6 +427,7 @@ function initializePlayerFactions(players) {
 }
 
 const gameState = {
+  currentRegime: "SINGAPORE",
   tiles: [],                 // 40 board tiles with x, y coordinates and property metadata
   cards: {
     chance: [],
@@ -1101,6 +1102,14 @@ function updateTelemetryVitals() {
       bpEl.textContent = `${Math.round(sbp)}/${Math.round(dbp)}`;
     }
 
+    const regimeBadgeEl = document.getElementById("telemetry-regime-badge");
+    if (regimeBadgeEl && typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegime === "function") {
+      const currentReg = CardiopolyPolicies.getRegime(gameState.currentRegime || "SINGAPORE");
+      regimeBadgeEl.textContent = `${currentReg.flag} ${currentReg.name}`;
+      regimeBadgeEl.title = `${currentReg.fullName}\n\n${currentReg.description}`;
+      regimeBadgeEl.setAttribute("data-regime-id", currentReg.id);
+    }
+
     const factionBadgeEl = document.getElementById("telemetry-faction-badge");
     if (factionBadgeEl && player.factionId) {
       const fDef = (typeof FACTIONS !== "undefined" && FACTIONS[player.factionId]) || player.faction;
@@ -1273,10 +1282,28 @@ async function resolveLandedTile(player, tile) {
   }
 
   if (tile.type === "TAX" || tile.type === "AUDIT") {
-    player.wp += tile.priceWP;
+    let auditMultiplier = 1.0;
+    let auditNote = "";
+    if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegimeMultiplier === "function") {
+      auditMultiplier = CardiopolyPolicies.getRegimeMultiplier(gameState.currentRegime, "AUDIT");
+      const scrutiny = CardiopolyPolicies.evaluateAuditScrutiny("PCI_3_STENT", gameState.currentRegime, {
+        ffr: 0.85,
+        priorAuth: false,
+        stentCount: 3,
+        qalyGain: 0.02
+      });
+      if (scrutiny && scrutiny.flagged) {
+        auditNote = ` — Audit Flag: ${scrutiny.reason}`;
+        if (typeof recordFactionAction === "function") {
+          recordFactionAction(player, "AUDIT_CLAWBACK", { amount: scrutiny.clawbackWP });
+        }
+      }
+    }
+    const finalAuditWP = Math.round(tile.priceWP * auditMultiplier);
+    player.wp += finalAuditWP;
     player.sbp += tile.sbpImpact;
     player.bmi = roundOneDecimal(player.bmi + tile.bmiImpact);
-    const msg = `${player.shortName} hit ${tile.name}: +${tile.priceWP} WP!`;
+    const msg = `${player.shortName} hit ${tile.name}${auditNote}: +${finalAuditWP} WP!`;
     setBoardTicker(msg);
     refreshAllViews();
 
@@ -1564,7 +1591,12 @@ async function handleOwnedPropertyVisit(visitor, tile) {
   );
   const ownsFullGroup = groupTiles.length > 0 && groupTiles.every((t) => t.ownerId === owner.id);
 
-  const consultWP = ownsFullGroup ? OWNED_PROPERTY_VISIT_WP * 2 : OWNED_PROPERTY_VISIT_WP;
+  let rentMultiplier = 1.0;
+  if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegimeMultiplier === "function") {
+    rentMultiplier = CardiopolyPolicies.getRegimeMultiplier(gameState.currentRegime, "RENT");
+  }
+  const baseRentWP = ownsFullGroup ? OWNED_PROPERTY_VISIT_WP * 2 : OWNED_PROPERTY_VISIT_WP;
+  const consultWP = Math.round(baseRentWP * rentMultiplier);
   const sbpDelta = ownsFullGroup ? RENT_SBP_INCREASE * 2 : RENT_SBP_INCREASE;
   const bmiDelta = roundOneDecimal(ownsFullGroup ? RENT_BMI_INCREASE * 2 : RENT_BMI_INCREASE);
 
@@ -1633,6 +1665,23 @@ async function handleCardDraw(player, tileType) {
 
   const baseConsequences = formatConsequences(card.sbp, card.bmi, card.wp);
   let impactSummary = baseConsequences;
+
+  // Global Health Policy Shift detection
+  const cardTextLower = (card.text || "").toLowerCase();
+  if (cardTextLower.includes("policy shift") || cardTextLower.includes("healthcare accord") || cardTextLower.includes("policy regime rotates") || cardTextLower.includes("healthcare reform")) {
+    if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.rotateNextRegime === "function") {
+      const shift = CardiopolyPolicies.rotateNextRegime(gameState);
+      if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+        CardiopolyToasts.showToast({
+          title: "GLOBAL POLICY SHIFT",
+          message: shift.announcement,
+          theme: "info",
+          durationMs: 4000
+        });
+      }
+      setBoardTicker(shift.announcement);
+    }
+  }
 
   if (isChance) {
     // Chance card impacts the player who picked it up
@@ -1788,6 +1837,7 @@ function resetGameToRules() {
   gameState.lastDice = [1, 1];
   gameState.userBoardSide = 0;
   gameState.triggeredMilestones = {};
+  gameState.currentRegime = "SINGAPORE";
   gameState.phase = "RULES";
 
   // Hide action & trade cards
@@ -2297,6 +2347,25 @@ function wireEventListeners() {
   document.getElementById("trade-bot-prop-select").addEventListener("change", updateDraftTradeSummary);
   document.getElementById("accept-trade-btn").addEventListener("click", () => resolvePendingTrade(true));
   document.getElementById("decline-trade-btn").addEventListener("click", () => resolvePendingTrade(false));
+
+  const regimeBadgeEl = document.getElementById("telemetry-regime-badge");
+  if (regimeBadgeEl) {
+    regimeBadgeEl.addEventListener("click", () => {
+      if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.rotateNextRegime === "function") {
+        const shift = CardiopolyPolicies.rotateNextRegime(gameState);
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "POLICY SHIFT",
+            message: shift.announcement,
+            theme: "info",
+            durationMs: 3500
+          });
+        }
+        setBoardTicker(shift.announcement);
+        refreshAllViews();
+      }
+    });
+  }
 }
 
 async function initGame() {
