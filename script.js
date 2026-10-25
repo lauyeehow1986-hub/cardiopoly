@@ -398,6 +398,34 @@ const DIE_PIP_PATTERNS = {
 // ============================================================================
 // GAME STATE
 // ============================================================================
+// --- ASYMMETRIC FACTION ASSIGNMENTS ---
+const DEFAULT_FACTION_ASSIGNMENTS = [
+  "ACADEMIC_CLINICIAN",
+  "INTERVENTIONALIST",
+  "HOSPITAL_CEO",
+  "REGULATORY_AUDITOR"
+];
+
+function initializePlayerFactions(players) {
+  if (!players || !Array.isArray(players)) return;
+  players.forEach((p, idx) => {
+    const factionId = DEFAULT_FACTION_ASSIGNMENTS[idx] || "ACADEMIC_CLINICIAN";
+    if (typeof assignFactionToPlayer === "function") {
+      assignFactionToPlayer(p, factionId);
+    } else {
+      p.factionId = factionId;
+      p.gdmtScore = typeof p.gdmtScore === "number" ? p.gdmtScore : 70;
+      p.encounters = typeof p.encounters === "number" ? p.encounters : 0;
+      p.complications = typeof p.complications === "number" ? p.complications : 0;
+      p.rvuPoints = typeof p.rvuPoints === "number" ? p.rvuPoints : 0;
+      p.sanctions = typeof p.sanctions === "number" ? p.sanctions : 0;
+      p.fullDepartmentGroups = typeof p.fullDepartmentGroups === "number" ? p.fullDepartmentGroups : 0;
+      p.departmentMargin = typeof p.departmentMargin === "number" ? p.departmentMargin : 0;
+      p.clawbackWP = typeof p.clawbackWP === "number" ? p.clawbackWP : 0;
+    }
+  });
+}
+
 const gameState = {
   tiles: [],                 // 40 board tiles with x, y coordinates and property metadata
   cards: {
@@ -407,10 +435,10 @@ const gameState = {
     communityChestIdx: 0
   },
   players: [
-    { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP },
-    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP },
-    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP },
-    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP }
+    { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "ACADEMIC_CLINICIAN", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
+    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "INTERVENTIONALIST", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
+    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "HOSPITAL_CEO", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
+    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "REGULATORY_AUDITOR", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 }
   ],
   currentPlayerIndex: 0,
   phase: "LOADING",          // "LOADING" | "RULES" | "WAIT_FOR_ROLL" | "MOVING" | "ACTION" | "AUCTION"
@@ -939,6 +967,11 @@ function renderScores() {
     const card = document.createElement("div");
     card.className = `player-score-card ${gameState.currentPlayerIndex === player.id ? "active-turn" : ""}`;
 
+    const fDef = (typeof FACTIONS !== "undefined" && FACTIONS[player.factionId]) || player.faction;
+    const factionBadgeHtml = fDef
+      ? `<div class="player-faction-row"><span class="player-faction-badge" style="border-color:${fDef.colorHex}66; color:${fDef.colorHex}; background:${fDef.colorHex}18;">${fDef.icon} ${fDef.badge}</span></div>`
+      : "";
+
     card.innerHTML = `
       <div class="player-card-header">
         <div class="player-name-wrap">
@@ -947,6 +980,7 @@ function renderScores() {
         </div>
         <span class="player-owned-pill">${ownedCount} prop${ownedCount === 1 ? "" : "s"}</span>
       </div>
+      ${factionBadgeHtml}
       <div class="player-metrics-row">
         <div class="metric-box">
           <span class="metric-label">SBP</span>
@@ -1065,6 +1099,18 @@ function updateTelemetryVitals() {
     }
     if (bpEl) {
       bpEl.textContent = `${Math.round(sbp)}/${Math.round(dbp)}`;
+    }
+
+    const factionBadgeEl = document.getElementById("telemetry-faction-badge");
+    if (factionBadgeEl && player.factionId) {
+      const fDef = (typeof FACTIONS !== "undefined" && FACTIONS[player.factionId]) || player.faction;
+      const badgeText = fDef ? fDef.badge : player.factionId.replace(/_/g, " ");
+      factionBadgeEl.textContent = badgeText;
+      if (fDef && fDef.colorHex) {
+        factionBadgeEl.style.borderColor = fDef.colorHex;
+        factionBadgeEl.style.color = fDef.colorHex;
+        factionBadgeEl.style.boxShadow = `0 0 10px ${fDef.colorHex}40`;
+      }
     }
   }
 }
@@ -1333,6 +1379,15 @@ function assignPropertyToPlayer(player, tile, wpCost, reasonLabel) {
   player.sbp += PURCHASE_SBP_INCREASE;
   player.bmi = roundOneDecimal(player.bmi + PURCHASE_BMI_INCREASE);
 
+  if (typeof recordFactionAction === "function") {
+    const groupTiles = gameState.tiles.filter((t) => t.type === "PROPERTY" && t.groupName === tile.groupName);
+    const completedGroup = groupTiles.length > 0 && groupTiles.every((t) => t.ownerId === player.id);
+    recordFactionAction(player, "DEPARTMENT_ACQUIRED", {
+      margin: Math.round(wpCost * 1.5),
+      fullGroup: completedGroup
+    });
+  }
+
   setBoardTicker(`${player.shortName} ${reasonLabel} ${tile.name} for ${Math.round(wpCost)} WP!`);
   refreshAllViews();
 }
@@ -1556,6 +1611,19 @@ async function handleCardDraw(player, tileType) {
     impactSummary = `All players get ${baseConsequences}`;
   }
 
+  if (typeof recordFactionAction === "function") {
+    const textLower = (card.text || "").toLowerCase();
+    if (textLower.includes("stent") || textLower.includes("cath") || textLower.includes("angiogram")) {
+      recordFactionAction(player, "STENT_DEPLOYED", { rvu: 1500 });
+    } else if (textLower.includes("statin") || textLower.includes("wegovy") || textLower.includes("bariatric") || textLower.includes("guideline")) {
+      recordFactionAction(player, "GDMT_PRESCRIBED", { score: 88 });
+    } else if (textLower.includes("bill") || textLower.includes("audit") || textLower.includes("troponin") || textLower.includes("panic")) {
+      recordFactionAction(player, "AUDIT_CLAWBACK", { amount: 1500 });
+    } else {
+      recordFactionAction(player, "GDMT_PRESCRIBED", { delta: 1 });
+    }
+  }
+
   setBoardTicker(`${player.shortName} drew ${isChance ? "Chance" : "Community Chest"}: ${impactSummary}`);
   refreshAllViews();
 
@@ -1658,6 +1726,7 @@ function resetGameToRules() {
     { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
     { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] }
   ];
+  initializePlayerFactions(gameState.players);
 
   // Unown all board tiles
   if (gameState.tiles && gameState.tiles.length) {
@@ -1829,7 +1898,58 @@ async function checkAndTriggerMilestones() {
   return false;
 }
 
+/**
+ * Evaluates whether any player has satisfied their asymmetric faction win condition.
+ * If met, displays victory popup modal and ends game / resets to rules.
+ *
+ * @returns {Promise<boolean>} true if a faction victory occurred, false otherwise
+ */
+async function checkFactionWins() {
+  if (typeof evaluateFactionWin !== "function") return false;
+
+  const orderedPlayers = [
+    gameState.players[gameState.currentPlayerIndex],
+    ...gameState.players.filter((_, idx) => idx !== gameState.currentPlayerIndex)
+  ];
+
+  for (const player of orderedPlayers) {
+    if (player && evaluateFactionWin(player, gameState)) {
+      const fDef = (typeof FACTIONS !== "undefined" && FACTIONS[player.factionId]) || player.faction;
+      const factionName = fDef ? fDef.name : (player.factionId || "Clinical Faction");
+      const isUser = player.id === 0;
+      const winnerPrefix = isUser ? "You have" : `${player.name} has`;
+      const title = `VICTORY — ${factionName.toUpperCase()} TRIUMPH`;
+      const winMessage = `${winnerPrefix} fulfilled the asymmetric win condition for ${factionName}: ${fDef ? fDef.winConditionDescription : "All clinical and economic targets satisfied."}`;
+      const impactSummary = isUser
+        ? "Congratulations! You successfully transformed the healthcare ecosystem."
+        : `${player.name} consolidated dominant systemic influence!`;
+
+      setBoardTicker(`🏆 ${winnerPrefix} won the game as ${factionName}!`);
+      refreshAllViews();
+
+      await showEventPopupModal(
+        title,
+        player,
+        winMessage,
+        impactSummary,
+        "game-end-theme",
+        "Okay",
+        true
+      );
+      resetGameToRules();
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function finishPlayerTurn() {
+  const factionWon = await checkFactionWins();
+  if (factionWon) {
+    return;
+  }
+
   const gameEnded = await checkAndTriggerMilestones();
   if (gameEnded) {
     return;
@@ -2133,6 +2253,7 @@ function wireEventListeners() {
 
 async function initGame() {
   initTelemetryController();
+  initializePlayerFactions(gameState.players);
   initDieElement(document.getElementById("die-1"));
   initDieElement(document.getElementById("die-2"));
   renderDieFace(document.getElementById("die-1"), 1);
