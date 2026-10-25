@@ -59,4 +59,6 @@ Community chest,3,1.5,200,Hospital terminates the outpatient cardiac rehab progr
 Community chest,2,0,450,Direct-to-consumer TV ads convince the nation that stairs causing breathlessness is a balloon emergency. ER volume explodes! 
 Community chest,4,3,200,Local city council repeals restrictions on commercial trans fats. Industrial bakeries celebrate with hydrogenated bliss! 
 Community chest,2,0,350,"New consensus finally brings down normal blood pressure to 100 / 60 mmHg, and the whole nation is hypertensive overnight! "
-Community chest,3,0,400,CCU fills 100% of its beds with stable stent checks. Critical STEMI and shock cases need to be diverted elsewhere! 
+Community chest,3,0,400,CCU fills 100% of its beds with stable stent checks. Critical STEMI and shock cases need to be diverted elsewhere!
+Chance,0,0,0,"Global Healthcare Policy Shift: Ministry of Health convenes international summit. National health policy regime rotates!"
+Community chest,0,0,0,"WHO International Healthcare Accord: Global macro-health policy framework enacted. National health policy regime rotates!"

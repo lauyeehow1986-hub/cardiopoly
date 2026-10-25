@@ -1,0 +1,29 @@
+{
+  "name": "cardiopoly-remastered",
+  "version": "1.0.0",
+  "description": "Cardiopoly Remastered - Academic Board Game on Healthcare Economics and Clinical Cardiology",
+  "main": "tools/mcp-guideline-server.js",
+  "scripts": {
+    "test": "node tests/telemetry.test.js && node tests/ui_command_center.test.js && node tests/factions.test.js && node tests/toasts.test.js && node tests/policies.test.js && node tests/vignettes.test.js && node tests/mcp-server.test.js && node -c script.js",
+    "test:telemetry": "node tests/telemetry.test.js",
+    "test:ui": "node tests/ui_command_center.test.js",
+    "test:factions": "node tests/factions.test.js",
+    "test:toasts": "node tests/toasts.test.js",
+    "test:policies": "node tests/policies.test.js",
+    "test:vignettes": "node tests/vignettes.test.js",
+    "test:mcp": "node tests/mcp-server.test.js",
+    "mcp-server": "node tools/mcp-guideline-server.js"
+  },
+  "keywords": [
+    "cardiology",
+    "healthcare-economics",
+    "mcp",
+    "medical-guidelines",
+    "model-context-protocol"
+  ],
+  "author": "Cardiopoly Remastered Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}
