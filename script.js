@@ -14,13 +14,13 @@ const AUCTION_DURATION = 10;                       // Seconds for auction counte
 const AUCTION_MAX_PRICE = 1000;                    // Maximum WP price when bidding stops & original lander gets assigned it
 
 // --- TOKEN MOVEMENT SPEED CONSTANTS (Milliseconds per sequential tile hop) ---
-const USER_TOKEN_STEP_MS = 1400;                   // Slow movement for user token to allow reading property names in close-up
-const BOT_TOKEN_STEP_MS = 105;                     // Faster movement for the 3 bot tokens
+const USER_TOKEN_STEP_MS = 280;                   // Slow movement for user token to allow reading property names in close-up
+const BOT_TOKEN_STEP_MS = 80;                     // Faster movement for the 3 bot tokens
 
 // --- BOT TURN PACING CONSTANTS ---
-const BOT_PRE_ROLL_DELAY_MS = 550;                 // Pause before a bot taps the dice box to roll
-const BOT_POST_TURN_DELAY_MS = 650;                // Pause after a bot finishes its turn actions
-const SPLASH_DURATION_MS = 4200;                   // Splash screen display time (3x longer / 1/3 progress bar speed)
+const BOT_PRE_ROLL_DELAY_MS = 300;                 // Pause before a bot taps the dice box to roll
+const BOT_POST_TURN_DELAY_MS = 350;                // Pause after a bot finishes its turn actions
+const SPLASH_DURATION_MS = 1200;                   // Splash screen display time (3x longer / 1/3 progress bar speed)
 
 // --- BACKEND DICE CONTROL CONSTANTS ---
 const PROBABILITY_OF_CARD_TILE_ROLL = 0.10;        // 10% chance roll lands on the first Chance/Community chest tile within 12 steps
@@ -1281,13 +1281,23 @@ async function resolveLandedTile(player, tile) {
     refreshAllViews();
 
     const consequences = formatConsequences(tile.sbpImpact, tile.bmiImpact, tile.priceWP);
-    await showEventPopupModal(
-      "HOSPITAL SURCHARGE",
-      player,
-      `${player.name} landed on <strong>${tile.name}</strong>!`,
-      consequences,
-      "event-theme"
-    );
+    if (player.isBot) {
+      if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+        CardiopolyToasts.showToast({
+          title: "HOSPITAL SURCHARGE",
+          message: `${player.name} landed on <strong>${tile.name}</strong>! ${consequences}`,
+          theme: "warning"
+        });
+      }
+    } else {
+      await showEventPopupModal(
+        "HOSPITAL SURCHARGE",
+        player,
+        `${player.name} landed on <strong>${tile.name}</strong>!`,
+        consequences,
+        "event-theme"
+      );
+    }
     await finishPlayerTurn();
     return;
   }
@@ -1309,13 +1319,21 @@ async function handleUnownedPropertyLanding(player, tile) {
     if (Math.random() < PROBABILITY_OF_PROP_PURCHASE) {
       assignPropertyToPlayer(player, tile, tile.priceWP, "purchased");
       const consequences = formatConsequences(PURCHASE_SBP_INCREASE, PURCHASE_BMI_INCREASE, tile.priceWP);
-      await showEventPopupModal(
-        "PROPERTY PURCHASED",
-        player,
-        `<strong>${player.name}</strong> purchased <strong>${tile.name}</strong> (${tile.groupName}) for <strong>${tile.priceWP} WP</strong>!`,
-        consequences,
-        "event-theme"
-      );
+      if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+        CardiopolyToasts.showToast({
+          title: "PROPERTY PURCHASED",
+          message: `<strong>${player.name}</strong> purchased <strong>${tile.name}</strong> (${tile.groupName}) for <strong>${tile.priceWP} WP</strong>! ${consequences}`,
+          theme: "event"
+        });
+      } else {
+        await showEventPopupModal(
+          "PROPERTY PURCHASED",
+          player,
+          `<strong>${player.name}</strong> purchased <strong>${tile.name}</strong> (${tile.groupName}) for <strong>${tile.priceWP} WP</strong>!`,
+          consequences,
+          "event-theme"
+        );
+      }
       await finishPlayerTurn();
     } else {
       setBoardTicker(`${player.shortName} declined ${tile.name} (${tile.priceWP} WP) — AUCTION STARTING!`);
@@ -1460,13 +1478,23 @@ function runPropertyAuction(tile, originalLander) {
           ? `Nobody stepped in before the counter hit <strong>${maxPrice.toLocaleString()} WP</strong>! <strong>${buyerPlayer.name}</strong> (who first landed on it) was assigned <strong>${tile.name}</strong> for <strong>${roundedWP.toLocaleString()} WP</strong>!`
           : `<strong>${buyerPlayer.name}</strong> stepped in and bought <strong>${tile.name}</strong> in the auction for <strong>${roundedWP.toLocaleString()} WP</strong>!`;
 
-      await showEventPopupModal(
-        "AUCTION RESULT",
-        buyerPlayer,
-        outcomeMsg,
-        consequences,
-        "auction-theme"
-      );
+      if (buyerPlayer.isBot) {
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "AUCTION RESULT",
+            message: `${outcomeMsg} ${consequences}`,
+            theme: "auction"
+          });
+        }
+      } else {
+        await showEventPopupModal(
+          "AUCTION RESULT",
+          buyerPlayer,
+          outcomeMsg,
+          consequences,
+          "auction-theme"
+        );
+      }
       resolve();
     };
 
@@ -1562,13 +1590,23 @@ async function handleOwnedPropertyVisit(visitor, tile) {
       : `<strong>${visitor.name}</strong> landed on <strong>${owner.name}</strong>'s property <strong>${tile.name}</strong>${doubleNote}!`;
 
   const consequences = formatConsequences(sbpDelta, bmiDelta, consultWP);
-  await showEventPopupModal(
-    ownsFullGroup ? "DOUBLE RENT!" : "OWNED PROPERTY",
-    visitor,
-    popupBody,
-    consequences,
-    "event-theme"
-  );
+  if (visitor.isBot) {
+    if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+      CardiopolyToasts.showToast({
+        title: ownsFullGroup ? "DOUBLE RENT!" : "OWNED PROPERTY",
+        message: `${popupBody} ${consequences}`,
+        theme: "warning"
+      });
+    }
+  } else {
+    await showEventPopupModal(
+      ownsFullGroup ? "DOUBLE RENT!" : "OWNED PROPERTY",
+      visitor,
+      popupBody,
+      consequences,
+      "event-theme"
+    );
+  }
 
   await finishPlayerTurn();
 }
@@ -1627,14 +1665,24 @@ async function handleCardDraw(player, tileType) {
   setBoardTicker(`${player.shortName} drew ${isChance ? "Chance" : "Community Chest"}: ${impactSummary}`);
   refreshAllViews();
 
-  // Show modal window that must be acknowledged and closed ("Game on!") before game proceeds
-  await showEventPopupModal(
-    isChance ? "CHANCE" : "COMMUNITY CHEST",
-    player,
-    card.text,
-    impactSummary,
-    isChance ? "chance-theme" : "chest-theme"
-  );
+  if (player.isBot) {
+    if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+      CardiopolyToasts.showToast({
+        title: isChance ? "CHANCE" : "COMMUNITY CHEST",
+        message: `<strong>${player.name}</strong>: ${card.text} (${impactSummary})`,
+        theme: isChance ? "event" : "info"
+      });
+    }
+  } else {
+    // Show modal window that must be acknowledged and closed ("Game on!") before game proceeds
+    await showEventPopupModal(
+      isChance ? "CHANCE" : "COMMUNITY CHEST",
+      player,
+      card.text,
+      impactSummary,
+      isChance ? "chance-theme" : "chest-theme"
+    );
+  }
 
   await finishPlayerTurn();
 }
@@ -2281,24 +2329,45 @@ async function initGame() {
   renderThumbnailBoard();
   refreshAllViews();
 
-  // Fill progress bar steadily over SPLASH_DURATION_MS (1/3 of original speed)
+  let splashDismissed = false;
+  function skipSplash() {
+    if (splashDismissed) return;
+    splashDismissed = true;
+    const splashEl = document.getElementById("splash-screen");
+    if (splashEl) {
+      splashEl.classList.remove("active");
+      splashEl.onclick = null;
+    }
+    const rulesEl = document.getElementById("rules-screen");
+    if (rulesEl) rulesEl.classList.add("active");
+    gameState.phase = "RULES";
+  }
+
+  const splashScreenEl = document.getElementById("splash-screen");
+  if (splashScreenEl) {
+    splashScreenEl.onclick = skipSplash;
+  }
+
+  // Fill progress bar steadily over SPLASH_DURATION_MS
   const steps = 20;
   const stepWait = Math.round(SPLASH_DURATION_MS / steps);
   for (let i = 1; i <= steps; i++) {
+    if (splashDismissed) break;
     const pct = Math.round((i / steps) * 100);
-    progressBar.style.width = `${pct}%`;
-    if (pct === 40) {
-      statusText.textContent = "Stocking Wegovy & Oculostenotic Stents...";
-    } else if (pct === 85) {
-      statusText.textContent = "Ready for Admission!";
+    if (progressBar) progressBar.style.width = `${pct}%`;
+    if (statusText) {
+      if (pct === 40) {
+        statusText.textContent = "Stocking Wegovy & Oculostenotic Stents...";
+      } else if (pct === 85) {
+        statusText.textContent = "Ready for Admission!";
+      }
     }
     await sleep(stepWait);
   }
 
-  // Transition from Splash Screen -> Rules of the Game Screen
-  document.getElementById("splash-screen").classList.remove("active");
-  document.getElementById("rules-screen").classList.add("active");
-  gameState.phase = "RULES";
+  if (!splashDismissed) {
+    skipSplash();
+  }
 }
 
 window.addEventListener("DOMContentLoaded", initGame);
