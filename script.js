@@ -1638,10 +1638,14 @@ function resetGameToRules() {
   // Hide action & trade cards
   const actionBanner = document.getElementById("action-banner");
   if (actionBanner) actionBanner.classList.add("hidden");
-  const tradeCard = document.getElementById("trade-proposal-card");
-  if (tradeCard) tradeCard.classList.add("hidden");
-  const createTradeCard = document.getElementById("trade-create-card");
-  if (createTradeCard) createTradeCard.classList.add("hidden");
+  const tradeActions = document.getElementById("trade-response-actions");
+  if (tradeActions) tradeActions.classList.add("hidden");
+  const tradeCreator = document.getElementById("trade-creator-form");
+  if (tradeCreator) tradeCreator.classList.add("hidden");
+  const tradeStatus = document.getElementById("trade-status-msg");
+  if (tradeStatus) {
+    tradeStatus.textContent = 'No pending trade offer. Tap "Create trade" to swap a property with a bot, or wait for a bot offer.';
+  }
 
   // Re-render UI
   const die1 = document.getElementById("die-1");
