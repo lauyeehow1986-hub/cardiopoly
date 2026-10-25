@@ -1,0 +1,368 @@
+{
+  "timestamp": "2026-10-25T19:13:05.625Z",
+  "reportTitle": "Cardiopoly Remastered - Visual DOM & System Integration Verification Report",
+  "branch": "feat/cardiopoly-remastered",
+  "overallStatus": "PASS",
+  "categories": {
+    "interactiveElements": {
+      "start-game-btn": {
+        "label": "Start Game Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "dice-click-box": {
+        "label": "3D Dice Click Box",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "die-1": {
+        "label": "Die 1 Element",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "die-2": {
+        "label": "Die 2 Element",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "rig-toggle-btn": {
+        "label": "Dice Rigging Toggle Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "dice-mode-select": {
+        "label": "Dice Director Mode Select",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "manual-die-1": {
+        "label": "Manual Die 1 Select",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "manual-die-2": {
+        "label": "Manual Die 2 Select",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "rules-reopen-btn": {
+        "label": "Rules Reopen Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "thumbnail-board": {
+        "label": "11x11 Board Thumbnail Grid",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "scores-grid": {
+        "label": "Scoreboard Grid (4 Players)",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "create-trade-btn": {
+        "label": "Create Trade Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "trade-offer-box": {
+        "label": "Trade Negotiation Box",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "accept-trade-btn": {
+        "label": "Accept Trade Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "decline-trade-btn": {
+        "label": "Decline Trade Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "board-ticker-text": {
+        "label": "Center Board Ticker Bar",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "modalOverlays": {
+      "splash-screen": {
+        "label": "Splash Screen Loading Overlay",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "splash-progress-bar": {
+        "label": "Splash Screen Progress Bar",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "splash-status-text": {
+        "label": "Cath Lab Status Text",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "rules-screen": {
+        "label": "Rules Screen Protocol Modal",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "action-banner": {
+        "label": "Action & Event Banner",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "action-tag": {
+        "label": "Action Tag Badge",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "action-title": {
+        "label": "Action Title Header",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "action-body": {
+        "label": "Action Content Body",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "action-controls": {
+        "label": "Action Controls Container",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "vignette-modal": {
+        "label": "Clinical Case Encounter Modal",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "card-modal": {
+        "label": "Chance / Community Chest Popup Modal",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "multiplayer-modal": {
+        "label": "WebRTC P2P Multiplayer & Supabase Modal",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "telemetryCanvas": {
+      "telemetry-dashboard": {
+        "label": "Clinical Telemetry Command Center",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "ecg-canvas": {
+        "label": "ECG 280x48 Oscilloscope Canvas",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "telemetry-hr-val": {
+        "label": "Heart Rate Vital Value",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "telemetry-bp-val": {
+        "label": "Blood Pressure Vital Value",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "toastsNotificationSystem": {
+      "toast-container": {
+        "label": "Toast Stack Notification Container",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "regimeAndFactionBadges": {
+      "telemetry-regime-badge": {
+        "label": "National Policy Regime Badge",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "telemetry-faction-badge": {
+        "label": "Clinical Faction Badge",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "multiplayerControls": {
+      "multiplayer-btn": {
+        "label": "Multiplayer Lobby Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "btn-start-hosting": {
+        "label": "Start Hosting Room Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "host-room-code-val": {
+        "label": "Room Code Display Field",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "copy-room-code-btn": {
+        "label": "Copy Room Code Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "btn-join-room": {
+        "label": "Join Room Button",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "join-room-code-input": {
+        "label": "Room Code Input Field",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "tab-peers": {
+        "label": "Connected Peers Tab",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "mesh-peer-count": {
+        "label": "Connected Peer Count Badge",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "tab-leaderboard": {
+        "label": "Leaderboard Tab",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "leaderboard-table": {
+        "label": "Global Leaderboards Table",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "lb-country-filter": {
+        "label": "Leaderboard Country Filter",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      },
+      "lb-faction-filter": {
+        "label": "Leaderboard Faction Filter",
+        "presentInDOM": true,
+        "status": "VERIFIED"
+      }
+    },
+    "glassmorphismTokens": {
+      "--bg-command-center": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      "--glass-bg": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      "--neon-cyan": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      "--accent-emerald": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      "--accent-crimson": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      "backdrop-filter: blur(12px)": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      ".telemetry-dashboard": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      ".player-score-card.active-turn": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      ".vignette-modal-dialog": {
+        "present": true,
+        "status": "VERIFIED"
+      },
+      ".toast-container": {
+        "present": true,
+        "status": "VERIFIED"
+      }
+    },
+    "scriptLoadOrder": {
+      "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js": {
+        "orderIndex": 24353,
+        "status": "VERIFIED"
+      },
+      "src/components/telemetry.js": {
+        "orderIndex": 24430,
+        "status": "VERIFIED"
+      },
+      "src/engine/factions.js": {
+        "orderIndex": 24484,
+        "status": "VERIFIED"
+      },
+      "src/engine/policies.js": {
+        "orderIndex": 24533,
+        "status": "VERIFIED"
+      },
+      "src/components/toasts.js": {
+        "orderIndex": 24583,
+        "status": "VERIFIED"
+      },
+      "src/components/vignetteModal.js": {
+        "orderIndex": 24635,
+        "status": "VERIFIED"
+      },
+      "src/network/supabaseClient.js": {
+        "orderIndex": 24694,
+        "status": "VERIFIED"
+      },
+      "src/network/p2pSync.js": {
+        "orderIndex": 24751,
+        "status": "VERIFIED"
+      },
+      "script.js": {
+        "orderIndex": 24801,
+        "status": "VERIFIED"
+      }
+    }
+  },
+  "e2eSimulations": {
+    "singaporeRegime": {
+      "status": "PASS",
+      "winnerFaction": "ACADEMIC_CLINICIAN",
+      "gdmtScore": 100,
+      "encounters": 12,
+      "complications": 0,
+      "ipRiderCoPayRate": "5%",
+      "mohFeeBenchmarkLimit": 0.8,
+      "capitationBonusWP": 250
+    },
+    "unitedStatesRegime": {
+      "status": "PASS",
+      "winnerFaction": "INTERVENTIONALIST",
+      "rvuPoints": 12000,
+      "sanctions": 0,
+      "ffsMultiplier": 2.1,
+      "priorAuthRequired": true
+    },
+    "unitedKingdomRegime": {
+      "status": "PASS",
+      "winnerFaction": "HOSPITAL_CEO",
+      "fullDepartmentGroups": 3,
+      "departmentMargin": 10500,
+      "niceQalyGateEnforced": true,
+      "nhsZeroPatientCoPay": true
+    },
+    "regulatoryAuditorAuditTest": {
+      "status": "PASS",
+      "winnerFaction": "REGULATORY_AUDITOR",
+      "clawbackWP": 15500
+    }
+  }
+}
