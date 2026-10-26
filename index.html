@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>CARDIOPOLY — The High-Billing Stent-Deploying Game</title>
+  <title>CARDIOPOLY — Hospital Command Center &amp; Clinical Strategy Simulation</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <!-- ====================================================================
-       1. SPLASH SCREEN (Shown while the game is loading)
+       1. SPLASH SCREEN (Shown on initial page load, clickable to dismiss)
        ==================================================================== -->
-  <div id="splash-screen" class="screen-overlay active">
+  <div id="splash-screen" class="screen-overlay active" role="dialog" aria-modal="true" aria-label="Loading Cardiopoly">
     <div class="splash-card">
       <div class="splash-image-wrap">
         <img
@@ -24,96 +24,212 @@
         <div class="splash-progress-track">
           <div class="splash-progress-bar" id="splash-progress-bar"></div>
         </div>
+        <div class="splash-hint-sub">Click anywhere to skip intro</div>
       </div>
     </div>
   </div>
 
   <!-- ====================================================================
-       2. RULES OF THE GAME SCREEN (Shown after loading, before Start Game)
+       2. PRE-GAME COMMAND SETUP LOBBY (Role, Regime, Mode & AI Selection)
+       ==================================================================== -->
+  <div id="setup-modal" class="screen-overlay" role="dialog" aria-modal="true" aria-labelledby="setup-modal-title">
+    <div class="setup-modal-window">
+      <div class="setup-modal-header">
+        <div class="setup-header-title-group">
+          <span class="setup-badge">CLINICAL COMMAND PROTOCOL</span>
+          <h2 id="setup-modal-title">Cardiology Match Configuration</h2>
+        </div>
+        <button id="setup-modal-close-btn" class="setup-close-btn" type="button" aria-label="Close Setup Dialog">✕</button>
+      </div>
+
+      <div class="setup-modal-body">
+        <!-- 1. Select Game Mode -->
+        <div class="setup-section">
+          <h3>1. Victory Framework &amp; Game Mode</h3>
+          <div class="setup-mode-cards">
+            <div class="setup-mode-card active" data-mode="CLINICAL_MASTERY" id="mode-card-mastery">
+              <div class="mode-card-header">
+                <span class="mode-badge badge-mastery">DEFAULT</span>
+                <h4>Clinical Mastery (Strategic Gamer Mode)</h4>
+              </div>
+              <p>Win by completing your <strong>Faction Victory Objective</strong> or having the highest <strong>Clinical Prestige &amp; Empire Score</strong>. Crossing SBP &ge; 200 or BMI &ge; 70 triggers a dangerous <strong>Code Blue Hospitalization</strong>!</p>
+            </div>
+            <div class="setup-mode-card" data-mode="BUREAUCRATIC_SATIRE" id="mode-card-satire">
+              <div class="mode-card-header">
+                <span class="mode-badge badge-satire">CLASSIC PARODY</span>
+                <h4>Bureaucratic Satire (Classic Escalation)</h4>
+              </div>
+              <p>The satirical race to mutual physical destruction: first player to reach SBP &ge; 200, WP &ge; 10,000, or BMI &ge; 70 wins via grotesque medical bureaucracy!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Select Your Faction Role -->
+        <div class="setup-section">
+          <h3>2. Select Your Faction Role</h3>
+          <p class="section-subtext">Each role has unique passive clinical perks and victory targets.</p>
+          <div class="setup-faction-grid" id="setup-faction-grid">
+            <div class="setup-faction-card active" data-faction="ACADEMIC_CLINICIAN">
+              <div class="faction-card-top">
+                <span class="faction-icon">🩺</span>
+                <span class="faction-name">Academic Clinician</span>
+              </div>
+              <div class="faction-card-role">Guideline &amp; GDMT Champion</div>
+              <div class="faction-card-passives">Passive: +20% Vignette GDMT bonus, -25% Peer Review bail</div>
+              <div class="faction-card-target">Win Target: GDMT &ge; 85%, Encounters &ge; 12, Complications &lt; 2</div>
+            </div>
+
+            <div class="setup-faction-card" data-faction="INTERVENTIONALIST">
+              <div class="faction-card-top">
+                <span class="faction-icon">💉</span>
+                <span class="faction-name">Interventionalist</span>
+              </div>
+              <div class="faction-card-role">High-Volume Cath Lab Operator</div>
+              <div class="faction-card-passives">Passive: 2x RVU extraction on Cath/CCU, +15% procedure fees</div>
+              <div class="faction-card-target">Win Target: RVUs &ge; 12,000, Sanctions &lt; 3</div>
+            </div>
+
+            <div class="setup-faction-card" data-faction="HOSPITAL_CEO">
+              <div class="faction-card-top">
+                <span class="faction-icon">🏥</span>
+                <span class="faction-name">Hospital CEO</span>
+              </div>
+              <div class="faction-card-role">Healthcare Enterprise Executive</div>
+              <div class="faction-card-passives">Passive: 15% discount on suite acquisitions &amp; upgrades, +50% monopoly rent</div>
+              <div class="faction-card-target">Win Target: &ge; 3 Color Monopolies OR Margin &ge; 10,000 WP</div>
+            </div>
+
+            <div class="setup-faction-card" data-faction="REGULATORY_AUDITOR">
+              <div class="faction-card-top">
+                <span class="faction-icon">📋</span>
+                <span class="faction-name">Regulatory Auditor</span>
+              </div>
+              <div class="faction-card-role">Compliance &amp; Overutilization Watchdog</div>
+              <div class="faction-card-passives">Passive: Collects 25% Audit Clawback on defensive tests &amp; runaway auctions</div>
+              <div class="faction-card-target">Win Target: Audit Clawbacks &ge; 15,000 WP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. National Healthcare Regime Mode -->
+        <div class="setup-section">
+          <h3>3. National Healthcare System Regime</h3>
+          <div class="setup-regime-controls">
+            <div class="regime-mode-radios">
+              <label class="radio-label">
+                <input type="radio" name="regime-mode-radio" value="CHOOSE_FIXED" checked />
+                <span>Choose Host Country (Fixed)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="regime-mode-radio" value="RANDOM_FIXED" />
+                <span>Random Country (Fixed at Match Start)</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="regime-mode-radio" value="DYNAMIC_WHO_SHIFT" />
+                <span>Dynamic WHO Policy Shift (Rotates Every 4 Rounds)</span>
+              </label>
+            </div>
+
+            <div class="regime-select-wrap" id="regime-select-wrap">
+              <label for="setup-country-select">Host Healthcare System:</label>
+              <select id="setup-country-select" class="modal-select">
+                <option value="SINGAPORE" selected>🇸🇬 Singapore (3M: MediShield, IP 5% Co-pay, MOH Benchmarks, Healthier SG)</option>
+                <option value="UNITED_STATES">🇺🇸 United States (Commercial FFS, Uncapped RVUs, Prior-Auth Denials)</option>
+                <option value="UNITED_KINGDOM">🇬🇧 United Kingdom (NHS Single-Payer, Strict NICE QALY Gates, Waitlists)</option>
+                <option value="SWEDEN">🇸🇪 Sweden (Decentralized Nordic, SWEDEHEART Quality Focus, Regional Caps)</option>
+                <option value="JAPAN">🇯🇵 Japan (Universal SHI, World's Highest CT/Cath Density, Chuikyo Price Cuts)</option>
+                <option value="SOUTH_KOREA">🇰🇷 South Korea (Big-5 Seoul Hospitals, Non-Covered Luxury Care, HIRA Clawbacks)</option>
+                <option value="TAIWAN">🇹🇼 Taiwan (NHI Smart-Card, Global Budget Floating Points Discount)</option>
+                <option value="MALAYSIA">🇲🇾 Malaysia (RM1/RM5 Public MOH Care vs. Luxury Medical Tourism)</option>
+                <option value="INDONESIA">🇮🇩 Indonesia (BPJS Kesehatan, INA-CBG Flat DRG Bundling Deficits)</option>
+              </select>
+              <div id="setup-regime-preview-card" class="regime-preview-card"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. AI Opponent Difficulty Tier -->
+        <div class="setup-section">
+          <h3>4. AI Opponent Difficulty Tier</h3>
+          <div class="setup-difficulty-buttons">
+            <button type="button" class="btn-difficulty" data-diff="RESIDENT">Resident (Easy / Occasional Mistakes)</button>
+            <button type="button" class="btn-difficulty active" data-diff="ATTENDING">Attending (Standard / Evaluates Monopolies)</button>
+            <button type="button" class="btn-difficulty" data-diff="DEPARTMENT_CHAIR">Department Chair (Ruthless / Blocks Monopolies &amp; Outbids)</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setup-modal-footer">
+        <button id="setup-quick-start-btn" class="btn btn-secondary btn-large" type="button">Quick Start (Defaults)</button>
+        <button id="setup-launch-match-btn" class="btn btn-primary btn-large" type="button">Launch Clinical Match</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       3. RULES OF THE GAME SCREEN (Updated Dual-Mode Protocol)
        ==================================================================== -->
   <div id="rules-screen" class="screen-overlay">
     <div class="rules-modal">
       <div class="rules-header">
         <span class="rules-badge">CLINICAL PROTOCOL &amp; BILLING GUIDE</span>
         <h1>CARDIOPOLY</h1>
-        <p class="rules-subtitle">Where lifestyle neglect meets high-margin metal.</p>
+        <p class="rules-subtitle">Where evidence-based medicine meets bureaucratic reality.</p>
       </div>
 
       <div class="rules-body">
         <div class="rules-section">
-          <h3>1. The Clinical Mission</h3>
+          <h3>1. The Two Game Modes</h3>
           <p>
-            Welcome to modern hospital cardiology! You compete against 3 bot opponents —
-            <strong>Fat Slob</strong>, <strong>Lazy Larry</strong>, and <strong>Sloppy Susan</strong> —
-            around a 40-tile hospital circuit. Nobody plays to "win" — you are here to witness the glorious
-            escalation of medical bureaucracy, defensive diagnostics, and lifestyle neglect.
+            <strong>Mode A: Clinical Mastery (Strategic Gamer Mode):</strong><br/>
+            Compete to complete your <strong>Faction Victory Objective</strong> (GDMT adherence, Procedural RVUs, Department Monopolies, or Audit Clawbacks).
+            Vital signs are a survival hazard: crossing <strong>SBP &ge; 200 mmHg</strong> or <strong>BMI &ge; 70 kg/m&sup2;</strong> causes a <strong>Code Blue Hospitalization</strong> (M&M Peer Review admission, vitals reset, and 1,500 WP resuscitation fine).
+            If global waste reaches the <strong>Ministry Audit Freeze cap (10k/30k WP)</strong>, the match ends and the highest Clinical Prestige score wins!
+          </p>
+          <p>
+            <strong>Mode B: Bureaucratic Satire (Classic Parody Mode):</strong><br/>
+            The classic inverted race to medical absurdity where the first player to cross <strong>SBP &ge; 200 mmHg</strong>, <strong>WP &ge; 10,000</strong>, or <strong>BMI &ge; 70 kg/m&sup2;</strong> wins via glorious medical excess.
           </p>
         </div>
 
         <div class="rules-section">
-          <h3>2. Vital Signs &amp; Waste Points (No Money!)</h3>
-          <p>Instead of cash, every decision escalates three vital metrics:</p>
+          <h3>2. Interactive Clinical Case Vignettes</h3>
+          <p>
+            Landing on any clinical suite triggers a real patient case with cross-disciplinary complexities (Cardiorenal eGFR contrast checks, Endocrinology SGLT2i/GLP-1 guidelines, Heart Team CABG vs. PCI). Choose between:
+          </p>
           <ul>
-            <li><strong>SBP (Systolic Blood Pressure):</strong> Rises with hospital stress, sodium-laden cafeteria cookies, and surprise billing audits.</li>
-            <li><strong>BMI (Body Mass Index):</strong> Fluctuates wildly between miracle GLP-1 shortages, bariatric interventions, and trans-fat lobbying.</li>
-            <li><strong>WP (Waste Points):</strong> Acquiring hospital departments, ordering defensive tests, or visiting rival units (+100 WP) adds directly to your Waste Points score.</li>
+            <li><strong>Guideline-Directed Medical Therapy (GDMT):</strong> Evidence-based care, low complications, awards Academic Clinician points.</li>
+            <li><strong>High-Margin Procedural Intervention:</strong> Maximizes Interventionalist RVUs &amp; hospital facility fees, but risks contrast nephropathy and audit scrutiny.</li>
+            <li><strong>Cost-Containment / Defensive Observation:</strong> Optimizes 23-hour observation bed turnover for the Hospital CEO.</li>
           </ul>
         </div>
 
         <div class="rules-section">
-          <h3>3. Acquiring Suites, Group Monopolies &amp; Runaway Auctions</h3>
+          <h3>3. Department Monopolies &amp; Upgrades</h3>
           <p>
-            Land on an unowned Cardiology property (e.g., <em>Oculostenotic space</em> or <em>Troponin cubicle</em>)
-            and you may claim it for its base <strong>WP</strong> price.
-          </p>
-          <p>
-            <strong>Full Department Monopoly (Double Rent):</strong> Landing on a property owned by another player
-            increases your Waste score by <strong>100 WP</strong> (along with raising your SBP and BMI).
-            <strong>When a player owns all properties in a color group, the rent doubles (200 WP)!</strong>
-          </p>
-          <p>
-            <strong>If a player declines to buy:</strong> An instant 10-second group auction begins! The price
-            counter ticks rapidly upward from the base price to <strong>1,000 WP</strong>. Anyone can step in and
-            hit <strong>"Buy"</strong> as the waste escalates — but if the counter reaches 1,000 WP, bidding stops
-            and the player who originally landed on the property is saddled with it at the maximum 1,000 WP!
+            Own all suites in a color group to collect double rent! Once a monopoly is secured, you can spend WP to upgrade suites across 3 tiers:
+            <strong>Tier 1: Clinical Fellow (1.5x)</strong>, <strong>Tier 2: Subspecialty Attending (2.2x)</strong>, and <strong>Tier 3: Flagship Heart Institute (3.5x + mandatory clinical challenge for rivals)</strong>.
           </p>
         </div>
 
         <div class="rules-section">
-          <h3>4. Backroom Department Trades &amp; Dice</h3>
+          <h3>4. International Healthcare Systems</h3>
           <p>
-            Swap hospital turf one-for-one with bots in the <strong>Trades</strong> panel below, or respond when
-            bots propose a trade. Tapping the <strong>Dice Box</strong> at the top rolls the dice and steers tokens
-            into maximum satirical drama.
+            Play under 9 authentic national models: <strong>Singapore 3M</strong> (IP 5% co-pay riders, MOH fee benchmarks, Healthier SG), <strong>US Commercial FFS</strong>, <strong>UK NHS NICE</strong>, <strong>Sweden SWEDEHEART</strong>, <strong>Japan Chuikyo</strong>, <strong>South Korea HIRA</strong>, <strong>Taiwan Global Budget</strong>, <strong>Malaysia</strong>, and <strong>Indonesia BPJS</strong>.
           </p>
-        </div>
-
-        <div class="rules-section">
-          <h3>5. Clinical Milestones &amp; The Finish Line</h3>
-          <p>
-            As medical waste and physical decline mount, clinical milestones will trigger — impacting players individually as they reach clinical milestones.
-          </p>
-          <p>
-            The game reaches its climax and ends when any player crosses one of the three terminal milestones:
-          </p>
-          <ul>
-            <li><strong>Systolic Blood Pressure (SBP) &ge; 200 mmHg:</strong> Hypertensive transcendence!</li>
-            <li><strong>Waste Points (WP) &ge; 10,000 WP:</strong> Bureaucratic mastery!</li>
-            <li><strong>Body Mass Index (BMI) &ge; 70 kg/m&sup2;:</strong> Morbid glory!</li>
-          </ul>
         </div>
       </div>
 
       <div class="rules-footer">
         <button id="start-game-btn" class="btn btn-primary btn-large" type="button">
-          Start game
+          Enter Game Setup
         </button>
       </div>
     </div>
   </div>
 
   <!-- ====================================================================
-       3. MAIN GAME SHELL (Mobile-First Vertical Stack)
+       4. MAIN GAME SHELL (Modern Clinical Command Center)
        ==================================================================== -->
   <main id="game-app" class="game-container">
 
@@ -127,12 +243,14 @@
         <div class="telemetry-badges-group">
           <div class="telemetry-regime-wrap">
             <span class="regime-label">REGIME:</span>
-            <span id="telemetry-regime-badge" class="regime-badge" title="National Healthcare Policy Regime: Singapore 3M">🇸🇬 Singapore</span>
+            <button id="telemetry-regime-badge" class="regime-badge btn-clickable-badge" type="button" title="View National Healthcare Policy Regime Details">🇸🇬 Singapore</button>
           </div>
           <div class="telemetry-faction-wrap">
             <span class="faction-label">FACTION:</span>
-            <span id="telemetry-faction-badge" class="faction-badge">ACADEMIC CLINICIAN</span>
+            <button id="telemetry-faction-badge" class="faction-badge btn-clickable-badge" type="button" title="View Faction Dossier &amp; Victory Progress">ACADEMIC CLINICIAN</button>
           </div>
+          <button id="audio-mute-btn" class="btn-chip btn-icon-chip" type="button" title="Toggle Sound Audio">🔊 Sound</button>
+          <button id="lobby-setup-btn" class="btn-chip btn-icon-chip" type="button" title="Match Settings &amp; Rules">⚙️ Options</button>
         </div>
       </div>
 
@@ -168,7 +286,7 @@
           <span id="turn-status-text">Your Turn — Tap Dice Box to Roll</span>
         </div>
         <div class="dice-controls-mini">
-          <button id="multiplayer-btn" class="btn-chip btn-multiplayer" type="button" title="Multiplayer & Global Leaderboards">🌐 Multiplayer</button>
+          <button id="multiplayer-btn" class="btn-chip btn-multiplayer" type="button" title="Multiplayer &amp; Global Leaderboards">🌐 Multiplayer</button>
           <button id="rules-reopen-btn" class="btn-chip" type="button" title="View Rules">Rules</button>
           <button id="rig-toggle-btn" class="btn-chip hidden" type="button" title="Configure Dice Roll Control">
             Roll: <span id="rig-mode-label">Director</span>
@@ -230,20 +348,44 @@
       <div class="action-banner-controls" id="action-controls"></div>
     </section>
 
-    <!-- SECTION 2: SMALL THUMBNAIL VERSION OF THE BOARD (Static 11x11 Grid) -->
-    <section id="thumbnail-board-section" class="panel board-panel" aria-label="Board Thumbnail">
+    <!-- SECTION 2: 11x11 BOARD WITH LIVE INTERACTIVE CARDIOLOGY CENTER CONSOLE -->
+    <section id="thumbnail-board-section" class="panel board-panel" aria-label="Hospital Board Circuit">
       <div class="board-wrapper" id="thumbnail-board">
         <!-- 40 perimeter tiles injected via JS on 11x11 CSS grid -->
-        <div class="board-center">
-          <img
-            src="Monopoly_board_center.png"
-            alt="Cardiopoly Board Center"
-            class="board-center-img"
-          />
-          <div class="board-center-toast" id="board-ticker-text">
-            Tap the dice box above to begin rounds!
+
+        <!-- LIVE INTERACTIVE CARDIOLOGY CENTER CONSOLE (Replaces static image) -->
+        <div class="board-center-console" id="board-center-console">
+          <div class="console-tab-bar">
+            <button id="tab-telemetry-btn" class="console-tab active" type="button">Telemetry</button>
+            <button id="tab-race-btn" class="console-tab" type="button">Faction Race</button>
+            <button id="tab-ticker-btn" class="console-tab" type="button">Action Feed</button>
+          </div>
+
+          <div class="console-tab-content">
+            <!-- Tab 1: Live Animated Telemetry Waveform & Rhythm Readout -->
+            <div id="console-telemetry-view" class="console-view active">
+              <canvas id="console-ecg-canvas" width="230" height="56" class="console-ecg-canvas"></canvas>
+              <div class="console-rhythm-bar">
+                <span id="console-rhythm-badge" class="rhythm-badge sinus">NORMAL SINUS RHYTHM</span>
+                <span id="console-vital-hr" class="rhythm-hr">72 BPM</span>
+              </div>
+            </div>
+
+            <!-- Tab 2: Faction Objectives & Victory Race Leaderboard -->
+            <div id="console-race-view" class="console-view">
+              <div id="console-faction-bars" class="console-faction-bars">
+                <!-- Dynamically populated faction progress bars -->
+              </div>
+            </div>
+
+            <!-- Tab 3: Action Feed & Ticker -->
+            <div id="console-ticker-view" class="console-view">
+              <div id="board-ticker-text" class="board-ticker-text">Welcome to Cardiopoly Command. Tap dice box to roll!</div>
+              <div id="console-action-log" class="console-action-log"></div>
+            </div>
           </div>
         </div>
+
         <!-- Token layer with X/Y coordinates for each of the 4 tokens -->
         <div id="board-tokens-layer" class="board-tokens-layer"></div>
       </div>
@@ -258,7 +400,7 @@
 
       <div id="closeup-rotator" class="closeup-rotator">
         <div id="closeup-track" class="closeup-track">
-          <!-- 5-7 surrounding tiles rendered dynamically so property names are horizontal and readable -->
+          <!-- Surrounding tiles rendered dynamically so property names are horizontal and readable -->
         </div>
       </div>
 
@@ -267,17 +409,18 @@
       </div>
     </section>
 
-    <!-- SECTION 4: THE 4 PLAYERS' SCORES (SBP, BMI, Waste Points) -->
+    <!-- SECTION 4: THE 4 PLAYERS' SCORES (SBP, BMI, Waste Points, Faction Standings) -->
     <section id="scores-section" class="panel scores-panel" aria-label="Scoreboard">
       <div class="section-header-bar">
-        <span class="section-title">Scoreboard</span>
+        <span class="section-title">Scoreboard &amp; Faction Standings</span>
+        <span class="game-mode-indicator" id="game-mode-indicator">Mode: Clinical Mastery</span>
       </div>
       <div id="scores-grid" class="scores-grid">
         <!-- 4 player score cards populated via JS -->
       </div>
     </section>
 
-    <!-- SECTION 5: LIST OF PROPERTIES OWNED BY THE PLAYER -->
+    <!-- SECTION 5: LIST OF PROPERTIES OWNED BY THE PLAYER & UPGRADES -->
     <section id="owned-properties-section" class="panel owned-panel" aria-label="Your properties">
       <div class="section-header-bar">
         <span class="section-title">Your properties (<span id="user-prop-count">0</span>)</span>
@@ -297,25 +440,23 @@
         </button>
       </div>
 
-      <!-- Active trade offer area (when a bot or user proposes a trade) -->
+      <!-- Active trade offer area -->
       <div id="trade-offer-box" class="trade-offer-box">
         <div id="trade-status-msg" class="trade-status-msg">
-          No pending trade offer. Tap "Create trade" to swap a property with a bot, or wait for a bot offer.
+          No pending trade offer. Tap "Create trade" to swap a property with an opponent, or wait for an offer.
         </div>
 
-        <!-- Trade creation / selection controls (shown when user clicks "Create trade") -->
         <div id="trade-creator-form" class="trade-creator-form hidden">
           <div class="trade-form-row">
             <label for="trade-user-prop-select">Your Property:</label>
             <select id="trade-user-prop-select"></select>
           </div>
           <div class="trade-form-row">
-            <label for="trade-bot-prop-select">Bot's Property:</label>
+            <label for="trade-bot-prop-select">Opponent's Property:</label>
             <select id="trade-bot-prop-select"></select>
           </div>
         </div>
 
-        <!-- Accept / Decline trade buttons (shown whenever a potential trade is presented) -->
         <div id="trade-response-actions" class="trade-response-actions hidden">
           <button id="accept-trade-btn" class="btn btn-success btn-sm" type="button">
             Accept trade
@@ -330,8 +471,10 @@
   </main>
 
   <!-- ====================================================================
-       4. CHANCE & COMMUNITY CHEST POPUP WINDOW (Must be acknowledged)
+       5. INTERACTIVE MODALS & OVERLAYS
        ==================================================================== -->
+
+  <!-- A. CHANCE & COMMUNITY CHEST POPUP WINDOW -->
   <div id="card-modal" class="screen-overlay" role="dialog" aria-modal="true" aria-labelledby="card-modal-type">
     <div id="card-modal-window" class="card-modal-window">
       <div id="card-modal-header" class="card-modal-header">
@@ -350,13 +493,169 @@
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-  <!-- Clinical Case Vignette Decision Encounter Modal -->
+  <!-- B. CLINICAL CASE VIGNETTE DECISION ENCOUNTER MODAL -->
   <div id="vignette-modal" class="vignette-modal-overlay" role="dialog" aria-modal="true" aria-hidden="true"></div>
 
-  <!-- WebRTC Multiplayer & Supabase Global Leaderboards Modal -->
+  <!-- C. COMPETITIVE LIVE AUCTION BIDDING MODAL -->
+  <div id="auction-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="auction-modal-title">
+    <div class="auction-modal-window">
+      <div class="auction-modal-header">
+        <span class="auction-modal-badge">LIVE CLINICAL AUCTION</span>
+        <h2 id="auction-modal-title">Bidding Open: Suite</h2>
+      </div>
+      <div class="auction-modal-body">
+        <div class="auction-status-bar">
+          <div class="auction-current-price-wrap">
+            <span class="auction-sub-label">CURRENT HIGH BID</span>
+            <span id="auction-high-bid-val" class="auction-high-bid-val">200 WP</span>
+          </div>
+          <div class="auction-leader-wrap">
+            <span class="auction-sub-label">CURRENT LEADER</span>
+            <span id="auction-leader-name" class="auction-leader-name">None (Starting Bid)</span>
+          </div>
+          <div class="auction-timer-wrap">
+            <span class="auction-sub-label">AUCTION CLOCK</span>
+            <span id="auction-clock-val" class="auction-clock-val">10.0s</span>
+          </div>
+        </div>
+
+        <div class="auction-progress-track">
+          <div id="auction-progress-bar" class="auction-progress-bar"></div>
+        </div>
+
+        <div id="auction-bot-feed" class="auction-bot-feed">
+          <div class="auction-feed-item">Bidding started at 50% base valuation. Step in before the clock expires!</div>
+        </div>
+
+        <div class="auction-bid-buttons-row">
+          <button id="auction-bid-plus-50" class="btn btn-success" type="button">+50 WP Bid</button>
+          <button id="auction-bid-plus-100" class="btn btn-primary" type="button">+100 WP Bid</button>
+          <button id="auction-pass-btn" class="btn btn-secondary" type="button">Pass (Withdraw)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. FACTION DOSSIER & VICTORY PROGRESS MODAL -->
+  <div id="faction-dossier-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="faction-dossier-title">
+    <div class="dossier-modal-window">
+      <div class="dossier-modal-header">
+        <div class="dossier-title-wrap">
+          <span class="dossier-badge">CLINICAL STAKEHOLDER INTELLIGENCE</span>
+          <h2 id="faction-dossier-title">Faction Dossier &amp; Victory Race</h2>
+        </div>
+        <button id="dossier-close-btn" class="modal-close-btn" type="button">✕</button>
+      </div>
+      <div class="dossier-modal-body" id="dossier-modal-body">
+        <!-- Dynamically rendered detailed cards for all 4 factions -->
+      </div>
+      <div class="dossier-modal-footer">
+        <button id="dossier-done-btn" class="btn btn-primary" type="button">Back to Command Center</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- E. NATIONAL HEALTHCARE POLICY DETAILS MODAL -->
+  <div id="regime-details-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="regime-details-title">
+    <div class="regime-modal-window">
+      <div class="regime-modal-header">
+        <div class="regime-title-wrap">
+          <span class="regime-badge-hdr">NATIONAL HEALTHCARE SYSTEM</span>
+          <h2 id="regime-details-title">Active Healthcare Policy Regime</h2>
+        </div>
+        <button id="regime-close-btn" class="modal-close-btn" type="button">✕</button>
+      </div>
+      <div class="regime-modal-body" id="regime-modal-body">
+        <!-- Dynamically populated with active country profile & sandbox switcher -->
+      </div>
+      <div class="regime-modal-footer">
+        <button id="regime-done-btn" class="btn btn-primary" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- F. PROPERTY DEED & DEPARTMENT UPGRADE MODAL -->
+  <div id="deed-inspector-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="deed-prop-title">
+    <div class="deed-modal-window">
+      <div class="deed-modal-header" id="deed-modal-header">
+        <span id="deed-group-badge" class="deed-group-badge">CARDIAC REHAB</span>
+        <h2 id="deed-prop-title">Treadmill Room</h2>
+      </div>
+      <div class="deed-modal-body">
+        <div class="deed-metrics-grid">
+          <div class="deed-metric-item">
+            <span class="deed-metric-lbl">Current Owner:</span>
+            <strong id="deed-owner-val">Unowned</strong>
+          </div>
+          <div class="deed-metric-item">
+            <span class="deed-metric-lbl">Base Price:</span>
+            <strong id="deed-price-val">350 WP</strong>
+          </div>
+          <div class="deed-metric-item">
+            <span class="deed-metric-lbl">Effective Rent:</span>
+            <strong id="deed-rent-val">100 WP</strong>
+          </div>
+          <div class="deed-metric-item">
+            <span class="deed-metric-lbl">Upgrade Level:</span>
+            <strong id="deed-level-val">Tier 0 (Standard)</strong>
+          </div>
+        </div>
+
+        <div class="deed-upgrades-table-wrap">
+          <h4>Department Upgrade Schedule</h4>
+          <table class="deed-upgrades-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Designation</th>
+                <th>Rent Multiplier</th>
+                <th>Upgrade Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="deed-tier-0-row">
+                <td>Tier 0</td>
+                <td>Standard Suite</td>
+                <td>1.0x (100 WP)</td>
+                <td>—</td>
+              </tr>
+              <tr id="deed-tier-1-row">
+                <td>Tier 1 ⭐</td>
+                <td>Clinical Fellow</td>
+                <td>1.5x (150 WP)</td>
+                <td id="deed-tier-1-cost">175 WP</td>
+              </tr>
+              <tr id="deed-tier-2-row">
+                <td>Tier 2 ⭐⭐</td>
+                <td>Subspecialty Attending</td>
+                <td>2.2x (220 WP)</td>
+                <td id="deed-tier-2-cost">175 WP</td>
+              </tr>
+              <tr id="deed-tier-3-row">
+                <td>Tier 3 ⭐⭐⭐</td>
+                <td>Flagship Heart Institute</td>
+                <td>3.5x (350 WP)</td>
+                <td id="deed-tier-3-cost">175 WP</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="deed-upgrade-action-box" class="deed-upgrade-action-box">
+          <button id="deed-upgrade-btn" class="btn btn-success" type="button">Upgrade Suite (+⭐)</button>
+          <span id="deed-upgrade-hint" class="deed-upgrade-hint">Must own full color monopoly to build upgrades.</span>
+        </div>
+      </div>
+      <div class="deed-modal-footer">
+        <button id="deed-close-btn" class="btn btn-secondary" type="button">Close Deed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- G. TOAST NOTIFICATION STACK CONTAINER -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- H. WEBRTC MULTIPLAYER & SUPABASE CLOUD LEADERBOARD MODAL -->
   <div id="multiplayer-modal" class="screen-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="multiplayer-modal-title">
     <div class="multiplayer-modal-window">
       <div class="multiplayer-modal-header">
@@ -367,7 +666,6 @@
         <button id="multiplayer-close-btn" class="multiplayer-close-btn" type="button" aria-label="Close Multiplayer Dialog">✕</button>
       </div>
 
-      <!-- Navigation Tabs -->
       <div class="multiplayer-tabs" role="tablist">
         <button class="multiplayer-tab-btn active" data-tab="tab-host" role="tab" aria-selected="true">Host Lobby</button>
         <button class="multiplayer-tab-btn" data-tab="tab-join" role="tab" aria-selected="false">Join Lobby</button>
@@ -375,7 +673,6 @@
         <button class="multiplayer-tab-btn" data-tab="tab-leaderboard" role="tab" aria-selected="false">Leaderboard</button>
       </div>
 
-      <!-- Tab 1: Host Room -->
       <div id="tab-host" class="multiplayer-tab-content active" role="tabpanel">
         <div class="host-section">
           <p class="tab-description">Create a direct peer-to-peer WebRTC room to host fellow cardiologists and hospital administrators.</p>
@@ -396,7 +693,6 @@
         </div>
       </div>
 
-      <!-- Tab 2: Join Room -->
       <div id="tab-join" class="multiplayer-tab-content hidden" role="tabpanel">
         <div class="join-section">
           <p class="tab-description">Enter an active room code shared by the host to connect directly via WebRTC data channel.</p>
@@ -416,7 +712,6 @@
         </div>
       </div>
 
-      <!-- Tab 3: Connected Peers -->
       <div id="tab-peers" class="multiplayer-tab-content hidden" role="tabpanel">
         <div class="peers-section">
           <div class="peers-header-meta">
@@ -432,7 +727,6 @@
         </div>
       </div>
 
-      <!-- Tab 4: Global Leaderboards -->
       <div id="tab-leaderboard" class="multiplayer-tab-content hidden" role="tabpanel">
         <div class="leaderboard-section">
           <div class="leaderboard-filters-row">
@@ -442,13 +736,13 @@
                 <option value="ALL">All Nations</option>
                 <option value="SG">🇸🇬 Singapore 3M</option>
                 <option value="US">🇺🇸 United States</option>
-                <option value="FR">🇫🇷 France</option>
-                <option value="JP">🇯🇵 Japan</option>
-                <option value="DE">🇩🇪 Germany</option>
-                <option value="IT">🇮🇹 Italy</option>
                 <option value="UK">🇬🇧 United Kingdom</option>
-                <option value="AU">🇦🇺 Australia</option>
-                <option value="CH">🇨🇭 Switzerland</option>
+                <option value="SE">🇸🇪 Sweden</option>
+                <option value="JP">🇯🇵 Japan</option>
+                <option value="KR">🇰🇷 South Korea</option>
+                <option value="TW">🇹🇼 Taiwan</option>
+                <option value="MY">🇲🇾 Malaysia</option>
+                <option value="ID">🇮🇩 Indonesia</option>
               </select>
             </div>
             <div class="filter-group">
@@ -475,9 +769,7 @@
                   <th>GDMT %</th>
                 </tr>
               </thead>
-              <tbody id="leaderboard-tbody">
-                <!-- Dynamically populated -->
-              </tbody>
+              <tbody id="leaderboard-tbody"></tbody>
             </table>
           </div>
         </div>
@@ -490,11 +782,17 @@
     </div>
   </div>
 
+  <!-- ====================================================================
+       6. SCRIPTS IN CANONICAL ARCHITECTURAL DEPENDENCY ORDER
+       ==================================================================== -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="src/components/audioSynth.js"></script>
   <script src="src/components/telemetry.js"></script>
   <script src="src/engine/factions.js"></script>
   <script src="src/engine/policies.js"></script>
   <script src="src/components/toasts.js"></script>
+  <script src="src/engine/aiController.js"></script>
+  <script src="src/engine/departmentUpgrades.js"></script>
   <script src="src/components/vignetteModal.js"></script>
   <script src="src/network/supabaseClient.js"></script>
   <script src="src/network/p2pSync.js"></script>

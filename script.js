@@ -1,3 +1,35 @@
+// ============================================================================
+// AUDIO SYNTHESIZER INTEGRATION (Web Audio API)
+// ============================================================================
+function playAudio(action, param) {
+  try {
+    if (typeof window !== "undefined" && window.CardiopolyAudio && window.CardiopolyAudio.audioSynth) {
+      const synth = window.CardiopolyAudio.audioSynth;
+      if (typeof synth.initAudio === "function") synth.initAudio();
+      switch (action) {
+        case "DICE":
+          if (typeof synth.playDiceRoll === "function") synth.playDiceRoll();
+          break;
+        case "BEEP":
+          if (typeof synth.playEcgBeep === "function") synth.playEcgBeep(param || 72);
+          break;
+        case "CASH":
+          if (typeof synth.playCashChime === "function") synth.playCashChime();
+          break;
+        case "ALARM":
+          if (typeof synth.playAlertAlarm === "function") synth.playAlertAlarm();
+          break;
+        case "DEFIB":
+          if (typeof synth.playDefibCharge === "function") synth.playDefibCharge();
+          break;
+        case "FLATLINE":
+          if (typeof synth.playFlatline === "function") synth.playFlatline();
+          break;
+      }
+    }
+  } catch (_e) {}
+}
+
 /* ============================================================================
    CARDIOPOLY — Satirical Cardiology Monopoly Game
    ============================================================================
@@ -427,7 +459,13 @@ function initializePlayerFactions(players) {
 }
 
 const gameState = {
+  gameMode: "CLINICAL_MASTERY",       // "CLINICAL_MASTERY" | "BUREAUCRATIC_SATIRE"
+  aiDifficulty: "ATTENDING",          // "RESIDENT" | "ATTENDING" | "DEPARTMENT_CHAIR"
+  regimeSelectionMode: "CHOOSE_FIXED",// "CHOOSE_FIXED" | "RANDOM_FIXED" | "DYNAMIC_WHO_SHIFT"
   currentRegime: "SINGAPORE",
+  roundNumber: 1,
+  turnCounter: 0,
+  audioEnabled: true,
   tiles: [],                 // 40 board tiles with x, y coordinates and property metadata
   cards: {
     chance: [],
@@ -436,10 +474,10 @@ const gameState = {
     communityChestIdx: 0
   },
   players: [
-    { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "ACADEMIC_CLINICIAN", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
-    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "INTERVENTIONALIST", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
-    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "HOSPITAL_CEO", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 },
-    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "REGULATORY_AUDITOR", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0 }
+    { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "ACADEMIC_CLINICIAN", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
+    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "INTERVENTIONALIST", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
+    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "HOSPITAL_CEO", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
+    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "REGULATORY_AUDITOR", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 }
   ],
   currentPlayerIndex: 0,
   phase: "LOADING",          // "LOADING" | "RULES" | "WAIT_FOR_ROLL" | "MOVING" | "ACTION" | "AUCTION"
@@ -694,6 +732,8 @@ function buildBoardTiles(propertiesByCorrespondsTo) {
           propIndex: prop.propIndex,
           correspondsTo: prop.correspondsTo,
           priceWP: prop.priceWP,
+          baseRent: 100,
+          upgradeLevel: 0,
           ownerId: null,
           ...coords
         };
@@ -762,7 +802,7 @@ function renderThumbnailBoard() {
   // Remove any old tiles while preserving .board-center and #board-tokens-layer
   boardEl.querySelectorAll(".thumb-tile").forEach((el) => el.remove());
 
-  const centerEl = boardEl.querySelector(".board-center");
+  const centerEl = boardEl.querySelector(".board-center-console") || boardEl.querySelector(".board-center");
 
   gameState.tiles.forEach((tile) => {
     const tileEl = document.createElement("div");
@@ -792,6 +832,11 @@ function renderThumbnailBoard() {
       tileEl.appendChild(sym);
     }
 
+    if (tile.type === "PROPERTY") {
+      tileEl.style.cursor = "pointer";
+      tileEl.title = `${tile.name} (${tile.groupName}) - Tap to inspect deed / upgrade`;
+      tileEl.addEventListener("click", () => openDeedInspectorModal(tile));
+    }
     boardEl.insertBefore(tileEl, centerEl);
   });
 
@@ -816,6 +861,17 @@ function updateThumbnailOwnershipFrames() {
     tileEl.classList.remove("owned-by-0", "owned-by-1", "owned-by-2", "owned-by-3");
     if (tile.ownerId !== null && tile.ownerId !== undefined) {
       tileEl.classList.add(`owned-by-${tile.ownerId}`);
+    }
+    let starPipEl = tileEl.querySelector(".tile-star-pips");
+    if (tile.upgradeLevel > 0) {
+      if (!starPipEl) {
+        starPipEl = document.createElement("span");
+        starPipEl.className = "tile-star-pips";
+        tileEl.appendChild(starPipEl);
+      }
+      starPipEl.textContent = "⭐".repeat(tile.upgradeLevel);
+    } else if (starPipEl) {
+      starPipEl.remove();
     }
   });
 }
@@ -1018,6 +1074,9 @@ function renderOwnedProperties() {
   userProps.forEach((prop) => {
     const item = document.createElement("div");
     item.className = "owned-prop-item";
+    item.style.cursor = "pointer";
+    item.title = "Tap to inspect deed & upgrade";
+    item.addEventListener("click", () => openDeedInspectorModal(prop));
     const swatchBg =
       prop.colorHex !== "transparent"
         ? prop.colorHex
@@ -1026,7 +1085,7 @@ function renderOwnedProperties() {
       <div class="owned-prop-left">
         <span class="prop-color-swatch" style="background: ${swatchBg}"></span>
         <div>
-          <span class="owned-prop-title">${prop.name}</span>
+          <span class="owned-prop-title">${prop.name} ${prop.upgradeLevel > 0 ? "⭐".repeat(prop.upgradeLevel) : ""}</span>
           <span class="owned-prop-group">(${prop.groupName})</span>
         </div>
       </div>
@@ -1133,6 +1192,8 @@ function refreshAllViews() {
   renderOwnedProperties();
   updateTurnIndicator();
   updateTelemetryVitals();
+  updateCenterConsoleTelemetry();
+  updateCenterConsoleFactionRace();
 }
 
 // ============================================================================
@@ -1211,6 +1272,34 @@ async function executeTurnRoll() {
   if (gameState.phase !== "WAIT_FOR_ROLL") return;
 
   const player = gameState.players[gameState.currentPlayerIndex];
+
+  // Handle M&M Peer Review (Jail) exit bug fix
+  if (player.inJail) {
+    player.jailTurns = (player.jailTurns || 0) + 1;
+    if (player.jailTurns >= 3) {
+      player.inJail = false;
+      player.jailTurns = 0; // Fix: reset jailTurns to 0 on exit!
+      setBoardTicker(`${player.shortName} served 3 rounds of Peer Review supervision and is discharged back to clinical duty!`);
+      appendCenterConsoleActionLog(`${player.shortName} discharged from Peer Review`);
+    } else {
+      const bailCost = player.factionId === "ACADEMIC_CLINICIAN" ? 375 : 500;
+      if (player.wp >= bailCost + 300) {
+        player.wp -= bailCost;
+        player.inJail = false;
+        player.jailTurns = 0; // Fix: reset jailTurns to 0 on exit!
+        playAudio("DEFIB");
+        setBoardTicker(`${player.shortName} paid ${bailCost} WP defense bail and exited Peer Review!`);
+        appendCenterConsoleActionLog(`${player.shortName} posted ${bailCost} WP bail`);
+      } else {
+        setBoardTicker(`${player.shortName} remains under Peer Review supervision (Round ${player.jailTurns}/3).`);
+        appendCenterConsoleActionLog(`${player.shortName} in Peer Review (${player.jailTurns}/3)`);
+        await sleep(350);
+        await finishPlayerTurn();
+        return;
+      }
+    }
+  }
+
   gameState.phase = "MOVING";
   updateTurnIndicator();
 
@@ -1222,6 +1311,7 @@ async function executeTurnRoll() {
   gameState.lastDice = [d1, d2];
   const totalSteps = d1 + d2;
 
+  playAudio("DICE");
   renderDiceBox(d1, d2, player.shortName);
   setBoardTicker(`${player.shortName} rolled ${d1} + ${d2} = ${totalSteps}!`);
 
@@ -1266,6 +1356,7 @@ async function executeTurnRoll() {
   // Resolve tile landing
   gameState.phase = "ACTION";
   updateTurnIndicator();
+  playAudio("BEEP", player.sbp);
   const landedTile = gameState.tiles[player.position];
   await resolveLandedTile(player, landedTile);
 }
@@ -1297,7 +1388,12 @@ async function handleClinicalEncounter(player, tile) {
     const getBotChoiceFn = (typeof CardiopolyVignettes !== "undefined" && CardiopolyVignettes.getBotVignetteChoice) || (typeof getBotVignetteChoice === "function" ? getBotVignetteChoice : null);
     const resolveDecisionFn = (typeof CardiopolyVignettes !== "undefined" && CardiopolyVignettes.resolveVignetteDecision) || (typeof resolveVignetteDecision === "function" ? resolveVignetteDecision : null);
 
-    const botChoiceId = getBotChoiceFn ? getBotChoiceFn(scenario, player, currentRegime) : "CHOICE_GDMT";
+    let botChoiceId = "CHOICE_GDMT";
+    if (typeof CardiopolyAI !== "undefined" && typeof CardiopolyAI.decideVignetteOption === "function") {
+      botChoiceId = CardiopolyAI.decideVignetteOption(player, scenario, gameState, gameState.aiDifficulty);
+    } else if (getBotChoiceFn) {
+      botChoiceId = getBotChoiceFn(scenario, player, currentRegime);
+    }
     const decision = resolveDecisionFn ? resolveDecisionFn(scenario, botChoiceId, player.factionId || (player.faction && player.faction.id), currentRegime) : null;
 
     if (decision) {
@@ -1480,9 +1576,15 @@ async function resolveLandedTile(player, tile) {
 async function handleUnownedPropertyLanding(player, tile) {
   if (player.isBot) {
     await sleep(BOT_POST_TURN_DELAY_MS / 2);
-    // Bot decides whether to buy based on PROBABILITY_OF_PROP_PURCHASE (0.5)
-    if (Math.random() < PROBABILITY_OF_PROP_PURCHASE) {
+    let shouldBuy = Math.random() < PROBABILITY_OF_PROP_PURCHASE;
+    if (typeof CardiopolyAI !== "undefined" && typeof CardiopolyAI.decidePropertyPurchase === "function") {
+      const aiDecision = CardiopolyAI.decidePropertyPurchase(player, tile, gameState, gameState.aiDifficulty);
+      shouldBuy = aiDecision.buy;
+    }
+
+    if (shouldBuy) {
       assignPropertyToPlayer(player, tile, tile.priceWP, "purchased");
+      playAudio("CASH");
       const consequences = formatConsequences(PURCHASE_SBP_INCREASE, PURCHASE_BMI_INCREASE, tile.priceWP);
       if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
         CardiopolyToasts.showToast({
@@ -1501,8 +1603,8 @@ async function handleUnownedPropertyLanding(player, tile) {
       }
       await finishPlayerTurn();
     } else {
-      setBoardTicker(`${player.shortName} declined ${tile.name} (${tile.priceWP} WP) — AUCTION STARTING!`);
-      await runPropertyAuction(tile, player);
+      setBoardTicker(`${player.shortName} declined ${tile.name} (${tile.priceWP} WP) — LIVE AUCTION STARTING!`);
+      await runCompetitiveAuction(tile, player);
       await finishPlayerTurn();
     }
     return;
@@ -1521,7 +1623,7 @@ async function handleUnownedPropertyLanding(player, tile) {
     title.textContent = `${tile.name} (${tile.groupName})`;
     body.innerHTML = `
       Price Tag: <strong>${tile.priceWP} WP</strong> (+${PURCHASE_SBP_INCREASE} SBP, +${PURCHASE_BMI_INCREASE} BMI).<br/>
-      If you pass, it goes to a ${AUCTION_DURATION}-second group auction counting up to ${AUCTION_MAX_PRICE} WP!
+      If you pass, it goes to a live competitive auction with rival clinicians!
     `;
     controls.innerHTML = `
       <button id="prop-buy-now-btn" class="btn btn-primary btn-sm" type="button">
@@ -1535,6 +1637,7 @@ async function handleUnownedPropertyLanding(player, tile) {
     document.getElementById("prop-buy-now-btn").onclick = async () => {
       banner.classList.add("hidden");
       assignPropertyToPlayer(player, tile, tile.priceWP, "purchased");
+      playAudio("CASH");
       const consequences = formatConsequences(PURCHASE_SBP_INCREASE, PURCHASE_BMI_INCREASE, tile.priceWP);
       await showEventPopupModal(
         "PROPERTY PURCHASED",
@@ -1548,8 +1651,9 @@ async function handleUnownedPropertyLanding(player, tile) {
     };
 
     document.getElementById("prop-pass-auction-btn").onclick = async () => {
-      setBoardTicker(`You passed on ${tile.name} — Group Auction started!`);
-      await runPropertyAuction(tile, player);
+      banner.classList.add("hidden");
+      setBoardTicker(`You passed on ${tile.name} — Live Auction started!`);
+      await runCompetitiveAuction(tile, player);
       await finishPlayerTurn();
       resolve();
     };
@@ -1735,35 +1839,48 @@ function runPropertyAuction(tile, originalLander) {
 
 async function handleOwnedPropertyVisit(visitor, tile) {
   const owner = gameState.players[tile.ownerId];
-  // Check if owner owns all properties in this group (rent doubles!)
-  const groupTiles = gameState.tiles.filter(
-    (t) => t.type === "PROPERTY" && t.groupOrder === tile.groupOrder
-  );
-  const ownsFullGroup = groupTiles.length > 0 && groupTiles.every((t) => t.ownerId === owner.id);
 
-  let rentMultiplier = 1.0;
-  if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegimeMultiplier === "function") {
-    rentMultiplier = CardiopolyPolicies.getRegimeMultiplier(gameState.currentRegime, "RENT");
+  let consultWP = 100;
+  let sbpDelta = RENT_SBP_INCREASE;
+  let bmiDelta = RENT_BMI_INCREASE;
+  let ownsFullGroup = false;
+
+  if (typeof CardiopolyUpgrades !== "undefined" && typeof CardiopolyUpgrades.getEffectiveRent === "function") {
+    const rentDetails = CardiopolyUpgrades.getEffectiveRent(tile, owner, visitor, gameState.currentRegime);
+    consultWP = rentDetails.effectiveRent;
+    ownsFullGroup = rentDetails.monopolyMultiplier > 1;
+    sbpDelta = ownsFullGroup ? RENT_SBP_INCREASE * 2 : RENT_SBP_INCREASE;
+    bmiDelta = roundOneDecimal(ownsFullGroup ? RENT_BMI_INCREASE * 2 : RENT_BMI_INCREASE);
+  } else {
+    const groupTiles = gameState.tiles.filter(
+      (t) => t.type === "PROPERTY" && t.groupOrder === tile.groupOrder
+    );
+    ownsFullGroup = groupTiles.length > 0 && groupTiles.every((t) => t.ownerId === owner.id);
+    let rentMultiplier = 1.0;
+    if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegimeMultiplier === "function") {
+      rentMultiplier = CardiopolyPolicies.getRegimeMultiplier(gameState.currentRegime, "RENT");
+    }
+    const baseRentWP = ownsFullGroup ? OWNED_PROPERTY_VISIT_WP * 2 : OWNED_PROPERTY_VISIT_WP;
+    consultWP = Math.round(baseRentWP * rentMultiplier);
+    sbpDelta = ownsFullGroup ? RENT_SBP_INCREASE * 2 : RENT_SBP_INCREASE;
+    bmiDelta = roundOneDecimal(ownsFullGroup ? RENT_BMI_INCREASE * 2 : RENT_BMI_INCREASE);
   }
-  const baseRentWP = ownsFullGroup ? OWNED_PROPERTY_VISIT_WP * 2 : OWNED_PROPERTY_VISIT_WP;
-  const consultWP = Math.round(baseRentWP * rentMultiplier);
-  const sbpDelta = ownsFullGroup ? RENT_SBP_INCREASE * 2 : RENT_SBP_INCREASE;
-  const bmiDelta = roundOneDecimal(ownsFullGroup ? RENT_BMI_INCREASE * 2 : RENT_BMI_INCREASE);
 
   visitor.wp += consultWP;
   visitor.sbp += sbpDelta;
   visitor.bmi = roundOneDecimal(visitor.bmi + bmiDelta);
+  playAudio("CASH");
 
-  // Format ticker & event message with proper grammar when owned by "You"
   const tickerMsg =
     owner.id === 0
       ? `${visitor.shortName} landed on your property ${tile.name}: +${consultWP} WP!`
       : `${visitor.shortName} landed on ${owner.shortName}'s ${tile.name}: +${consultWP} WP!`;
 
   setBoardTicker(tickerMsg);
+  appendCenterConsoleActionLog(tickerMsg);
   refreshAllViews();
 
-  const doubleNote = ownsFullGroup ? " (Full Group Owned — Double Rent!)" : "";
+  const doubleNote = ownsFullGroup ? (tile.upgradeLevel > 0 ? ` (Tier ${tile.upgradeLevel} Upgraded Department!)` : " (Full Group Owned — Double Rent!)") : "";
   const popupBody =
     owner.id === 0
       ? `<strong>${visitor.name}</strong> landed on your property <strong>${tile.name}</strong>${doubleNote}!`
@@ -1775,14 +1892,14 @@ async function handleOwnedPropertyVisit(visitor, tile) {
   if (visitor.isBot) {
     if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
       CardiopolyToasts.showToast({
-        title: ownsFullGroup ? "DOUBLE RENT!" : "OWNED PROPERTY",
+        title: ownsFullGroup ? "UPGRADED DEPARTMENT RENT!" : "OWNED PROPERTY",
         message: `${popupBody} ${consequences}`,
         theme: "warning"
       });
     }
   } else {
     await showEventPopupModal(
-      ownsFullGroup ? "DOUBLE RENT!" : "OWNED PROPERTY",
+      ownsFullGroup ? "UPGRADED DEPARTMENT RENT!" : "OWNED PROPERTY",
       visitor,
       popupBody,
       consequences,
@@ -2067,6 +2184,10 @@ async function checkAndTriggerMilestones() {
             refreshAllViews();
 
             if (milestone.significance === "GameEnds") {
+              if (gameState.gameMode === "CLINICAL_MASTERY" && (milestone.metric === "SBP" || milestone.metric === "BMI")) {
+                // In Mode A: Handled via Code Blue Hospitalization in finishPlayerTurn
+                break;
+              }
               await showEventPopupModal(
                 "GAME OVER — CLINICAL MILESTONE",
                 triggeringPlayer,
@@ -2113,6 +2234,10 @@ async function checkAndTriggerMilestones() {
               refreshAllViews();
 
               if (milestone.significance === "GameEnds") {
+                if (gameState.gameMode === "CLINICAL_MASTERY" && (milestone.metric === "SBP" || milestone.metric === "BMI")) {
+                  // In Mode A: Handled via Code Blue Hospitalization in finishPlayerTurn
+                  break;
+                }
                 // Save game session to Supabase / offline DB on terminal milestone
                 if (typeof CardiopolyDB !== "undefined") {
                   try {
@@ -2234,16 +2359,118 @@ async function checkFactionWins() {
 }
 
 async function finishPlayerTurn() {
+  const curPlayer = gameState.players[gameState.currentPlayerIndex];
+
+  // 1. Dual-Mode Victory: Check Code Blue Hospitalization (Mode A: Clinical Mastery)
+  if (gameState.gameMode === "CLINICAL_MASTERY" && typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.checkCodeBlueHospitalization === "function") {
+    const codeBlue = CardiopolyFactions.checkCodeBlueHospitalization(curPlayer, gameState.gameMode);
+    if (codeBlue.triggered) {
+      playAudio("DEFIB");
+      playAudio("ALARM");
+      setBoardTicker(`🚨 ${codeBlue.message}`);
+      appendCenterConsoleActionLog(codeBlue.message);
+      refreshAllViews();
+
+      if (curPlayer.isBot) {
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "CODE BLUE HOSPITALIZATION",
+            message: codeBlue.message,
+            theme: "danger",
+            durationMs: 4000
+          });
+        }
+      } else {
+        await showEventPopupModal(
+          "CODE BLUE HOSPITALIZATION",
+          curPlayer,
+          codeBlue.message,
+          "Vitals stabilized at SBP 140 mmHg, BMI 35. 1,500 WP deducted for CCU resuscitation.",
+          "game-end-theme",
+          "Acknowledge Resuscitation"
+        );
+      }
+    }
+  }
+
+  // 2. Dual-Mode Victory: Check Global Systemic Collapse (Mode A)
+  if (gameState.gameMode === "CLINICAL_MASTERY" && typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.checkGlobalCollapse === "function") {
+    const collapseRes = CardiopolyFactions.checkGlobalCollapse(gameState.players, gameState.gameMode, { wasteThreshold: 10000 });
+    if (collapseRes.triggered) {
+      playAudio("FLATLINE");
+      const winner = collapseRes.winner || gameState.players[0];
+      const winMsg = `${collapseRes.message} Winner by Net Clinical Empire Score: ${winner.name} (${collapseRes.winnerScore ? collapseRes.winnerScore.total : 0} pts)!`;
+      setBoardTicker(`🏛️ ${winMsg}`);
+      appendCenterConsoleActionLog(winMsg);
+      refreshAllViews();
+
+      await showEventPopupModal(
+        "MINISTRY AUDIT FREEZE — MATCH CONCLUDED",
+        winner,
+        winMsg,
+        "Systemic waste ceiling breached. All billing frozen. Top Clinical Prestige wins!",
+        "game-end-theme",
+        "Okay",
+        true
+      );
+      resetGameToRules();
+      return;
+    }
+  }
+
+  // 3. Faction Win Objectives
   const factionWon = await checkFactionWins();
   if (factionWon) {
+    playAudio("CASH");
     return;
   }
 
+  // 4. Milestone Triggers
   const gameEnded = await checkAndTriggerMilestones();
   if (gameEnded) {
+    playAudio("FLATLINE");
     return;
   }
 
+  // 5. Dynamic WHO Policy Shift (Every 4 rounds if enabled)
+  gameState.turnCounter = (gameState.turnCounter || 0) + 1;
+  const turnsPerRound = gameState.players.length;
+  if (gameState.turnCounter % turnsPerRound === 0) {
+    gameState.roundNumber = (gameState.roundNumber || 1) + 1;
+    if (gameState.regimeSelectionMode === "DYNAMIC_WHO_SHIFT" && typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.rotateNextRegime === "function") {
+      if (gameState.roundNumber % 4 === 1) {
+        const shift = CardiopolyPolicies.rotateNextRegime(gameState);
+        playAudio("ALARM");
+        const shiftMsg = `🌐 WHO POLICY ROTATION (Round ${gameState.roundNumber}): Healthcare system shifted to ${shift.regime ? shift.regime.name : shift.announcement}!`;
+        setBoardTicker(shiftMsg);
+        appendCenterConsoleActionLog(shiftMsg);
+        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+          CardiopolyToasts.showToast({
+            title: "WHO GLOBAL POLICY SHIFT",
+            message: shiftMsg,
+            theme: "info",
+            durationMs: 4000
+          });
+        }
+      }
+    }
+  }
+
+  // 6. Bot Department Upgrades
+  if (curPlayer.isBot && typeof CardiopolyUpgrades !== "undefined") {
+    const ownedMonopolies = gameState.tiles.filter((t) => t.type === "PROPERTY" && t.ownerId === curPlayer.id && CardiopolyUpgrades.canUpgrade(t, curPlayer, gameState.tiles).canUpgrade);
+    if (ownedMonopolies.length > 0 && curPlayer.wp > 1200) {
+      const targetTile = ownedMonopolies[0];
+      const upRes = CardiopolyUpgrades.upgradeTile(targetTile, curPlayer, gameState);
+      if (upRes.success) {
+        playAudio("CASH");
+        setBoardTicker(`${curPlayer.shortName} upgraded ${targetTile.name} to Tier ${upRes.newTier}!`);
+        appendCenterConsoleActionLog(`${curPlayer.shortName} upgraded ${targetTile.name} to Tier ${upRes.newTier}`);
+      }
+    }
+  }
+
+  // Advance turn
   gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
   gameState.phase = "WAIT_FOR_ROLL";
   refreshAllViews();
@@ -2467,6 +2694,665 @@ function openUserTradeCreator() {
 }
 
 // ============================================================================
+// MASTER REBUILD INTERACTIVE MODULES & CONTROLLERS
+// ============================================================================
+
+// --- 1. PRE-GAME COMMAND SETUP LOBBY ---
+function initSetupModal() {
+  const modal = document.getElementById("setup-modal");
+  if (!modal) return;
+
+  const modeCards = modal.querySelectorAll(".setup-mode-card");
+  modeCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      modeCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      gameState.gameMode = card.getAttribute("data-mode") || "CLINICAL_MASTERY";
+      const modeIndicator = document.getElementById("game-mode-indicator");
+      if (modeIndicator) {
+        modeIndicator.textContent = `Mode: ${gameState.gameMode === "CLINICAL_MASTERY" ? "Clinical Mastery" : "Bureaucratic Satire"}`;
+      }
+    });
+  });
+
+  const factionCards = modal.querySelectorAll(".setup-faction-card");
+  factionCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      factionCards.forEach((c) => c.classList.remove("active"));
+      card.classList.add("active");
+      const chosenFaction = card.getAttribute("data-faction") || "ACADEMIC_CLINICIAN";
+      reassignFactions(chosenFaction);
+    });
+  });
+
+  const regimeRadios = modal.querySelectorAll('input[name="regime-mode-radio"]');
+  regimeRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      gameState.regimeSelectionMode = radio.value;
+      if (radio.value === "RANDOM_FIXED" && typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getAllRegimes === "function") {
+        const regimes = CardiopolyPolicies.getAllRegimes();
+        const randReg = regimes[Math.floor(Math.random() * regimes.length)];
+        if (randReg) {
+          gameState.currentRegime = randReg.id;
+          const countrySelect = document.getElementById("setup-country-select");
+          if (countrySelect) countrySelect.value = randReg.id;
+          updateRegimePreviewCard(randReg.id);
+        }
+      }
+    });
+  });
+
+  const countrySelect = document.getElementById("setup-country-select");
+  if (countrySelect) {
+    countrySelect.addEventListener("change", () => {
+      gameState.currentRegime = countrySelect.value;
+      updateRegimePreviewCard(countrySelect.value);
+      updateTelemetryVitals();
+    });
+    updateRegimePreviewCard(countrySelect.value);
+  }
+
+  const diffButtons = modal.querySelectorAll(".btn-difficulty");
+  diffButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      diffButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      gameState.aiDifficulty = btn.getAttribute("data-diff") || "ATTENDING";
+    });
+  });
+
+  const launchBtn = document.getElementById("setup-launch-match-btn");
+  if (launchBtn) {
+    launchBtn.addEventListener("click", () => {
+      playAudio("CASH");
+      closeSetupModal();
+      if (gameState.phase === "RULES" || gameState.phase === "LOADING") {
+        gameState.phase = "WAIT_FOR_ROLL";
+        refreshAllViews();
+      }
+    });
+  }
+
+  const quickStartBtn = document.getElementById("setup-quick-start-btn");
+  if (quickStartBtn) {
+    quickStartBtn.addEventListener("click", () => {
+      playAudio("CASH");
+      gameState.gameMode = "CLINICAL_MASTERY";
+      gameState.aiDifficulty = "ATTENDING";
+      gameState.regimeSelectionMode = "CHOOSE_FIXED";
+      gameState.currentRegime = "SINGAPORE";
+      reassignFactions("ACADEMIC_CLINICIAN");
+      closeSetupModal();
+      if (gameState.phase === "RULES" || gameState.phase === "LOADING") {
+        gameState.phase = "WAIT_FOR_ROLL";
+        refreshAllViews();
+      }
+    });
+  }
+
+  const lobbySetupBtn = document.getElementById("lobby-setup-btn");
+  if (lobbySetupBtn) {
+    lobbySetupBtn.addEventListener("click", openSetupModal);
+  }
+
+  const muteBtn = document.getElementById("audio-mute-btn");
+  if (muteBtn) {
+    muteBtn.addEventListener("click", () => {
+      if (window.CardiopolyAudio && window.CardiopolyAudio.audioSynth) {
+        const muted = window.CardiopolyAudio.audioSynth.toggleMute();
+        muteBtn.textContent = muted ? "🔇 Muted" : "🔊 Sound";
+      }
+    });
+  }
+}
+
+function openSetupModal() {
+  const modal = document.getElementById("setup-modal");
+  if (modal) modal.classList.add("active");
+}
+
+function closeSetupModal() {
+  const modal = document.getElementById("setup-modal");
+  if (modal) modal.classList.remove("active");
+}
+
+function reassignFactions(humanFactionId) {
+  const allFactions = ["ACADEMIC_CLINICIAN", "INTERVENTIONALIST", "HOSPITAL_CEO", "REGULATORY_AUDITOR"];
+  const botFactions = allFactions.filter((f) => f !== humanFactionId);
+
+  if (typeof assignFactionToPlayer === "function") {
+    assignFactionToPlayer(gameState.players[0], humanFactionId);
+  } else {
+    gameState.players[0].factionId = humanFactionId;
+  }
+
+  for (let i = 1; i < 4; i++) {
+    const fId = botFactions[i - 1] || "INTERVENTIONALIST";
+    if (typeof assignFactionToPlayer === "function") {
+      assignFactionToPlayer(gameState.players[i], fId);
+    } else {
+      gameState.players[i].factionId = fId;
+    }
+  }
+
+  updateTelemetryVitals();
+  renderScores();
+}
+
+function updateRegimePreviewCard(countryKey) {
+  const previewCard = document.getElementById("setup-regime-preview-card");
+  if (!previewCard) return;
+  if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegime === "function") {
+    const reg = CardiopolyPolicies.getRegime(countryKey);
+    previewCard.innerHTML = `
+      <strong>${reg.flag} ${reg.name} (${reg.fullName})</strong><br/>
+      <em>${reg.tagline || ""}</em><br/>
+      ${reg.description || ""}<br/>
+      <span style="color:#38bdf8;">Key Rule: Co-pay rate ${((reg.coPayRate || 0) * 100).toFixed(0)}%, RVU mult ${reg.rvuMultiplier}x, Rent mult ${reg.rentMultiplier}x</span>
+    `;
+  }
+}
+
+// --- 2. CENTER CARDIOLOGY COMMAND CONSOLE ---
+function initCenterConsole() {
+  const tabTelemetryBtn = document.getElementById("tab-telemetry-btn");
+  const tabRaceBtn = document.getElementById("tab-race-btn");
+  const tabTickerBtn = document.getElementById("tab-ticker-btn");
+
+  const viewTelemetry = document.getElementById("console-telemetry-view");
+  const viewRace = document.getElementById("console-race-view");
+  const viewTicker = document.getElementById("console-ticker-view");
+
+  if (!tabTelemetryBtn || !tabRaceBtn || !tabTickerBtn) return;
+
+  const setConsoleTab = (tabName) => {
+    [tabTelemetryBtn, tabRaceBtn, tabTickerBtn].forEach((b) => b.classList.remove("active"));
+    [viewTelemetry, viewRace, viewTicker].forEach((v) => v && v.classList.remove("active"));
+
+    if (tabName === "telemetry") {
+      tabTelemetryBtn.classList.add("active");
+      if (viewTelemetry) viewTelemetry.classList.add("active");
+    } else if (tabName === "race") {
+      tabRaceBtn.classList.add("active");
+      if (viewRace) viewRace.classList.add("active");
+      updateCenterConsoleFactionRace();
+    } else if (tabName === "ticker") {
+      tabTickerBtn.classList.add("active");
+      if (viewTicker) viewTicker.classList.add("active");
+    }
+  };
+
+  tabTelemetryBtn.addEventListener("click", () => setConsoleTab("telemetry"));
+  tabRaceBtn.addEventListener("click", () => setConsoleTab("race"));
+  tabTickerBtn.addEventListener("click", () => setConsoleTab("ticker"));
+
+  const consoleCanvas = document.getElementById("console-ecg-canvas");
+  if (consoleCanvas && typeof CardiopolyTelemetry !== "undefined" && typeof CardiopolyTelemetry.initTelemetryCanvas === "function") {
+    window.consoleTelemetryController = CardiopolyTelemetry.initTelemetryCanvas(consoleCanvas, { sbp: 120, dbp: 80 });
+  }
+}
+
+function updateCenterConsoleTelemetry() {
+  const curPlayer = gameState.players[gameState.currentPlayerIndex] || gameState.players[0];
+  const sbp = typeof curPlayer.sbp === "number" ? curPlayer.sbp : 120;
+  const dbp = Math.round(sbp * 0.67);
+
+  if (window.consoleTelemetryController) {
+    window.consoleTelemetryController.update({ sbp, dbp });
+  }
+
+  const badgeEl = document.getElementById("console-rhythm-badge");
+  const hrEl = document.getElementById("console-vital-hr");
+
+  const hr = Math.min(185, Math.max(50, Math.round(72 + (sbp - 120) * 0.45)));
+  if (hrEl) hrEl.textContent = `${hr} BPM`;
+
+  if (badgeEl) {
+    badgeEl.className = "rhythm-badge";
+    if (sbp < 140) {
+      badgeEl.classList.add("sinus");
+      badgeEl.textContent = "NORMAL SINUS RHYTHM";
+    } else if (sbp < 165) {
+      badgeEl.classList.add("tachy");
+      badgeEl.textContent = "SINUS TACHYCARDIA";
+    } else if (sbp < 185) {
+      badgeEl.classList.add("pvc");
+      badgeEl.textContent = "FREQUENT PVCs";
+    } else {
+      badgeEl.classList.add("vtach");
+      badgeEl.textContent = "RUNS OF VT (V-TACH)";
+    }
+  }
+}
+
+function updateCenterConsoleFactionRace() {
+  const container = document.getElementById("console-faction-bars");
+  if (!container) return;
+
+  const factionColors = {
+    ACADEMIC_CLINICIAN: "fill-clinician",
+    INTERVENTIONALIST: "fill-interventionalist",
+    HOSPITAL_CEO: "fill-ceo",
+    REGULATORY_AUDITOR: "fill-auditor"
+  };
+
+  container.innerHTML = "";
+  gameState.players.forEach((p) => {
+    let progressPct = 0;
+    let desc = "";
+    if (typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.getFactionProgress === "function") {
+      const prog = CardiopolyFactions.getFactionProgress(p, gameState);
+      progressPct = prog.progressPct;
+      desc = prog.label;
+    } else {
+      progressPct = Math.min(100, Math.round((p.wp / 5000) * 100));
+      desc = `${p.wp} WP`;
+    }
+
+    const row = document.createElement("div");
+    row.className = "faction-bar-row";
+    const colorClass = factionColors[p.factionId] || "fill-clinician";
+
+    row.innerHTML = `
+      <div class="faction-bar-label-row">
+        <span>${p.shortName} (${p.factionId ? p.factionId.replace(/_/g, " ").slice(0, 10) : "CLIN"})</span>
+        <span>${desc} (${progressPct}%)</span>
+      </div>
+      <div class="faction-bar-track">
+        <div class="faction-bar-fill ${colorClass}" style="width: ${progressPct}%"></div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function appendCenterConsoleActionLog(msg) {
+  const logEl = document.getElementById("console-action-log");
+  if (!logEl) return;
+  const item = document.createElement("div");
+  item.className = "console-log-item";
+  const now = new Date();
+  const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+  item.textContent = `[${timeStr}] ${msg}`;
+  logEl.prepend(item);
+  while (logEl.children.length > 20) {
+    logEl.removeChild(logEl.lastChild);
+  }
+}
+
+// --- 3. COMPETITIVE LIVE AUCTION MODAL ---
+function runCompetitiveAuction(tile, originalLander) {
+  return new Promise((resolve) => {
+    gameState.phase = "AUCTION";
+    const modal = document.getElementById("auction-modal");
+    const titleEl = document.getElementById("auction-modal-title");
+    const highBidValEl = document.getElementById("auction-high-bid-val");
+    const leaderNameEl = document.getElementById("auction-leader-name");
+    const clockValEl = document.getElementById("auction-clock-val");
+    const progressBarEl = document.getElementById("auction-progress-bar");
+    const botFeedEl = document.getElementById("auction-bot-feed");
+
+    const plus50Btn = document.getElementById("auction-bid-plus-50");
+    const plus100Btn = document.getElementById("auction-bid-plus-100");
+    const passBtn = document.getElementById("auction-pass-btn");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.classList.add("active");
+    }
+    if (titleEl) titleEl.textContent = `Bidding Open: ${tile.name} (${tile.groupName})`;
+
+    const baseVal = tile.priceWP || BASE_PROPERTY_PRICE_WP;
+    let currentBid = Math.round(baseVal * 0.5);
+    let highBidder = null;
+    let clockSeconds = 10.0;
+    const maxClock = 10.0;
+    let settled = false;
+    const withdrawnPlayers = new Set();
+
+    if (botFeedEl) {
+      botFeedEl.innerHTML = `<div class="auction-feed-item">Auction opened at <strong>${currentBid} WP</strong> (50% valuation). Step in!</div>`;
+    }
+
+    if (plus50Btn) plus50Btn.disabled = false;
+    if (plus100Btn) plus100Btn.disabled = false;
+    if (passBtn) passBtn.disabled = false;
+
+    const updateDisplay = () => {
+      if (highBidValEl) highBidValEl.textContent = `${currentBid.toLocaleString()} WP`;
+      if (leaderNameEl) leaderNameEl.textContent = highBidder ? highBidder.name : "None (Starting Bid)";
+      if (clockValEl) clockValEl.textContent = `${Math.max(0, clockSeconds).toFixed(1)}s`;
+      if (progressBarEl) {
+        const pct = Math.min(100, Math.max(0, (clockSeconds / maxClock) * 100));
+        progressBarEl.style.width = `${pct}%`;
+      }
+    };
+
+    updateDisplay();
+
+    const conclude = async () => {
+      if (settled) return;
+      settled = true;
+      clearInterval(clockIntervalId);
+      clearInterval(botBidIntervalId);
+      gameState.activeAuction = null;
+      if (modal) {
+        modal.classList.remove("active");
+        modal.classList.add("hidden");
+      }
+
+      if (highBidder) {
+        assignPropertyToPlayer(highBidder, tile, currentBid, "won via live auction");
+        playAudio("CASH");
+        const outcomeMsg = `<strong>${highBidder.name}</strong> won the competitive auction for <strong>${tile.name}</strong> at <strong>${currentBid} WP</strong>!`;
+        const consequences = formatConsequences(PURCHASE_SBP_INCREASE, PURCHASE_BMI_INCREASE, currentBid);
+
+        if (highBidder.isBot) {
+          if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+            CardiopolyToasts.showToast({
+              title: "AUCTION HAMMER",
+              message: `${outcomeMsg} ${consequences}`,
+              theme: "success"
+            });
+          }
+        } else {
+          await showEventPopupModal(
+            "AUCTION HAMMER",
+            highBidder,
+            outcomeMsg,
+            consequences,
+            "auction-theme"
+          );
+        }
+      } else {
+        setBoardTicker(`No bids received for ${tile.name}. Suite remains unassigned.`);
+      }
+      resolve();
+    };
+
+    const handlePlayerBid = (increment) => {
+      if (settled) return;
+      const human = gameState.players[0];
+      currentBid += increment;
+      highBidder = human;
+      clockSeconds = Math.min(maxClock, clockSeconds + 3.0);
+      playAudio("CASH");
+      updateDisplay();
+
+      if (botFeedEl) {
+        const item = document.createElement("div");
+        item.className = "auction-feed-item bid-event";
+        item.textContent = `You bid ${currentBid} WP!`;
+        botFeedEl.prepend(item);
+      }
+    };
+
+    if (plus50Btn) plus50Btn.onclick = () => handlePlayerBid(50);
+    if (plus100Btn) plus100Btn.onclick = () => handlePlayerBid(100);
+    if (passBtn) {
+      passBtn.onclick = () => {
+        withdrawnPlayers.add(0);
+        if (passBtn) passBtn.disabled = true;
+        if (plus50Btn) plus50Btn.disabled = true;
+        if (plus100Btn) plus100Btn.disabled = true;
+        if (botFeedEl) {
+          const item = document.createElement("div");
+          item.className = "auction-feed-item";
+          item.textContent = "You passed (withdrew from bidding).";
+          botFeedEl.prepend(item);
+        }
+      };
+    }
+
+    const botBidIntervalId = setInterval(() => {
+      if (settled) return;
+      const bots = gameState.players.filter((p) => p.isBot && !withdrawnPlayers.has(p.id));
+      if (bots.length === 0 && withdrawnPlayers.has(0)) {
+        conclude();
+        return;
+      }
+
+      const bot = bots[Math.floor(Math.random() * bots.length)];
+      if (!bot) return;
+
+      if (typeof CardiopolyAI !== "undefined" && typeof CardiopolyAI.decideAuctionBid === "function") {
+        const decision = CardiopolyAI.decideAuctionBid(bot, tile, currentBid, highBidder, gameState, gameState.aiDifficulty);
+        if (decision.bid && decision.amount > currentBid) {
+          currentBid = decision.amount;
+          highBidder = bot;
+          clockSeconds = Math.min(maxClock, clockSeconds + 2.5);
+          playAudio("CASH");
+          updateDisplay();
+
+          if (botFeedEl) {
+            const item = document.createElement("div");
+            item.className = "auction-feed-item bid-event";
+            const quip = (typeof CardiopolyAI.generateBotQuip === "function")
+              ? CardiopolyAI.generateBotQuip(bot, "OUTBID_USER", { propertyName: tile.name }, gameState.aiDifficulty)
+              : "";
+            item.textContent = `${bot.shortName} raised bid to ${currentBid} WP! ${quip ? `"${quip}"` : ""}`;
+            botFeedEl.prepend(item);
+          }
+        } else {
+          if (currentBid >= decision.maxWillingToPay) {
+            withdrawnPlayers.add(bot.id);
+          }
+        }
+      }
+    }, 1200);
+
+    const clockIntervalId = setInterval(() => {
+      if (settled) return;
+      clockSeconds -= 0.1;
+      updateDisplay();
+      if (clockSeconds <= 0) {
+        conclude();
+      }
+    }, 100);
+
+    gameState.activeAuction = { tile, clockIntervalId, botBidIntervalId, conclude };
+  });
+}
+
+// --- 4. PROPERTY DEED & DEPARTMENT UPGRADES INSPECTOR ---
+function openDeedInspectorModal(tile) {
+  if (!tile || tile.type !== "PROPERTY") return;
+  const modal = document.getElementById("deed-inspector-modal");
+  if (!modal) return;
+
+  const headerEl = document.getElementById("deed-modal-header");
+  const groupBadgeEl = document.getElementById("deed-group-badge");
+  const propTitleEl = document.getElementById("deed-prop-title");
+  const ownerValEl = document.getElementById("deed-owner-val");
+  const priceValEl = document.getElementById("deed-price-val");
+  const rentValEl = document.getElementById("deed-rent-val");
+  const levelValEl = document.getElementById("deed-level-val");
+
+  if (groupBadgeEl) {
+    groupBadgeEl.textContent = tile.groupName ? tile.groupName.toUpperCase() : "HOSPITAL UNIT";
+    groupBadgeEl.style.background = tile.colorHex || "#1e293b";
+  }
+  if (propTitleEl) propTitleEl.textContent = tile.name;
+
+  const owner = tile.ownerId !== null && tile.ownerId !== undefined ? gameState.players[tile.ownerId] : null;
+  if (ownerValEl) {
+    ownerValEl.textContent = owner ? owner.name : "Unowned";
+    ownerValEl.style.color = owner ? owner.hex : "#94a3b8";
+  }
+  if (priceValEl) priceValEl.textContent = `${tile.priceWP} WP`;
+
+  const rentDetails = (typeof CardiopolyUpgrades !== "undefined" && typeof CardiopolyUpgrades.getEffectiveRent === "function")
+    ? CardiopolyUpgrades.getEffectiveRent(tile, owner, gameState.players[0], gameState.currentRegime)
+    : { effectiveRent: tile.baseRent || 100, tier: tile.upgradeLevel || 0 };
+
+  if (rentValEl) rentValEl.textContent = `${rentDetails.effectiveRent} WP`;
+  if (levelValEl) levelValEl.textContent = `Tier ${tile.upgradeLevel || 0} ${"⭐".repeat(tile.upgradeLevel || 0)}`;
+
+  [0, 1, 2, 3].forEach((tier) => {
+    const rowEl = document.getElementById(`deed-tier-${tier}-row`);
+    if (rowEl) {
+      if ((tile.upgradeLevel || 0) === tier) {
+        rowEl.className = "current-tier-row";
+      } else {
+        rowEl.className = "";
+      }
+    }
+  });
+
+  [1, 2, 3].forEach((tier) => {
+    const costCell = document.getElementById(`deed-tier-${tier}-cost`);
+    if (costCell && typeof CardiopolyUpgrades !== "undefined") {
+      const baseCost = CardiopolyUpgrades.UPGRADE_TIERS[tier] ? CardiopolyUpgrades.UPGRADE_TIERS[tier].cost : 175;
+      const effectiveCost = owner && owner.factionId === "HOSPITAL_CEO" ? Math.round(baseCost * 0.85) : baseCost;
+      costCell.textContent = `${effectiveCost} WP`;
+    }
+  });
+
+  const upgradeBtn = document.getElementById("deed-upgrade-btn");
+  const upgradeHint = document.getElementById("deed-upgrade-hint");
+
+  const human = gameState.players[0];
+  const isHumanOwner = owner && owner.id === 0;
+
+  if (typeof CardiopolyUpgrades !== "undefined") {
+    const canUp = isHumanOwner && CardiopolyUpgrades.canUpgrade(tile, human, gameState.tiles);
+    if (upgradeBtn) {
+      upgradeBtn.disabled = !canUp.canUpgrade;
+    }
+    if (upgradeHint) {
+      if (!isHumanOwner) {
+        upgradeHint.textContent = owner ? `Owned by ${owner.shortName}. You cannot upgrade rival departments.` : "Unowned property. Must acquire suite before building upgrades.";
+      } else if (!canUp.canUpgrade) {
+        upgradeHint.textContent = canUp.reason;
+      } else {
+        const nextCost = CardiopolyUpgrades.getUpgradeCost(tile, human);
+        upgradeHint.textContent = `Ready to upgrade to Tier ${canUp.nextTier} for ${nextCost} WP!`;
+      }
+    }
+
+    if (upgradeBtn) {
+      upgradeBtn.onclick = () => {
+        const res = CardiopolyUpgrades.upgradeTile(tile, human, gameState);
+        if (res.success) {
+          playAudio("CASH");
+          if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
+            CardiopolyToasts.showToast({
+              title: "UPGRADE COMMISSIONED",
+              message: res.message,
+              theme: "success"
+            });
+          }
+          openDeedInspectorModal(tile);
+          refreshAllViews();
+        } else {
+          alert(res.message);
+        }
+      };
+    }
+  }
+
+  const closeBtn = document.getElementById("deed-close-btn");
+  if (closeBtn) closeBtn.onclick = closeDeedInspectorModal;
+
+  modal.classList.remove("hidden");
+  modal.classList.add("active");
+}
+
+function closeDeedInspectorModal() {
+  const modal = document.getElementById("deed-inspector-modal");
+  if (modal) {
+    modal.classList.remove("active");
+    modal.classList.add("hidden");
+  }
+}
+
+// --- 5. FACTION DOSSIER & REGIME MODALS ---
+function openFactionDossierModal() {
+  const modal = document.getElementById("faction-dossier-modal");
+  const body = document.getElementById("dossier-modal-body");
+  if (!modal || !body) return;
+
+  body.innerHTML = "";
+  const factionsList = (typeof FACTIONS !== "undefined") ? FACTIONS : (typeof CardiopolyFactions !== "undefined" ? CardiopolyFactions.FACTIONS : null);
+
+  gameState.players.forEach((player) => {
+    const fId = player.factionId || "ACADEMIC_CLINICIAN";
+    const fDef = (factionsList && factionsList[fId]) || {};
+    const isUser = player.id === 0;
+
+    const card = document.createElement("div");
+    card.className = `dossier-card ${isUser ? "active-user-faction" : ""}`;
+
+    let progressText = "";
+    if (typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.getFactionProgress === "function") {
+      const prog = CardiopolyFactions.getFactionProgress(player, gameState);
+      progressText = `${prog.label} (${prog.progressPct}%)`;
+    }
+
+    card.innerHTML = `
+      <div class="dossier-card-hdr">
+        <span class="dossier-card-title">${fDef.icon || "🩺"} ${fDef.name || fId} ${isUser ? "(YOU)" : `(${player.name})`}</span>
+        <span style="font-size:0.68rem; font-weight:800; color:${fDef.colorHex || '#38bdf8'}">${progressText}</span>
+      </div>
+      <div style="font-size:0.72rem; color:#cbd5e1; margin-bottom:4px;">${fDef.description || ""}</div>
+      <div style="font-size:0.7rem; color:#94a3b8;"><strong>Passives:</strong> ${fDef.passivePerks || ""}</div>
+      <div style="font-size:0.7rem; color:#facc15; margin-top:2px;"><strong>Win Target:</strong> ${fDef.winConditionDescription || ""}</div>
+      <div class="dossier-metrics-row">
+        <div class="dossier-metric-item"><span class="dossier-metric-lbl">GDMT / Score:</span><span class="dossier-metric-val">${player.gdmtScore || 0}%</span></div>
+        <div class="dossier-metric-item"><span class="dossier-metric-lbl">RVUs / Margin:</span><span class="dossier-metric-val">${(player.rvuPoints || player.departmentMargin || 0).toLocaleString()} WP</span></div>
+        <div class="dossier-metric-item"><span class="dossier-metric-lbl">Clawbacks:</span><span class="dossier-metric-val">${(player.clawbackWP || 0).toLocaleString()} WP</span></div>
+      </div>
+    `;
+    body.appendChild(card);
+  });
+
+  const closeBtn = document.getElementById("dossier-close-btn");
+  const doneBtn = document.getElementById("dossier-done-btn");
+  if (closeBtn) closeBtn.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("active"); };
+  if (doneBtn) doneBtn.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("active"); };
+
+  modal.classList.remove("hidden");
+  modal.classList.add("active");
+}
+
+function openRegimeDetailsModal() {
+  const modal = document.getElementById("regime-details-modal");
+  const body = document.getElementById("regime-modal-body");
+  if (!modal || !body) return;
+
+  const currentRegKey = gameState.currentRegime || "SINGAPORE";
+  const reg = (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegime === "function")
+    ? CardiopolyPolicies.getRegime(currentRegKey)
+    : { name: currentRegKey, flag: "🌐", fullName: currentRegKey };
+
+  body.innerHTML = `
+    <div style="text-align:center; margin-bottom:12px;">
+      <span style="font-size:2rem;">${reg.flag || "🇸🇬"}</span>
+      <h3 style="color:#f8fafc; font-size:1.15rem;">${reg.name || "Singapore"}</h3>
+      <p style="color:#38bdf8; font-size:0.78rem;">${reg.fullName || ""}</p>
+    </div>
+    <div style="background:rgba(30,41,59,0.7); padding:10px; border-radius:8px; font-size:0.75rem; color:#cbd5e1; line-height:1.4; margin-bottom:12px;">
+      <p><strong>System Profile:</strong> ${reg.description || ""}</p>
+      <p style="margin-top:6px;"><strong>Key Levers:</strong></p>
+      <ul style="padding-left:18px; margin-top:4px;">
+        <li>Patient Out-of-Pocket Co-Pay: <strong>${((reg.coPayRate || 0) * 100).toFixed(0)}%</strong></li>
+        <li>Procedure RVU Multiplier: <strong>${reg.rvuMultiplier || 1.0}x</strong></li>
+        <li>Department Rent Multiplier: <strong>${reg.rentMultiplier || 1.0}x</strong></li>
+        <li>Prior Authorization Friction: <strong>${reg.priorAuthRequired ? "Mandatory Prior Auth" : "Open Access / Global Budget"}</strong></li>
+      </ul>
+    </div>
+  `;
+
+  const closeBtn = document.getElementById("regime-close-btn");
+  const doneBtn = document.getElementById("regime-done-btn");
+  if (closeBtn) closeBtn.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("active"); };
+  if (doneBtn) doneBtn.onclick = () => { modal.classList.add("hidden"); modal.classList.remove("active"); };
+
+  modal.classList.remove("hidden");
+  modal.classList.add("active");
+}
+
+// ============================================================================
 // INITIALIZATION & EVENT LISTENERS
 // ============================================================================
 
@@ -2478,10 +3364,7 @@ function wireEventListeners() {
   // Start Game button on Rules screen
   document.getElementById("start-game-btn").addEventListener("click", () => {
     document.getElementById("rules-screen").classList.remove("active");
-    if (gameState.phase === "RULES") {
-      gameState.phase = "WAIT_FOR_ROLL";
-      refreshAllViews();
-    }
+    openSetupModal();
   });
 
   // Re-open Rules button
@@ -2541,37 +3424,19 @@ function wireEventListeners() {
 
   const regimeBadgeEl = document.getElementById("telemetry-regime-badge");
   if (regimeBadgeEl) {
-    regimeBadgeEl.addEventListener("click", () => {
-      if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.rotateNextRegime === "function") {
-        const shift = CardiopolyPolicies.rotateNextRegime(gameState);
-        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
-          CardiopolyToasts.showToast({
-            title: "POLICY SHIFT",
-            message: shift.announcement,
-            theme: "info",
-            durationMs: 3500
-          });
-        }
-        setBoardTicker(shift.announcement);
-        refreshAllViews();
+    regimeBadgeEl.addEventListener("click", openRegimeDetailsModal);
+  }
 
-        // Broadcast regime shift to P2P network
-        if (typeof CardiopolyP2P !== "undefined" && window.cardiopolyNetwork && (window.cardiopolyNetwork.status === 'HOSTING' || window.cardiopolyNetwork.status === 'JOINED')) {
-          try {
-            window.cardiopolyNetwork.broadcastAction({
-              type: 'REGIME_SHIFT',
-              countryId: gameState.activeCountryId || (shift.regime && shift.regime.id),
-              regimeName: shift.regime ? shift.regime.name : shift.announcement
-            });
-          } catch (e) {}
-        }
-      }
-    });
+  const factionBadgeEl = document.getElementById("telemetry-faction-badge");
+  if (factionBadgeEl) {
+    factionBadgeEl.addEventListener("click", openFactionDossierModal);
   }
 }
 
 async function initGame() {
   initTelemetryController();
+  initCenterConsole();
+  initSetupModal();
   initializePlayerFactions(gameState.players);
   initDieElement(document.getElementById("die-1"));
   initDieElement(document.getElementById("die-2"));

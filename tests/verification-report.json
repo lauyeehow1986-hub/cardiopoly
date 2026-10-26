@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-25T19:33:07.441Z",
+  "timestamp": "2026-10-26T09:24:21.085Z",
   "reportTitle": "Cardiopoly Remastered - Visual DOM & System Integration Verification Report",
   "branch": "feat/cardiopoly-remastered",
   "overallStatus": "PASS",
@@ -295,39 +295,39 @@
     },
     "scriptLoadOrder": {
       "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js": {
-        "orderIndex": 24488,
+        "orderIndex": 40433,
         "status": "VERIFIED"
       },
       "src/components/telemetry.js": {
-        "orderIndex": 24565,
+        "orderIndex": 40564,
         "status": "VERIFIED"
       },
       "src/engine/factions.js": {
-        "orderIndex": 24620,
+        "orderIndex": 40618,
         "status": "VERIFIED"
       },
       "src/engine/policies.js": {
-        "orderIndex": 24670,
+        "orderIndex": 40667,
         "status": "VERIFIED"
       },
       "src/components/toasts.js": {
-        "orderIndex": 24720,
+        "orderIndex": 40716,
         "status": "VERIFIED"
       },
       "src/components/vignetteModal.js": {
-        "orderIndex": 24772,
+        "orderIndex": 40879,
         "status": "VERIFIED"
       },
       "src/network/supabaseClient.js": {
-        "orderIndex": 24831,
+        "orderIndex": 40937,
         "status": "VERIFIED"
       },
       "src/network/p2pSync.js": {
-        "orderIndex": 24888,
+        "orderIndex": 40993,
         "status": "VERIFIED"
       },
       "script.js": {
-        "orderIndex": 24938,
+        "orderIndex": 41042,
         "status": "VERIFIED"
       }
     }
