@@ -198,8 +198,11 @@ class CutInOverlayManager {
     if (videoSrc) {
       mediaMarkup = `
         <div class="cutin-media-container">
-          <video class="cutin-video" src="${videoSrc}" autoplay muted loop playsinline
-                 onerror="this.style.display='none'; const p=this.nextElementSibling; if(p) p.style.display='block';"></video>
+          <video class="cutin-video" autoplay muted loop playsinline
+                 onerror="this.style.display='none'; const p=this.nextElementSibling; if(p) p.style.display='block';">
+            <source src="${videoSrc}" type="video/webm">
+            <source src="${videoSrc.replace(/\.webm$/, '.mp4')}" type="video/mp4">
+          </video>
           ${posterSrc ? `<img class="cutin-poster" src="${posterSrc}" alt="${title}" style="display:none;" />` : ''}
           <div class="cutin-scanlines"></div>
         </div>
