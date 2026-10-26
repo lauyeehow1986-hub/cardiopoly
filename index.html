@@ -62,6 +62,11 @@
       if (enterBtn) {
         enterBtn.addEventListener("click", function(e) {
           e.stopPropagation();
+          if (typeof window.CardiopolyAudioSynth !== "undefined" && typeof window.CardiopolyAudioSynth.playHospitalChime === "function") {
+            try { window.CardiopolyAudioSynth.playHospitalChime(); } catch(_) {}
+          } else if (typeof window.CardiopolyPatches?.cardiopolyAudioV2?.playHospitalChime === "function") {
+            try { window.CardiopolyPatches.cardiopolyAudioV2.playHospitalChime(); } catch(_) {}
+          }
           dismissSplash();
         });
       }

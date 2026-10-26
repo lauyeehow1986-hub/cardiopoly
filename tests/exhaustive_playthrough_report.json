@@ -1,0 +1,137 @@
+[
+  {
+    "sceneId": 1,
+    "sceneName": "Splash & Boot Pre-rendering",
+    "status": "PASS",
+    "observation": "Remastered centerpiece artwork preloaded in <head>; instant skip button & keyboard handlers eliminate any boot hang.",
+    "recommendations": [
+      "Add Web Audio API unlock stinger on the ENTER SIMULATION click for immediate audio context warmup"
+    ]
+  },
+  {
+    "sceneId": 2,
+    "sceneName": "Setup Lobby, 9 Regimes & Dual Modes",
+    "status": "PASS",
+    "observation": "All 9 Healthcare Regimes formatted with valid numeric RVU multipliers & active rule hooks; zero undefinedx.",
+    "recommendations": [
+      "Add country flag/emblem indicator on player cards to reinforce international health economics"
+    ]
+  },
+  {
+    "sceneId": 3,
+    "sceneName": "Perimeter Board & 40 Tiles",
+    "status": "PASS",
+    "observation": "Perimeter tile visual hierarchy complete: cost badges, ownership glow, upgrade pips (1-4), and mortgage striping verified.",
+    "recommendations": [
+      "Scale token hop duration dynamically based on dice roll distance (e.g., 60ms for rolls >= 8) to keep pacing snappy"
+    ]
+  },
+  {
+    "sceneId": 4,
+    "sceneName": "Clinical Encounters & Synergies",
+    "status": "PASS",
+    "observation": "Hospital suite synergies applied to vignette choices; sticky patient banner and 3-column choices grid verified in CSS.",
+    "recommendations": [
+      "Expose synergy bonuses as animated glowing pill tags directly inside the vignette choices modal"
+    ]
+  },
+  {
+    "sceneId": 5,
+    "sceneName": "Centerpiece Command Console",
+    "status": "PASS",
+    "observation": "Remastered centerpiece art is active default tab; duplicate telemetry removed; live HUD status overlay badges present.",
+    "recommendations": [
+      "Add micro-zoom on hover and tap-to-expand modal for inspecting high-res details of the centerpiece artwork"
+    ]
+  },
+  {
+    "sceneId": 6,
+    "sceneName": "Telemetry & Vital Reaction",
+    "status": "PASS",
+    "observation": "Hemodynamic color transitions verified: 120 SBP -> #10b981, 155 SBP -> #f59e0b, 185 SBP -> #ef4444.",
+    "recommendations": [
+      "Modulate heartbeat audio sub-bass filter cutoff frequency in tandem with SBP color transitions"
+    ]
+  },
+  {
+    "sceneId": 7,
+    "sceneName": "Live Clinical Auctions",
+    "status": "PASS",
+    "observation": "Live competitive auction modal with quick-increment bids (+50, +100 WP), countdown timer bar, and AI heuristic bidding.",
+    "recommendations": [
+      "Add urgent cardiac monitor ticking sound effect during the final 3 seconds of auction countdown"
+    ]
+  },
+  {
+    "sceneId": 8,
+    "sceneName": "Strategic Trading & AI Evaluator",
+    "status": "PASS",
+    "observation": "Anti-exploit trade evaluation prevents predatory monopolies and ensures realistic attending-level negotiations.",
+    "recommendations": [
+      "Add AI personality speech bubbles explaining trade rejections (\"This violates hospital committee policy!\")"
+    ]
+  },
+  {
+    "sceneId": 9,
+    "sceneName": "Emergency Code Blue Hospitalization",
+    "status": "PASS",
+    "observation": "Critical vitals (SBP >= 175 or BMI >= 60) trigger emergency CCU transfer, fee deduction, and vitals reset.",
+    "recommendations": [
+      "Trigger screen-wide emergency red perimeter strobe animation on Code Blue activation"
+    ]
+  },
+  {
+    "sceneId": 10,
+    "sceneName": "Longitudinal Follow-Up Queue",
+    "status": "PASS",
+    "observation": "Consequence queue registers deferred events (readmission penalty) scheduled for future turns (turnNumber + 6).",
+    "recommendations": [
+      "Display a small badge on the action feed showing active pending follow-up cases"
+    ]
+  },
+  {
+    "sceneId": 11,
+    "sceneName": "MCP Macro Shock Engine",
+    "status": "PASS",
+    "observation": "Macro shocks advance on Turn % 4 cadences, modifying tariffs, co-pays, and GDMT bonuses with offline fallback.",
+    "recommendations": [
+      "Display a breaking-news flash ticker animation across the center console when a new shock triggers"
+    ]
+  },
+  {
+    "sceneId": 12,
+    "sceneName": "Cinematic Video Cut-Ins",
+    "status": "PASS",
+    "observation": "Video cut-in overlay renders with dual WebM + MP4 video sources, CRT scanlines, soundtrack ducking, and image fallback.",
+    "recommendations": [
+      "Add high-tension orchestral brass stinger cue to complement procedural audio on video cut-in entry"
+    ]
+  },
+  {
+    "sceneId": 13,
+    "sceneName": "Options Menu & Pause System",
+    "status": "PASS",
+    "observation": "Options button (#lobby-setup-btn) opens setup modal to review rules, regime settings, or reconfigure match.",
+    "recommendations": [
+      "Add master volume slider and SFX/Music independent balance sliders to the options modal"
+    ]
+  },
+  {
+    "sceneId": 14,
+    "sceneName": "Career Compendium Persistence",
+    "status": "PASS",
+    "observation": "Lifetime achievements and landmark trials (CURE, PLATO, COURAGE, ISCHEMIA, PARADIGM-HF) persist in localStorage.",
+    "recommendations": [
+      "Add interactive trophy shelf or trial summary modal accessible from the center console"
+    ]
+  },
+  {
+    "sceneId": 15,
+    "sceneName": "Game Over & Victory Ceremony",
+    "status": "PASS",
+    "observation": "Dual-mode victory conditions (Academic GDMT %, Interventionalist RVU, CEO Monopolies, Auditor Clawback) verified.",
+    "recommendations": [
+      "Add celebratory fireworks particle canvas and clinical career commendation certificate on victory"
+    ]
+  }
+]

@@ -1371,7 +1371,9 @@ async function executeTurnRoll() {
     } catch (e) {}
   }
 
-  const stepDelay = player.isBot ? BOT_TOKEN_STEP_MS : USER_TOKEN_STEP_MS;
+  const userStepDelay = totalSteps > 6 ? Math.max(110, Math.round(280 - (totalSteps - 6) * 24)) : 220;
+  const botStepDelay = totalSteps > 6 ? 55 : BOT_TOKEN_STEP_MS;
+  const stepDelay = player.isBot ? botStepDelay : userStepDelay;
 
   // Move sequentially tile-by-tile with distinct stops on each tile
   for (let s = 1; s <= totalSteps; s++) {

@@ -600,6 +600,15 @@ class CardiopolyAudioEngineV2 {
     }, durationMs);
   }
 
+  playHospitalChime() {
+    this.initContext();
+    if (!this.ctx) return;
+    const chimeFreqs = [523.25, 659.25, 783.99, 987.77, 1174.66]; // C5, E5, G5, B5, D6 (Cmaj9 arpeggio)
+    chimeFreqs.forEach((freq, idx) => {
+      this.playEnvelopedTone(freq, 0.45, 'triangle', 0.042, idx * 0.045);
+    });
+  }
+
   startClinicalLoFiSoundtrack() {
     this.stopClinicalLoFiSoundtrack();
     if (!this.ctx) return;
@@ -651,7 +660,9 @@ class CardiopolyAudioEngineV2 {
       // 2. Cardiac Heartbeat Sub-Bass ("Lub-Dub" at beats 0 and 2.5)
       if (measureStep === 0 || measureStep === 10) {
         const bassFreq = measureStep === 0 ? 55 : 44;
-        this.playEnvelopedTone(bassFreq, 0.16, 'sine', 0.055 * duckMultiplier, 0);
+        const waveType = sbp >= 175 ? 'sawtooth' : (sbp >= 145 ? 'triangle' : 'sine');
+        const peakGain = (sbp >= 175 ? 0.075 : (sbp >= 145 ? 0.065 : 0.052)) * duckMultiplier;
+        this.playEnvelopedTone(bassFreq, 0.16, waveType, peakGain, 0);
       }
 
       // 3. Subtle Syncopated Arpeggio Lead (clinical telemetry vibe)
