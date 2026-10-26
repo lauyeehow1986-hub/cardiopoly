@@ -922,7 +922,7 @@ html, body {
 .board-wrapper {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: min(94vw, 440px);
   aspect-ratio: 1 / 1;
   background: var(--bg-board);
   border: 2.5px solid #0f172a;
@@ -2529,4 +2529,934 @@ html, body {
 .db-sync-indicator {
   font-size: 0.7rem;
   color: #10b981;
+}
+
+
+/* ============================================================================
+   CARDIOPOLY MASTER REBUILD — ENHANCED UI & INTERACTIVE COMPONENTS
+   ============================================================================ */
+
+/* Interactive Badges & Buttons in Telemetry Dashboard */
+.btn-clickable-badge {
+  background: rgba(6, 182, 212, 0.18);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: #38bdf8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 3px 7px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clickable-badge:hover {
+  background: rgba(6, 182, 212, 0.35);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
+  transform: translateY(-1px);
+}
+
+.telemetry-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.telemetry-regime-wrap,
+.telemetry-faction-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.regime-label,
+.faction-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+/* 1. CENTER CARDIOLOGY COMMAND CONSOLE (#board-center-console) */
+.board-center-console {
+  grid-column: 2 / 11;
+  grid-row: 2 / 11;
+  position: relative;
+  background: #090e1a;
+  border: 1.5px solid rgba(6, 182, 212, 0.45);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 14px rgba(6, 182, 212, 0.25);
+  z-index: 5;
+}
+
+.console-tab-bar {
+  display: flex;
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.console-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #94a3b8;
+  font-size: 0.64rem;
+  font-weight: 700;
+  padding: 4px 2px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.console-tab:hover {
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.console-tab.active {
+  color: #38bdf8;
+  background: rgba(6, 182, 212, 0.15);
+  border-bottom: 2px solid #06b6d4;
+}
+
+.console-tab-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px;
+}
+
+.console-view {
+  display: none;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.console-view.active {
+  display: flex;
+}
+
+/* Tab 1: Telemetry Waveform */
+.console-ecg-canvas {
+  width: 100%;
+  height: 52px;
+  display: block;
+  border-radius: 4px;
+  background: rgba(11, 17, 32, 0.95);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.console-rhythm-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 3px;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.rhythm-badge {
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  font-size: 0.58rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.rhythm-badge.sinus {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.rhythm-badge.tachy {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.rhythm-badge.pvc {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fb923c;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.rhythm-badge.vtach {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.6);
+  animation: pulseAlert 0.8s infinite alternate;
+}
+
+.rhythm-hr {
+  color: #38bdf8;
+  font-family: monospace;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+/* Tab 2: Faction Race */
+.console-faction-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+}
+
+.faction-bar-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.faction-bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.faction-bar-track {
+  height: 5px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.faction-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.fill-clinician { background: #38bdf8; }
+.fill-interventionalist { background: #ef4444; }
+.fill-ceo { background: #facc15; }
+.fill-auditor { background: #10b981; }
+
+/* Tab 3: Action Feed */
+.board-ticker-text {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #f8fafc;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.console-action-log {
+  flex: 1;
+  width: 100%;
+  max-height: 55px;
+  overflow-y: auto;
+  font-size: 0.56rem;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.console-log-item {
+  padding: 1px 4px;
+  border-left: 2px solid #06b6d4;
+  background: rgba(255, 255, 255, 0.03);
+  line-height: 1.25;
+}
+
+/* Tile Upgrade Pips (⭐) */
+.tile-star-pips {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  font-size: 0.55rem;
+  line-height: 1;
+  color: #facc15;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  font-weight: 800;
+  z-index: 4;
+}
+
+/* 2. PRE-GAME COMMAND SETUP LOBBY (#setup-modal) */
+.setup-modal {
+  width: 100%;
+  max-width: 660px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(6, 182, 212, 0.2);
+  color: #f1f5f9;
+}
+
+.setup-modal-header {
+  text-align: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.setup-modal-badge {
+  display: inline-block;
+  background: rgba(6, 182, 212, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.setup-modal-header h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f8fafc, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.setup-subtitle {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.setup-section {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.setup-section:last-of-type {
+  border-bottom: none;
+}
+
+.setup-section h3 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.section-subtext {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+/* Mode Cards */
+.setup-mode-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .setup-mode-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.setup-mode-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.setup-mode-card:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.setup-mode-card.active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: #06b6d4;
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.25);
+}
+
+.mode-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.mode-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.mode-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge-mastery {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.badge-satire {
+  background: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.mode-desc {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+/* Faction Cards */
+.setup-faction-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .setup-faction-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.setup-faction-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.setup-faction-card:hover {
+  background: rgba(30, 41, 59, 0.85);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.setup-faction-card.active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.25);
+}
+
+.faction-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.faction-icon {
+  font-size: 1rem;
+}
+
+.faction-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.faction-card-role {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #38bdf8;
+  margin-bottom: 3px;
+}
+
+.faction-card-passives {
+  font-size: 0.66rem;
+  color: #cbd5e1;
+  margin-bottom: 3px;
+  line-height: 1.25;
+}
+
+.faction-card-target {
+  font-size: 0.64rem;
+  color: #facc15;
+  font-weight: 700;
+}
+
+/* Regime Controls */
+.regime-mode-radios {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.regime-select-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-select {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #f8fafc;
+  font-size: 0.76rem;
+}
+
+.regime-preview-card {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+/* Difficulty Buttons */
+.setup-difficulty-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .setup-difficulty-buttons {
+    flex-direction: column;
+  }
+}
+
+.btn-difficulty {
+  flex: 1;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 8px 6px;
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-difficulty:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.btn-difficulty.active {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fde68a;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+}
+
+.setup-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3. COMPETITIVE LIVE AUCTION BIDDING MODAL (#auction-modal) */
+.auction-modal-window {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(6, 182, 212, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 24px rgba(6, 182, 212, 0.2);
+  color: #f8fafc;
+}
+
+.auction-modal-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.auction-modal-badge {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-size: 0.64rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.auction-modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.auction-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.auction-sub-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.auction-high-bid-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.auction-leader-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.auction-clock-val {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #f59e0b;
+  font-family: monospace;
+}
+
+.auction-progress-track {
+  height: 6px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.auction-progress-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
+  transition: width 0.1s linear;
+}
+
+.auction-bot-feed {
+  max-height: 85px;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+
+.auction-feed-item {
+  line-height: 1.3;
+}
+
+.auction-feed-item.bid-event {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.auction-bid-buttons-row {
+  display: flex;
+  gap: 8px;
+}
+
+.auction-bid-buttons-row .btn {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 8px 4px;
+}
+
+/* 4. DOSSIER & REGIME MODALS (#faction-dossier-modal, #regime-details-modal) */
+.dossier-modal-window,
+.regime-modal-window {
+  width: 100%;
+  max-width: 620px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  color: #f1f5f9;
+}
+
+.dossier-modal-header,
+.regime-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.dossier-badge,
+.regime-badge-hdr {
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+}
+
+.dossier-card {
+  background: rgba(30, 41, 59, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.dossier-card.active-user-faction {
+  border-color: #38bdf8;
+  background: rgba(6, 182, 212, 0.12);
+}
+
+.dossier-card-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.dossier-card-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.dossier-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 6px 0;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.dossier-metric-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.66rem;
+}
+
+.dossier-metric-lbl {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.dossier-metric-val {
+  color: #38bdf8;
+  font-weight: 800;
+}
+
+.dossier-modal-footer,
+.regime-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 5. PROPERTY DEED & DEPARTMENT UPGRADE MODAL (#deed-inspector-modal) */
+.deed-modal-window {
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(6, 182, 212, 0.35);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+  color: #f1f5f9;
+}
+
+.deed-modal-header {
+  text-align: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.deed-group-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+.deed-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: rgba(30, 41, 59, 0.6);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.deed-metric-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+}
+
+.deed-metric-lbl {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.deed-metric-item strong {
+  color: #f8fafc;
+  font-size: 0.82rem;
+}
+
+.deed-upgrades-table-wrap {
+  margin-bottom: 12px;
+}
+
+.deed-upgrades-table-wrap h4 {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 6px;
+}
+
+.deed-upgrades-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.deed-upgrades-table th {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  font-weight: 800;
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deed-upgrades-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+
+.deed-upgrades-table tr.current-tier-row {
+  background: rgba(6, 182, 212, 0.15);
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.deed-upgrade-action-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.deed-upgrade-hint {
+  font-size: 0.68rem;
+  color: #f59e0b;
+  text-align: center;
+}
+
+.deed-modal-footer {
+  display: flex;
+  justify-content: flex-end;
 }
