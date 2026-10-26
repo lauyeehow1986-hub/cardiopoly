@@ -439,6 +439,9 @@ const DEFAULT_FACTION_ASSIGNMENTS = [
 ];
 
 function initializePlayerFactions(players) {
+  if (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.sanitizePlayerNames === "function") {
+    CardiopolyPatches.sanitizePlayerNames(players);
+  }
   if (!players || !Array.isArray(players)) return;
   players.forEach((p, idx) => {
     const factionId = DEFAULT_FACTION_ASSIGNMENTS[idx] || "ACADEMIC_CLINICIAN";
@@ -475,9 +478,9 @@ const gameState = {
   },
   players: [
     { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "ACADEMIC_CLINICIAN", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
-    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "INTERVENTIONALIST", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
-    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "HOSPITAL_CEO", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
-    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "REGULATORY_AUDITOR", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 }
+    { id: 1, name: "Dr. Cath-A-Lot", shortName: "Dr. Cath-A-Lot", possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "INTERVENTIONALIST", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
+    { id: 2, name: "V.P. Margin",   shortName: "V.P. Margin",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "HOSPITAL_CEO", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 },
+    { id: 3, name: "Inspector Clawback", shortName: "Inspector Clawback", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, factionId: "REGULATORY_AUDITOR", gdmtScore: 70, encounters: 0, complications: 0, rvuPoints: 0, sanctions: 0, fullDepartmentGroups: 0, departmentMargin: 0, clawbackWP: 0, inJail: false, jailTurns: 0 }
   ],
   currentPlayerIndex: 0,
   phase: "LOADING",          // "LOADING" | "RULES" | "WAIT_FOR_ROLL" | "MOVING" | "ACTION" | "AUCTION"
@@ -806,7 +809,7 @@ function renderThumbnailBoard() {
 
   gameState.tiles.forEach((tile) => {
     const tileEl = document.createElement("div");
-    tileEl.className = `thumb-tile side-${tile.side}`;
+    tileEl.className = `thumb-tile board-tile tile side-${tile.side}`;
     tileEl.id = `thumb-tile-${tile.index}`;
     tileEl.style.gridColumn = String(tile.gridCol);
     tileEl.style.gridRow = String(tile.gridRow);
@@ -816,7 +819,7 @@ function renderThumbnailBoard() {
       tileEl.innerHTML = `<span>GO</span><span class="go-arrow">←</span>`;
     } else if (tile.type === "PROPERTY") {
       const colorBar = document.createElement("div");
-      colorBar.className = "thumb-color-bar";
+      colorBar.className = "thumb-color-bar tile-color-bar";
       if (tile.colorHex !== "transparent") {
         colorBar.style.background = tile.colorHex;
       } else {
@@ -825,6 +828,12 @@ function renderThumbnailBoard() {
           "repeating-linear-gradient(45deg, rgba(15,23,42,0.18), rgba(15,23,42,0.18) 2px, transparent 2px, transparent 4px)";
       }
       tileEl.appendChild(colorBar);
+
+      // Phase 2: WP Cost Badge on perimeter purchasable suites
+      const costBadge = document.createElement("span");
+      costBadge.className = "tile-cost-badge";
+      costBadge.textContent = `${tile.price || tile.cost || 300} WP`;
+      tileEl.appendChild(costBadge);
     } else {
       const sym = document.createElement("span");
       sym.className = "thumb-mini-symbol";
@@ -846,7 +855,16 @@ function renderThumbnailBoard() {
   gameState.players.forEach((player) => {
     const tokenEl = document.createElement("div");
     tokenEl.id = `board-token-${player.id}`;
-    tokenEl.className = `board-token ${player.colorClass} ${player.id === 0 ? "token-user" : ""}`;
+    tokenEl.className = `board-token player-token ${player.colorClass} ${player.id === 0 ? "token-user" : ""}`;
+    
+    // Phase 2: Render inline SVG medical token
+    if (typeof CardiopolyPatches !== "undefined") {
+      const fKey = CardiopolyPatches.resolveFactionKey(player.factionId || player.faction || player.role);
+      const meta = CardiopolyPatches.FACTION_METADATA[fKey];
+      if (meta && meta.tokenSvg) {
+        tokenEl.innerHTML = meta.tokenSvg;
+      }
+    }
     tokensLayer.appendChild(tokenEl);
   });
 
@@ -858,10 +876,31 @@ function updateThumbnailOwnershipFrames() {
   gameState.tiles.forEach((tile) => {
     const tileEl = document.getElementById(`thumb-tile-${tile.index}`);
     if (!tileEl) return;
-    tileEl.classList.remove("owned-by-0", "owned-by-1", "owned-by-2", "owned-by-3");
+    tileEl.classList.remove("owned-by-0", "owned-by-1", "owned-by-2", "owned-by-3", "is-owned", "is-mortgaged");
+    
     if (tile.ownerId !== null && tile.ownerId !== undefined) {
-      tileEl.classList.add(`owned-by-${tile.ownerId}`);
+      tileEl.classList.add(`owned-by-${tile.ownerId}`, "is-owned");
+      const owner = gameState.players[tile.ownerId];
+      if (owner && owner.hex) {
+        tileEl.style.setProperty("--owner-color", owner.hex);
+      }
     }
+    if (tile.isMortgaged) {
+      tileEl.classList.add("is-mortgaged");
+    }
+
+    // 1-4 .tile-upgrade-pip markers inside .tile-color-bar
+    const colorBar = tileEl.querySelector(".tile-color-bar, .thumb-color-bar");
+    if (colorBar) {
+      colorBar.querySelectorAll(".tile-upgrade-pip").forEach((pip) => pip.remove());
+      const tier = tile.upgradeTier || tile.upgradeLevel || 0;
+      for (let p = 0; p < Math.min(4, tier); p++) {
+        const pip = document.createElement("div");
+        pip.className = "tile-upgrade-pip";
+        colorBar.appendChild(pip);
+      }
+    }
+
     let starPipEl = tileEl.querySelector(".tile-star-pips");
     if (tile.upgradeLevel > 0) {
       if (!starPipEl) {
@@ -1147,6 +1186,9 @@ function updateTelemetryVitals() {
   const sbp = typeof player.sbp === "number" ? player.sbp : 120;
   const dbp = Math.round(sbp * 0.67);
   window.telemetryController.update({ sbp: sbp, dbp: dbp });
+  if (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.updateTelemetryFromActivePlayer === "function") {
+    CardiopolyPatches.updateTelemetryFromActivePlayer(player);
+  }
 
   if (typeof document !== "undefined") {
     const hrEl = document.getElementById("telemetry-hr-val");
@@ -1333,12 +1375,31 @@ async function executeTurnRoll() {
   for (let s = 1; s <= totalSteps; s++) {
     player.position = (player.position + 1) % 40;
 
+    // Phase 2: Animate step-by-step tile hopping (.is-hopping at 90ms)
+    const movingTokenEl = document.getElementById(`board-token-${player.id}`);
+    if (movingTokenEl) {
+      movingTokenEl.classList.add("is-hopping");
+      setTimeout(() => movingTokenEl.classList.remove("is-hopping"), 90);
+    }
+
     // Check if passing or landing on GO (Tile 0)
     if (player.position === 0) {
       player.wp += PASS_GO_WP_ADDED;
       player.sbp += PASS_GO_SBP_ADDED;
       player.bmi = roundOneDecimal(player.bmi + PASS_GO_BMI_ADDED);
-      setBoardTicker(`${player.shortName} passed GO (+${PASS_GO_WP_ADDED} WP routine admission labs)!`);
+
+      // Phase 4: Sweden (SWEDEHEART) Registry Quality Dividend (+250 WP when GDMT >= 80%)
+      const isSweden = (gameState.currentRegime === "SWEDEN" || gameState.currentRegime === "sweden");
+      const hasHighGdmt = (player.gdmtAdherence >= 80 || player.gdmtScore >= 80);
+      if (isSweden && hasHighGdmt) {
+        player.wp += 250;
+        if (typeof CardiopolyPatches !== "undefined") {
+          CardiopolyPatches.spawnFloatingResourceDelta(`#player-card-${player.id}`, "+250 WP (SWEDEHEART Dividend)", "positive");
+        }
+        setBoardTicker(`${player.shortName} passed GO: Collected +${PASS_GO_WP_ADDED} WP + 250 WP SWEDEHEART Quality Bonus!`);
+      } else {
+        setBoardTicker(`${player.shortName} passed GO (+${PASS_GO_WP_ADDED} WP routine admission labs)!`);
+      }
     }
 
     updateThumbnailTokenPositions(Math.max(60, stepDelay - 25));
@@ -1466,6 +1527,40 @@ function applyClinicalDecisionToPlayer(player, decision, scenario) {
   }
   if (typeof decision.sbpDelta === "number") {
     player.sbp = Math.max(90, Math.min(240, player.sbp + decision.sbpDelta));
+  }
+  if (typeof decision.bmiDelta === "number") {
+    player.bmi = roundOneDecimal(Math.max(18, Math.min(75, player.bmi + decision.bmiDelta)));
+  }
+
+  // Phase 4 Rule Hook: UK GDMT Bonus
+  if ((gameState.currentRegime === "UNITED_KINGDOM" || gameState.currentRegime === "uk") && decision.choiceId === "CHOICE_GDMT") {
+    player.wp += 100;
+  }
+
+  // Phase 3: Dynamic Vital-Linked Telemetry and Floating Resource Deltas
+  if (typeof CardiopolyPatches !== "undefined") {
+    if (typeof CardiopolyPatches.updateTelemetryFromActivePlayer === "function") {
+      CardiopolyPatches.updateTelemetryFromActivePlayer(player);
+    }
+    const cardSel = `#player-card-${player.id}`;
+    const tileSel = `#thumb-tile-${player.position}`;
+    if (decision.wastePoints) {
+      const sign = decision.wastePoints >= 0 ? "+" : "";
+      const tone = decision.wastePoints >= 0 ? "positive" : "negative";
+      CardiopolyPatches.spawnFloatingResourceDelta(cardSel, `${sign}${decision.wastePoints} WP`, tone);
+      CardiopolyPatches.spawnFloatingResourceDelta(tileSel, `${sign}${decision.wastePoints} WP`, tone);
+    }
+    if (decision.gdmtPoints) {
+      CardiopolyPatches.spawnFloatingResourceDelta(cardSel, `+${decision.gdmtPoints} GDMT`, "positive");
+    }
+    if (decision.rvuPoints) {
+      CardiopolyPatches.spawnFloatingResourceDelta(cardSel, `+${decision.rvuPoints} RVU`, "positive");
+    }
+    if (decision.sbpDelta) {
+      const sign = decision.sbpDelta >= 0 ? "+" : "";
+      const tone = decision.sbpDelta > 0 ? "negative" : "positive";
+      CardiopolyPatches.spawnFloatingResourceDelta(cardSel, `${sign}${decision.sbpDelta} SBP`, tone);
+    }
   }
 
   // 2. Update faction metrics via recordFactionAction
@@ -2086,9 +2181,9 @@ function resetGameToRules() {
   // Reset all 4 players to initial vitals & properties
   gameState.players = [
     { id: 0, name: "You",          shortName: "You",          possessive: "your", colorClass: "token-blue",   hex: "#2563eb", isBot: false, position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
-    { id: 1, name: "Fat Slob",     shortName: "Fat Slob",     possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
-    { id: 2, name: "Lazy Larry",   shortName: "Lazy Larry",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
-    { id: 3, name: "Sloppy Susan", shortName: "Sloppy Susan", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] }
+    { id: 1, name: "Dr. Cath-A-Lot", shortName: "Dr. Cath-A-Lot", possessive: "his",  colorClass: "token-red",    hex: "#dc2626", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
+    { id: 2, name: "V.P. Margin",   shortName: "V.P. Margin",   possessive: "his",  colorClass: "token-yellow", hex: "#eab308", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] },
+    { id: 3, name: "Inspector Clawback", shortName: "Inspector Clawback", possessive: "her",  colorClass: "token-green",  hex: "#16a34a", isBot: true,  position: 0, sbp: INITIAL_SBP, bmi: INITIAL_BMI, wp: INITIAL_WP, properties: [] }
   ];
   initializePlayerFactions(gameState.players);
 
@@ -2471,8 +2566,37 @@ async function finishPlayerTurn() {
   }
 
   // Advance turn
+  gameState.turnNumber = (gameState.turnNumber || 1) + 1;
   gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
   gameState.phase = "WAIT_FOR_ROLL";
+
+  // Phase 4: Process Longitudinal Patient Follow-Up Queue (turnNumber >= triggerTurn)
+  if (Array.isArray(gameState.followUpQueue) && gameState.followUpQueue.length > 0) {
+    const nextP = gameState.players[gameState.currentPlayerIndex];
+    const followUpIdx = gameState.followUpQueue.findIndex(
+      (item) => item.playerId === nextP.id && gameState.turnNumber >= item.triggerTurn
+    );
+    if (followUpIdx !== -1) {
+      const item = gameState.followUpQueue.splice(followUpIdx, 1)[0];
+      const hasShield = gameState.tiles.some(
+        (t) => t.ownerId === nextP.id && (t.name === "Telemetry bed" || t.name === "CPET lab")
+      );
+      const actualWpPenalty = hasShield ? Math.round(item.wpPenalty * 0.5) : item.wpPenalty;
+      nextP.sbp = Math.min(240, nextP.sbp + item.sbpPenalty);
+      nextP.wp = Math.max(0, nextP.wp - actualWpPenalty);
+      
+      const followUpMsg = `⚠️ FOLLOW-UP EVENT: ${item.patientName} - ${item.reason} (+8 SBP, -${actualWpPenalty} WP${hasShield ? ' [50% Shielded]' : ''})`;
+      setBoardTicker(followUpMsg);
+      appendCenterConsoleActionLog(followUpMsg);
+
+      if (typeof CardiopolyPatches !== "undefined") {
+        CardiopolyPatches.spawnFloatingResourceDelta(`#player-card-${nextP.id}`, `-${actualWpPenalty} WP`, "negative");
+        CardiopolyPatches.spawnFloatingResourceDelta(`#player-card-${nextP.id}`, `+8 SBP`, "negative");
+        CardiopolyPatches.updateTelemetryFromActivePlayer(nextP);
+      }
+    }
+  }
+
   refreshAllViews();
 
   const nextPlayer = gameState.players[gameState.currentPlayerIndex];
@@ -2761,12 +2885,25 @@ function initSetupModal() {
     });
   });
 
+  const resumeBtn = document.getElementById("setup-resume-btn");
+  if (resumeBtn) {
+    resumeBtn.addEventListener("click", () => {
+      playAudio("CASH");
+      resumeActiveMatch();
+    });
+  }
+
   const launchBtn = document.getElementById("setup-launch-match-btn");
   if (launchBtn) {
     launchBtn.addEventListener("click", () => {
       playAudio("CASH");
+      const isMatchActive = gameState.phase !== "RULES" && gameState.phase !== "LOADING";
       closeSetupModal();
-      if (gameState.phase === "RULES" || gameState.phase === "LOADING") {
+      if (isMatchActive) {
+        resetGameToRules();
+        gameState.phase = "WAIT_FOR_ROLL";
+        refreshAllViews();
+      } else if (gameState.phase === "RULES" || gameState.phase === "LOADING") {
         gameState.phase = "WAIT_FOR_ROLL";
         refreshAllViews();
       }
@@ -2808,7 +2945,41 @@ function initSetupModal() {
 
 function openSetupModal() {
   const modal = document.getElementById("setup-modal");
-  if (modal) modal.classList.add("active");
+  if (!modal) return;
+  modal.classList.add("active");
+
+  const isMatchActive = gameState.phase !== "RULES" && gameState.phase !== "LOADING";
+  const resumeBtn = document.getElementById("setup-resume-btn");
+  const quickStartBtn = document.getElementById("setup-quick-start-btn");
+  const launchBtn = document.getElementById("setup-launch-match-btn");
+
+  if (isMatchActive) {
+    gameState.isPaused = true;
+    clearTimeout(gameState.botTurnTimeout);
+    if (gameState.activeAuction && gameState.activeAuction.intervalId) {
+      clearInterval(gameState.activeAuction.intervalId);
+    }
+    if (resumeBtn) resumeBtn.classList.remove("hidden");
+    if (quickStartBtn) quickStartBtn.classList.add("hidden");
+    if (launchBtn) launchBtn.textContent = "Restart Match (Confirm)";
+  } else {
+    gameState.isPaused = false;
+    if (resumeBtn) resumeBtn.classList.add("hidden");
+    if (quickStartBtn) quickStartBtn.classList.remove("hidden");
+    if (launchBtn) launchBtn.textContent = "Launch Clinical Match";
+  }
+}
+
+function resumeActiveMatch() {
+  gameState.isPaused = false;
+  closeSetupModal();
+  const curPlayer = gameState.players[gameState.currentPlayerIndex];
+  if (curPlayer && curPlayer.isBot && gameState.phase === "WAIT_FOR_ROLL") {
+    clearTimeout(gameState.botTurnTimeout);
+    gameState.botTurnTimeout = setTimeout(() => {
+      rollDiceAndMove(curPlayer);
+    }, 1200);
+  }
 }
 
 function closeSetupModal() {
@@ -2844,11 +3015,14 @@ function updateRegimePreviewCard(countryKey) {
   if (!previewCard) return;
   if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegime === "function") {
     const reg = CardiopolyPolicies.getRegime(countryKey);
+    const ruleText = (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.formatRegimeRuleText === "function")
+      ? CardiopolyPatches.formatRegimeRuleText(reg)
+      : `Key Rule: Co-pay rate ${Math.round(Number(reg.coPayRate ?? 0) * 100)}%, RVU mult ${Number(reg.rvuMult ?? reg.rvuMultiplier ?? 1.0).toFixed(2)}x, Rent mult ${Number(reg.rentMult ?? reg.rentMultiplier ?? 1.0).toFixed(2)}x${reg.specialRule ? ' | ' + reg.specialRule : ''}`;
     previewCard.innerHTML = `
       <strong>${reg.flag} ${reg.name} (${reg.fullName})</strong><br/>
       <em>${reg.tagline || ""}</em><br/>
       ${reg.description || ""}<br/>
-      <span style="color:#38bdf8;">Key Rule: Co-pay rate ${((reg.coPayRate || 0) * 100).toFixed(0)}%, RVU mult ${reg.rvuMultiplier}x, Rent mult ${reg.rentMultiplier}x</span>
+      <span style="color:#38bdf8;">${ruleText}</span>
     `;
   }
 }
@@ -2929,41 +3103,10 @@ function updateCenterConsoleFactionRace() {
   const container = document.getElementById("console-faction-bars");
   if (!container) return;
 
-  const factionColors = {
-    ACADEMIC_CLINICIAN: "fill-clinician",
-    INTERVENTIONALIST: "fill-interventionalist",
-    HOSPITAL_CEO: "fill-ceo",
-    REGULATORY_AUDITOR: "fill-auditor"
-  };
-
-  container.innerHTML = "";
-  gameState.players.forEach((p) => {
-    let progressPct = 0;
-    let desc = "";
-    if (typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.getFactionProgress === "function") {
-      const prog = CardiopolyFactions.getFactionProgress(p, gameState);
-      progressPct = prog.progressPct;
-      desc = prog.label;
-    } else {
-      progressPct = Math.min(100, Math.round((p.wp / 5000) * 100));
-      desc = `${p.wp} WP`;
-    }
-
-    const row = document.createElement("div");
-    row.className = "faction-bar-row";
-    const colorClass = factionColors[p.factionId] || "fill-clinician";
-
-    row.innerHTML = `
-      <div class="faction-bar-label-row">
-        <span>${p.shortName} (${p.factionId ? p.factionId.replace(/_/g, " ").slice(0, 10) : "CLIN"})</span>
-        <span>${desc} (${progressPct}%)</span>
-      </div>
-      <div class="faction-bar-track">
-        <div class="faction-bar-fill ${colorClass}" style="width: ${progressPct}%"></div>
-      </div>
-    `;
-    container.appendChild(row);
-  });
+  if (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.renderFactionRacePatched === "function") {
+    CardiopolyPatches.renderFactionRacePatched(container, gameState.players, gameState);
+    return;
+  }
 }
 
 function appendCenterConsoleActionLog(msg) {

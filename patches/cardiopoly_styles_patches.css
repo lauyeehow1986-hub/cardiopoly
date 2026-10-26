@@ -1,0 +1,217 @@
+/* ============================================================================
+ * CARDIOPOLY — Visual Polish, Modal Ergonomics & 11x11 Board Patch (`cardiopoly_styles_patches.css`)
+ * Target Repository: https://lauyeehow1986-hub.github.io/cardiopoly/ (`styles.css`)
+ *
+ * Fixes & Visual Enhancements Included:
+ * 1. Prevents Clinical Encounter / Vignette modals from overflowing below the viewport fold.
+ * 2. Arranges the 3 clinical option cards (`GDMT PROTOCOL`, `INVASIVE CATH / STENT`,
+ *    `COST CONTAINMENT`) into a responsive 3-column horizontal grid on desktop viewports.
+ * 3. Enhances 11x11 perimeter board tiles with readable WP cost badges, ownership glow borders,
+ *    mortgaged hazard stripes, and 4-pip suite upgrade indicators.
+ * 4. Adds floating resource delta callout animations (`+RVU`, `+WP`, `+SBP`) and dynamic ECG colors.
+ * ============================================================================ */
+
+:root {
+  --ecg-color: #10b981;
+  --tile-owned-glow: rgba(56, 189, 248, 0.45);
+  --modal-surface: #0f172a;
+  --modal-border: rgba(56, 189, 248, 0.32);
+}
+
+/* 1. Clinical Encounter / Vignette Modal Viewport & 3-Column Option Grid */
+.vignette-modal-content,
+.clinical-modal-card,
+.modal-dialog {
+  max-height: 88vh;
+  width: min(960px, 94vw);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 24px;
+  background: var(--modal-surface);
+  border: 1px solid var(--modal-border);
+  border-radius: 14px;
+  box-shadow: 0 22px 50px rgba(2, 6, 23, 0.85);
+  scrollbar-width: thin;
+  scrollbar-color: #38bdf8 #0f172a;
+}
+
+.vignette-patient-banner {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(8px);
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.vignette-options-grid,
+.clinical-choices-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 6px;
+}
+
+.vignette-option-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.vignette-option-card:hover {
+  transform: translateY(-2px);
+  border-color: #38bdf8;
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.15);
+}
+
+/* 2. 11x11 Perimeter Tile Visual Hierarchy, Cost Badges & Upgrade Pips */
+.board-tile,
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3px 4px;
+  overflow: hidden;
+  user-select: none;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.board-tile.is-owned,
+.tile.is-owned {
+  box-shadow: inset 0 0 0 1.5px var(--owner-color, #38bdf8), 0 0 8px var(--tile-owned-glow);
+}
+
+.board-tile.is-mortgaged::after,
+.tile.is-mortgaged::after {
+  content: "MORTGAGED";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #f87171;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(15, 23, 42, 0.78),
+    rgba(15, 23, 42, 0.78) 5px,
+    rgba(127, 29, 29, 0.45) 5px,
+    rgba(127, 29, 29, 0.45) 10px
+  );
+  pointer-events: none;
+}
+
+/* 4-Pip Suite Upgrade Tier Bar inside Property Color Header */
+.tile-color-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 7px;
+  width: 100%;
+  border-radius: 2px;
+}
+
+.tile-upgrade-pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fef08a;
+  box-shadow: 0 0 4px rgba(250, 204, 21, 0.9);
+}
+
+.tile-cost-badge {
+  font-size: 0.58rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  color: #cbd5e1;
+  background: rgba(2, 6, 23, 0.65);
+  padding: 1px 4px;
+  border-radius: 3px;
+  align-self: center;
+}
+
+/* 3. Medical SVG Token Badges & Step Hop Animation */
+.player-token {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.player-token.is-hopping {
+  transform: scale(1.28) translateY(-4px);
+}
+
+/* 4. Floating Resource Delta Callouts (+RVU, +WP, +SBP) */
+.floating-delta-badge {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  z-index: 30;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  pointer-events: none;
+  animation: cardiopolyFloatUp 1.4s ease-out forwards;
+}
+
+.floating-delta-badge.delta-positive {
+  background: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.5);
+}
+
+.floating-delta-badge.delta-negative {
+  background: rgba(239, 68, 68, 0.22);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+@keyframes cardiopolyFloatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.92);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-24px) scale(0.96);
+  }
+}
+
+/* 5. Responsive Breakpoints for Laptop & Tablet Viewports */
+@media (max-width: 1024px) {
+  .vignette-options-grid,
+  .clinical-choices-container {
+    grid-template-columns: 1fr;
+  }
+
+  .vignette-modal-content,
+  .clinical-modal-card {
+    max-height: 92vh;
+    padding: 14px 16px;
+  }
+}

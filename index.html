@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>CARDIOPOLY — Hospital Command Center &amp; Clinical Strategy Simulation</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css" />
 </head>
 <body>
   <!-- ====================================================================
@@ -160,6 +161,7 @@
       </div>
 
       <div class="setup-modal-footer">
+        <button id="setup-resume-btn" class="btn btn-secondary btn-large hidden" type="button">▶️ Resume Match</button>
         <button id="setup-quick-start-btn" class="btn btn-secondary btn-large" type="button">Quick Start (Defaults)</button>
         <button id="setup-launch-match-btn" class="btn btn-primary btn-large" type="button">Launch Clinical Match</button>
       </div>
@@ -796,6 +798,7 @@
   <script src="src/components/vignetteModal.js"></script>
   <script src="src/network/supabaseClient.js"></script>
   <script src="src/network/p2pSync.js"></script>
+  <script src="patches/cardiopoly_script_patches.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
