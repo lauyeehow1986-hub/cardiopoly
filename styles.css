@@ -4044,3 +4044,81 @@ html, body {
   from { transform: scale(1); }
   to { transform: scale(1.12); }
 }
+
+
+/* ========================================================
+   SPLASH SCREEN PRE-RENDER & ARTWORK POLISH (GRADIENT-BOOST)
+   ======================================================== */
+.splash-badge-kicker {
+  font-size: 0.65rem;
+  font-family: monospace;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #38bdf8;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  backdrop-filter: blur(4px);
+}
+
+.splash-image-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid rgba(6, 182, 212, 0.45);
+  background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+  box-shadow: 0 0 28px rgba(6, 182, 212, 0.35), inset 0 0 16px rgba(0, 0, 0, 0.8);
+  animation: splashGlowPulse 3.5s infinite ease-in-out;
+}
+
+@keyframes splashGlowPulse {
+  0%, 100% {
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.25), inset 0 0 16px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    border-color: rgba(6, 182, 212, 0.85);
+    box-shadow: 0 0 38px rgba(6, 182, 212, 0.55), inset 0 0 20px rgba(6, 182, 212, 0.25);
+  }
+}
+
+.splash-image-overlay-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.08) 0%, transparent 40%, rgba(3, 7, 18, 0.45) 100%);
+}
+
+.splash-enter-btn {
+  margin-top: 12px;
+  width: 100%;
+  padding: 11px 18px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #06b6d4 0%, #0284c7 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  text-transform: uppercase;
+}
+
+.splash-enter-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 22px rgba(6, 182, 212, 0.65);
+  filter: brightness(1.12);
+}
+
+.splash-enter-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.35);
+}

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>CARDIOPOLY — Hospital Command Center &amp; Clinical Strategy Simulation</title>
+  <link rel="preload" as="image" href="assets/images/cardiopoly_centerpiece_remastered.jpg" fetchpriority="high" />
   <link rel="stylesheet" href="styles.css?v=2.2.0" />
   <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css?v=2.2.0" />
 </head>
@@ -13,19 +14,25 @@
        ==================================================================== -->
   <div id="splash-screen" class="screen-overlay active" role="dialog" aria-modal="true" aria-label="Loading Cardiopoly">
     <div class="splash-card">
+      <div class="splash-badge-kicker">WHERE EVIDENCE-BASED MEDICINE MEETS HIGH-MARGIN METAL</div>
       <div class="splash-image-wrap">
         <img
           id="splash-img"
-          src="Monopoly_board_center.png"
-          alt="Cardiopoly Splash Screen"
+          src="assets/images/cardiopoly_centerpiece_remastered.jpg"
+          alt="Cardiopoly Remastered Game Centerpiece"
+          fetchpriority="high"
+          decoding="sync"
+          onerror="this.src='Monopoly_board_center.png'"
         />
+        <div class="splash-image-overlay-glow"></div>
       </div>
       <div class="splash-loading-area">
         <div class="splash-status" id="splash-status-text">Calibrating Cath Lab Billing Codes...</div>
         <div class="splash-progress-track">
           <div class="splash-progress-bar" id="splash-progress-bar"></div>
         </div>
-        <div class="splash-hint-sub">Tap anywhere to skip intro</div>
+        <button id="skip-splash-btn" class="splash-enter-btn" type="button">ENTER SIMULATION</button>
+        <div class="splash-hint-sub">Tap anywhere or press Space / Enter to skip</div>
       </div>
     </div>
   </div>
@@ -50,6 +57,26 @@
       window.__dismissCardiopolySplash = dismissSplash;
 
       // Instant touch & pointer dismiss
+      // Enter simulation button click
+      var enterBtn = document.getElementById("skip-splash-btn");
+      if (enterBtn) {
+        enterBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          dismissSplash();
+        });
+      }
+
+      // Keyboard dismiss (Space, Enter, Escape)
+      window.addEventListener("keydown", function(e) {
+        if (e.key === " " || e.key === "Enter" || e.key === "Escape") {
+          var s = document.getElementById("splash-screen");
+          if (s && s.classList.contains("active")) {
+            e.preventDefault();
+            dismissSplash();
+          }
+        }
+      });
+
       window.addEventListener("pointerdown", function () {
         var s = document.getElementById("splash-screen");
         if (s && s.classList.contains("active")) { dismissSplash(); }

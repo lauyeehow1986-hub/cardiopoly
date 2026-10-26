@@ -134,8 +134,15 @@ async function main() {
     console.log('Navigating to app:', appUrl);
     await send('Page.navigate', { url: appUrl });
 
+    // Wait for document ready
+    for (let i = 0; i < 20; i++) {
+      const state = await send('Runtime.evaluate', { expression: 'document.readyState' });
+      if (state?.result?.result?.value === 'complete' || state?.result?.result?.value === 'interactive') break;
+      await sleep(100);
+    }
+
     // 1. Splash Screen
-    await sleep(400);
+    await sleep(350);
     await saveScreenshot('screenshot_01_splash.png');
 
     // 2. Rules Screen
