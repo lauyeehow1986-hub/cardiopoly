@@ -1,0 +1,111 @@
+{
+  "updatedAt": "2026-10-26T23:00:00Z",
+  "version": "1.2.0",
+  "feedSource": "Cardiopoly MCP Live World Gateway (Brave News, Tavily, FRED, OpenFDA, PubMed)",
+  "events": [
+    {
+      "id": "pandemic_surge",
+      "category": "EPIDEMIOLOGICAL ALERT",
+      "headline": "Acute Viral Myocarditis & Respiratory Surge Overwhelms ER Triage",
+      "sourceTag": "WHO / MOH Surveillance Feed",
+      "patientVolumeMult": 1.5,
+      "rvuMod": 1.1,
+      "rentMod": 0.9,
+      "sbpStressDelta": 3,
+      "cathSurchargeWp": 0,
+      "gdmtBonusPoints": 5,
+      "description": "Patient encounter volume +50%. All clinical encounters add +3 SBP clinician fatigue unless mitigated by Telemetry bed."
+    },
+    {
+      "id": "contrast_shortage",
+      "category": "FDA SUPPLY SHORTAGE",
+      "headline": "Global Iodinated Contrast Media & Drug-Eluting Stent Bottleneck",
+      "sourceTag": "OpenFDA Device & Drug Shortage Registry",
+      "patientVolumeMult": 1.0,
+      "rvuMod": 0.8,
+      "rentMod": 1.0,
+      "sbpStressDelta": 0,
+      "cathSurchargeWp": 300,
+      "gdmtBonusPoints": 10,
+      "description": "Invasive Cath / Stent procedures incur a 300 WP supply surcharge and -20% RVU margin; GDMT Protocol grants +10 bonus GDMT points."
+    },
+    {
+      "id": "insurance_premium_spike",
+      "category": "MACROECONOMIC SHOCK",
+      "headline": "Commercial Insurance Premiums & Deductibles Spike +18% YoY",
+      "sourceTag": "FRED Medical Care CPI / Payer Bulletin",
+      "patientVolumeMult": 0.85,
+      "rvuMod": 1.0,
+      "rentMod": 0.8,
+      "sbpStressDelta": 2,
+      "cathSurchargeWp": 0,
+      "gdmtBonusPoints": 0,
+      "description": "Patients delay elective clinic visits: Suite rent collection drops by 20%, and Cost Containment triggers +50% higher readmission risk."
+    },
+    {
+      "id": "guideline_class_1a_update",
+      "category": "GUIDELINE REVISION",
+      "headline": "Joint ACC/ESC/MOH Rapid Four-Pillar GDMT Mandate Issued",
+      "sourceTag": "PubMed / National Guideline Clearinghouse",
+      "patientVolumeMult": 1.0,
+      "rvuMod": 0.95,
+      "rentMod": 1.05,
+      "sbpStressDelta": -2,
+      "cathSurchargeWp": 0,
+      "gdmtBonusPoints": 10,
+      "description": "Selecting GDMT Protocol grants +10 extra GDMT Points and -2 SBP relief. Guideline-discordant stenting doubles Regulatory Auditor clawback."
+    },
+    {
+      "id": "glp1_expansion",
+      "category": "CLINICAL TRIAL BREAKTHROUGH",
+      "headline": "Landmark SELECT/FLOW Trials Show 20% MACE Reduction via GLP-1 RA & SGLT2i",
+      "sourceTag": "ClinicalTrials.gov / ACC Scientific Sessions",
+      "patientVolumeMult": 1.15,
+      "rvuMod": 1.0,
+      "rentMod": 1.1,
+      "sbpStressDelta": -1,
+      "cathSurchargeWp": 0,
+      "gdmtBonusPoints": 15,
+      "description": "Preventive cardiometabolic regimens expand: GDMT Protocol yields +15 bonus points and reduces patient BMI trajectory."
+    },
+    {
+      "id": "ai_triage_mandate",
+      "category": "TECHNOLOGY & REGULATORY",
+      "headline": "Autonomous AI Echocardiogram & ECG Diagnostic Platforms Clear FDA Class II",
+      "sourceTag": "OpenFDA Digital Health / MedTech Wire",
+      "patientVolumeMult": 1.1,
+      "rvuMod": 1.15,
+      "rentMod": 1.0,
+      "sbpStressDelta": -3,
+      "cathSurchargeWp": -50,
+      "gdmtBonusPoints": 5,
+      "description": "Diagnostic workflow throughput increases by 15%; ECG Room and UA Area owners receive +50 WP dividend per turn."
+    },
+    {
+      "id": "nursing_workforce_strike",
+      "category": "LABOR & WORKFORCE",
+      "headline": "Nationwide Cardiac Perfusionist & Critical Care Nursing Shortage",
+      "sourceTag": "Hospital CEO Association Press Briefing",
+      "patientVolumeMult": 0.8,
+      "rvuMod": 0.85,
+      "rentMod": 0.9,
+      "sbpStressDelta": 4,
+      "cathSurchargeWp": 150,
+      "gdmtBonusPoints": 0,
+      "description": "Bed capacity constrained: All suites suffer -10% rent collections and clinician stress increases by +4 SBP."
+    },
+    {
+      "id": "heparin_recall_alert",
+      "category": "FDA DEVICE & DRUG RECALL",
+      "headline": "Urgent Batch Contamination Recall on Unfractionated Heparin Vials",
+      "sourceTag": "OpenFDA Enforcement Report",
+      "patientVolumeMult": 0.95,
+      "rvuMod": 0.75,
+      "rentMod": 1.0,
+      "sbpStressDelta": 2,
+      "cathSurchargeWp": 200,
+      "gdmtBonusPoints": 5,
+      "description": "Cath labs face supply rationing: Invasive Cath / Stent incurs +200 WP surcharge and carries +15% complication hazard."
+    }
+  ]
+}

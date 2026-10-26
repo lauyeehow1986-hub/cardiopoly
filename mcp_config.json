@@ -1,0 +1,100 @@
+{
+  "mcpServers": {
+    "brave-search-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@brave/brave-search-mcp-server"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_BRAVE_API_KEY"
+      }
+    },
+    "tavily-live-events": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "tavily-mcp@latest"
+      ],
+      "env": {
+        "TAVILY_API_KEY": "YOUR_TAVILY_API_KEY"
+      }
+    },
+    "fred-macroeconomics": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "fred-mcp-server"
+      ],
+      "env": {
+        "FRED_API_KEY": "YOUR_FRED_API_KEY"
+      }
+    },
+    "openfda-shortages-recalls": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@cyanheads/openfda-mcp-server"
+      ],
+      "env": {
+        "OPENFDA_API_KEY": "YOUR_OPENFDA_API_KEY"
+      }
+    },
+    "pubmed-guidelines": {
+      "command": "uvx",
+      "args": [
+        "pubmedmcp"
+      ]
+    },
+    "clinical-trials": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "clinicaltrials-mcp-server"
+      ]
+    },
+    "fal-visuals-audio-video": {
+      "command": "uvx",
+      "args": [
+        "fal-mcp-server"
+      ],
+      "env": {
+        "FAL_KEY": "YOUR_FAL_AI_KEY"
+      }
+    },
+    "replicate-media": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-replicate"
+      ],
+      "env": {
+        "REPLICATE_API_TOKEN": "YOUR_REPLICATE_TOKEN"
+      }
+    },
+    "elevenlabs-voice-sfx": {
+      "url": "https://api.elevenlabs.io/v1/mcp",
+      "note": "Official hosted OAuth MCP server for TTS character voiceovers and game SFX"
+    },
+    "minimax-multimodal": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "minimax-mcp-js"
+      ],
+      "env": {
+        "MINIMAX_API_KEY": "YOUR_MINIMAX_API_KEY",
+        "MINIMAX_API_HOST": "https://api.minimaxi.chat"
+      }
+    },
+    "luma-video-cutins": {
+      "command": "uvx",
+      "args": [
+        "luma-api-mcp"
+      ],
+      "env": {
+        "LUMA_API_KEY": "YOUR_LUMA_API_KEY"
+      }
+    }
+  }
+}

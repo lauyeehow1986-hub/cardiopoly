@@ -228,3 +228,109 @@
 .code-blue-screen-shake {
   animation: codeBlueShake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
+
+
+/* 7. Macro News Ticker & Dramatic In-Game Video Cut-In Overlay (Iteration 2) */
+.macro-news-ticker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+  border-bottom: 1px solid rgba(56, 189, 248, 0.35);
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.macro-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.macro-headline {
+  color: #38bdf8;
+}
+
+.macro-desc {
+  color: #cbd5e1;
+}
+
+.macro-source {
+  color: #94a3b8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.7rem;
+}
+
+.cutin-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.72);
+  backdrop-filter: blur(6px);
+  animation: cutinFadeIn 0.22s ease-out;
+}
+
+.cutin-overlay-backdrop.hidden {
+  display: none !important;
+}
+
+.cutin-banner-card {
+  width: min(760px, 92vw);
+  background: #0f172a;
+  border: 2px solid var(--cutin-accent, #ef4444);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 0 45px rgba(239, 68, 68, 0.4);
+  transform: skewX(-3deg);
+}
+
+.cutin-video {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.cutin-procedural-graphic {
+  padding: 18px 24px 6px;
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.16), transparent 70%);
+}
+
+.cutin-text-block {
+  padding: 14px 22px 18px;
+}
+
+.cutin-kicker {
+  font-size: 0.68rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+}
+
+.cutin-title {
+  margin: 4px 0;
+  font-size: 1.45rem;
+  font-weight: 900;
+  color: #f8fafc;
+}
+
+.cutin-subtitle {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+}
+
+@keyframes cutinFadeIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}

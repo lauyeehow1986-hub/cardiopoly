@@ -1493,6 +1493,33 @@ async function handleClinicalEncounter(player, tile) {
 function applyClinicalDecisionToPlayer(player, decision, scenario) {
   if (!player || !decision) return;
 
+  // MCP Macro Shock Modifiers
+  const activeShock = (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine)
+    ? CardiopolyMcpBridge.macroShockEngine.activeShock
+    : null;
+
+  if (activeShock) {
+    if (decision.choiceId === "CHOICE_INTERVENTION" && activeShock.cathSurchargeWp) {
+      player.wp = Math.max(0, player.wp - activeShock.cathSurchargeWp);
+    }
+    if (decision.choiceId === "CHOICE_GDMT" && activeShock.gdmtBonusPoints) {
+      decision.gdmtPoints = (decision.gdmtPoints || 3) + activeShock.gdmtBonusPoints;
+    }
+    if (activeShock.sbpStressDelta) {
+      player.sbp = Math.max(90, Math.min(240, player.sbp + activeShock.sbpStressDelta));
+    }
+  }
+
+  // MCP Video Cut-In Trigger on High-Risk Cath / Stenting
+  if (decision.choiceId === "CHOICE_INTERVENTION" && typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
+    CardiopolyMcpBridge.cutInOverlay.playCutIn({
+      id: 'cath_lab',
+      title: 'HIGH-RISK CATH / STENT DEPLOYED',
+      subtitle: `${player.name} deployed DES in ${(scenario && scenario.department) || 'Cath Lab'} (+${decision.rvuPoints || 1500} RVU)`,
+      accentColor: '#38bdf8'
+    });
+  }
+
   // Supabase analytics log & P2P broadcast for clinical decisions
   if (typeof CardiopolyDB !== "undefined") {
     try {
@@ -1768,6 +1795,14 @@ function assignPropertyToPlayer(player, tile, wpCost, reasonLabel) {
       margin: Math.round(wpCost * 1.5),
       fullGroup: completedGroup
     });
+    if (completedGroup && typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
+      CardiopolyMcpBridge.cutInOverlay.playCutIn({
+        id: 'monopoly_complete',
+        title: 'DEPARTMENT MONOPOLY FORMED',
+        subtitle: `${player.name} consolidated all suites in ${tile.groupName}!`,
+        accentColor: '#10b981'
+      });
+    }
   }
 
   setBoardTicker(`${player.shortName} ${reasonLabel} ${tile.name} for ${Math.round(wpCost)} WP!`);
@@ -2219,6 +2254,14 @@ function resetGameToRules() {
   const die2 = document.getElementById("die-2");
   if (die1) renderDieFace(die1, 1);
   if (die2) renderDieFace(die2, 1);
+  // Load MCP Live World Feed & initialize Macro Shock Engine
+  if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine) {
+    try {
+      await CardiopolyMcpBridge.macroShockEngine.loadMcpFeed("data/liveWorldFeed.json");
+      CardiopolyMcpBridge.macroShockEngine.advanceTurn(gameState.turnNumber || 1);
+    } catch (_) {}
+  }
+
   renderThumbnailBoard();
   refreshAllViews();
 
@@ -2460,6 +2503,14 @@ async function finishPlayerTurn() {
   if (gameState.gameMode === "CLINICAL_MASTERY" && typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.checkCodeBlueHospitalization === "function") {
     const codeBlue = CardiopolyFactions.checkCodeBlueHospitalization(curPlayer, gameState.gameMode);
     if (codeBlue.triggered) {
+      if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
+        CardiopolyMcpBridge.cutInOverlay.playCutIn({
+          id: 'code_blue',
+          title: 'CODE BLUE HOSPITALIZATION',
+          subtitle: `${curPlayer.name} admitted to CCU (SBP: ${curPlayer.sbp} mmHg)`,
+          accentColor: '#ef4444'
+        });
+      }
       playAudio("DEFIB");
       playAudio("ALARM");
       setBoardTicker(`🚨 ${codeBlue.message}`);
@@ -2569,6 +2620,19 @@ async function finishPlayerTurn() {
   gameState.turnNumber = (gameState.turnNumber || 1) + 1;
   gameState.currentPlayerIndex = (gameState.currentPlayerIndex + 1) % gameState.players.length;
   gameState.phase = "WAIT_FOR_ROLL";
+
+  // MCP Runtime Bridge: Advance Macro Shocks every 4 turns
+  if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine) {
+    const shock = CardiopolyMcpBridge.macroShockEngine.advanceTurn(gameState.turnNumber);
+    if (gameState.turnNumber % 4 === 0 && shock && CardiopolyMcpBridge.cutInOverlay) {
+      CardiopolyMcpBridge.cutInOverlay.playCutIn({
+        id: 'macro_shock',
+        title: (shock.headline || 'MACRO POLICY SHIFT').toUpperCase(),
+        subtitle: `${shock.category}: ${shock.description}`,
+        accentColor: '#38bdf8'
+      });
+    }
+  }
 
   // Phase 4: Process Longitudinal Patient Follow-Up Queue (turnNumber >= triggerTurn)
   if (Array.isArray(gameState.followUpQueue) && gameState.followUpQueue.length > 0) {
