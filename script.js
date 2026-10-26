@@ -3000,9 +3000,24 @@ function initSetupModal() {
   const muteBtn = document.getElementById("audio-mute-btn");
   if (muteBtn) {
     muteBtn.addEventListener("click", () => {
-      if (window.CardiopolyAudio && window.CardiopolyAudio.audioSynth) {
+      if (window.CardiopolyPatches?.cardiopolyAudioV2) {
+        const enabled = window.CardiopolyPatches.cardiopolyAudioV2.toggleSound();
+        muteBtn.textContent = enabled ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+        muteBtn.classList.toggle("active", enabled);
+      } else if (window.CardiopolyAudio && window.CardiopolyAudio.audioSynth) {
         const muted = window.CardiopolyAudio.audioSynth.toggleMute();
         muteBtn.textContent = muted ? "🔇 Muted" : "🔊 Sound";
+      }
+    });
+  }
+
+  const musicBtn = document.getElementById("audio-music-btn");
+  if (musicBtn) {
+    musicBtn.addEventListener("click", () => {
+      if (window.CardiopolyPatches?.cardiopolyAudioV2) {
+        const isMusic = window.CardiopolyPatches.cardiopolyAudioV2.toggleMusic();
+        musicBtn.textContent = isMusic ? "🎵 Music: ON" : "🔇 Music: OFF";
+        musicBtn.classList.toggle("active", isMusic);
       }
     });
   }
@@ -3646,10 +3661,14 @@ async function initGame() {
   function skipSplash() {
     if (splashDismissed) return;
     splashDismissed = true;
-    const splashEl = document.getElementById("splash-screen");
-    if (splashEl) {
-      splashEl.classList.remove("active");
-      splashEl.onclick = null;
+    if (typeof window.__dismissCardiopolySplash === "function") {
+      window.__dismissCardiopolySplash();
+    } else {
+      const splashEl = document.getElementById("splash-screen");
+      if (splashEl) {
+        splashEl.classList.remove("active");
+        splashEl.onclick = null;
+      }
     }
     const rulesEl = document.getElementById("rules-screen");
     if (rulesEl) rulesEl.classList.add("active");

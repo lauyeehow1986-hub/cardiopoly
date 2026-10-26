@@ -468,7 +468,10 @@ class CardiopolyAudioEngineV2 {
   constructor() {
     this.ctx = null;
     this.enabled = false;
+    this.musicEnabled = false;
     this.ambienceTimer = null;
+    this.musicTimer = null;
+    this.musicStep = 0;
     this.currentSbp = 120;
   }
 
@@ -575,6 +578,92 @@ class CardiopolyAudioEngineV2 {
     if (this.ambienceTimer) {
       clearTimeout(this.ambienceTimer);
       this.ambienceTimer = null;
+    }
+  }
+
+  toggleMusic(forceState) {
+    this.initContext();
+    this.musicEnabled = typeof forceState === 'boolean' ? forceState : !this.musicEnabled;
+    if (this.musicEnabled) {
+      this.startClinicalLoFiSoundtrack();
+    } else {
+      this.stopClinicalLoFiSoundtrack();
+    }
+    return this.musicEnabled;
+  }
+
+  startClinicalLoFiSoundtrack() {
+    this.stopClinicalLoFiSoundtrack();
+    if (!this.ctx) return;
+    this.musicEnabled = true;
+
+    // Normal play: Smooth Dm9 -> G13 -> Cmaj9 -> Am7 (Hospital Chillhop Strategy)
+    const normalChords = [
+      [146.83, 174.61, 220.00, 261.63, 329.63], // Dm9
+      [98.00, 174.61, 246.94, 329.63, 440.00],  // G13
+      [130.81, 164.81, 196.00, 246.94, 293.66], // Cmaj9
+      [110.00, 196.00, 261.63, 329.63]          // Am7
+    ];
+
+    // High tension / auction / elevated SBP: Darker diminished/minor progression
+    const tensionChords = [
+      [123.47, 174.61, 207.65, 261.63], // Bdim7
+      [164.81, 207.65, 246.94, 311.13], // E7b9
+      [110.00, 164.81, 220.00, 261.63], // Am9
+      [146.83, 174.61, 220.00, 293.66]  // Dm9
+    ];
+
+    const leadMotifs = [
+      [523.25, 587.33, 659.25, 783.99], // C5, D5, E5, G5
+      [440.00, 523.25, 659.25, 880.00], // A4, C5, E5, A5
+      [587.33, 659.25, 783.99, 1046.5]  // D5, E5, G5, C6
+    ];
+
+    const tick = () => {
+      if (!this.musicEnabled || !this.ctx) return;
+      const sbp = this.currentSbp || 120;
+      const bpm = sbp >= 175 ? 136 : (sbp >= 145 ? 104 : 72);
+      const beatInterval = (60 / bpm);
+      const stepInterval = beatInterval / 4; // 16th note step
+
+      const measureStep = this.musicStep % 16;
+      const chordIndex = Math.floor((this.musicStep / 16) % 4);
+      const isTension = sbp >= 145;
+      const chordSet = isTension ? tensionChords : normalChords;
+      const currentChord = chordSet[chordIndex];
+
+      // 1. Beat 1: Warm Rhodes Piano Chord (ADSR with lowpass warmth)
+      if (measureStep === 0) {
+        currentChord.forEach((freq, idx) => {
+          this.playEnvelopedTone(freq, beatInterval * 3.6, 'triangle', 0.032, idx * 0.022);
+        });
+      }
+
+      // 2. Cardiac Heartbeat Sub-Bass ("Lub-Dub" at beats 0 and 2.5)
+      if (measureStep === 0 || measureStep === 10) {
+        const bassFreq = measureStep === 0 ? 55 : 44;
+        this.playEnvelopedTone(bassFreq, 0.16, 'sine', 0.055, 0);
+      }
+
+      // 3. Subtle Syncopated Arpeggio Lead (clinical telemetry vibe)
+      if (measureStep === 4 || measureStep === 8 || measureStep === 14) {
+        const motif = leadMotifs[chordIndex % leadMotifs.length];
+        const note = motif[Math.floor(Math.random() * motif.length)];
+        this.playEnvelopedTone(note, 0.22, 'sine', 0.018, 0);
+      }
+
+      this.musicStep++;
+      this.musicTimer = setTimeout(tick, Math.round(stepInterval * 1000));
+    };
+
+    tick();
+  }
+
+  stopClinicalLoFiSoundtrack() {
+    this.musicEnabled = false;
+    if (this.musicTimer) {
+      clearTimeout(this.musicTimer);
+      this.musicTimer = null;
     }
   }
 }

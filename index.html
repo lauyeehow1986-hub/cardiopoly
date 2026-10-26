@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>CARDIOPOLY — Hospital Command Center &amp; Clinical Strategy Simulation</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css" />
+  <link rel="stylesheet" href="styles.css?v=2.2.0" />
+  <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css?v=2.2.0" />
 </head>
 <body>
   <!-- ====================================================================
@@ -25,10 +25,65 @@
         <div class="splash-progress-track">
           <div class="splash-progress-bar" id="splash-progress-bar"></div>
         </div>
-        <div class="splash-hint-sub">Click anywhere to skip intro</div>
+        <div class="splash-hint-sub">Tap anywhere to skip intro</div>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var dismissed = false;
+      function dismissSplash() {
+        if (dismissed) return;
+        dismissed = true;
+        var s = document.getElementById("splash-screen");
+        if (s) {
+          s.classList.remove("active");
+          s.style.opacity = "0";
+          s.style.pointerEvents = "none";
+          setTimeout(function () { if (s.parentNode) s.style.display = "none"; }, 350);
+        }
+        var r = document.getElementById("rules-screen");
+        if (r && (!window.gameState || window.gameState.phase === "RULES" || window.gameState.phase === "LOADING")) {
+          r.classList.add("active");
+        }
+      }
+      window.__dismissCardiopolySplash = dismissSplash;
+
+      // Instant touch & pointer dismiss
+      window.addEventListener("pointerdown", function () {
+        var s = document.getElementById("splash-screen");
+        if (s && s.classList.contains("active")) { dismissSplash(); }
+      }, { capture: true, passive: true });
+
+      // Progressive status updates
+      var pct = 0;
+      var statusMessages = [
+        "Calibrating Cath Lab Billing Codes...",
+        "Loading ACC/AHA Guideline Formularies...",
+        "Syncing RVU Reimbursement Schedules...",
+        "Connecting Real-Time Telemetry ECG...",
+        "Ready for Clinical Admission!"
+      ];
+      var timer = setInterval(function () {
+        if (dismissed) { clearInterval(timer); return; }
+        pct = Math.min(100, pct + 14);
+        var bar = document.getElementById("splash-progress-bar");
+        var txt = document.getElementById("splash-status-text");
+        if (bar) bar.style.width = pct + "%";
+        if (txt) {
+          var stepIdx = Math.min(statusMessages.length - 1, Math.floor((pct / 100) * statusMessages.length));
+          txt.textContent = statusMessages[stepIdx];
+        }
+        if (pct >= 100) {
+          clearInterval(timer);
+          setTimeout(dismissSplash, 280);
+        }
+      }, 100);
+
+      // Hard ceiling timeout: never hangs longer than 1.4s under any condition
+      setTimeout(dismissSplash, 1400);
+    })();
+  </script>
 
   <!-- ====================================================================
        2. PRE-GAME COMMAND SETUP LOBBY (Role, Regime, Mode & AI Selection)
@@ -251,7 +306,8 @@
             <span class="faction-label">FACTION:</span>
             <button id="telemetry-faction-badge" class="faction-badge btn-clickable-badge" type="button" title="View Faction Dossier &amp; Victory Progress">ACADEMIC CLINICIAN</button>
           </div>
-          <button id="audio-mute-btn" class="btn-chip btn-icon-chip" type="button" title="Toggle Sound Audio">🔊 Sound</button>
+          <button id="audio-mute-btn" class="btn-chip btn-icon-chip" type="button" title="Toggle Sound SFX">🔊 Sound</button>
+          <button id="audio-music-btn" class="btn-chip btn-icon-chip" type="button" title="Toggle Clinical Lo-Fi Strategy Music">🎵 Music</button>
           <button id="lobby-setup-btn" class="btn-chip btn-icon-chip" type="button" title="Match Settings &amp; Rules">⚙️ Options</button>
         </div>
       </div>
@@ -788,18 +844,18 @@
        6. SCRIPTS IN CANONICAL ARCHITECTURAL DEPENDENCY ORDER
        ==================================================================== -->
   <script defer src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="src/components/audioSynth.js"></script>
-  <script src="src/components/telemetry.js"></script>
-  <script src="src/engine/factions.js"></script>
-  <script src="src/engine/policies.js"></script>
-  <script src="src/components/toasts.js"></script>
-  <script src="src/engine/aiController.js"></script>
-  <script src="src/engine/departmentUpgrades.js"></script>
-  <script src="src/components/vignetteModal.js"></script>
-  <script src="src/network/supabaseClient.js"></script>
-  <script src="src/network/p2pSync.js"></script>
-  <script src="patches/cardiopoly_script_patches.js"></script>
-  <script src="patches/cardiopoly_mcp_runtime_bridge.js"></script>
-  <script src="script.js"></script>
+  <script src="src/components/audioSynth.js?v=2.2.0"></script>
+  <script src="src/components/telemetry.js?v=2.2.0"></script>
+  <script src="src/engine/factions.js?v=2.2.0"></script>
+  <script src="src/engine/policies.js?v=2.2.0"></script>
+  <script src="src/components/toasts.js?v=2.2.0"></script>
+  <script src="src/engine/aiController.js?v=2.2.0"></script>
+  <script src="src/engine/departmentUpgrades.js?v=2.2.0"></script>
+  <script src="src/components/vignetteModal.js?v=2.2.0"></script>
+  <script src="src/network/supabaseClient.js?v=2.2.0"></script>
+  <script src="src/network/p2pSync.js?v=2.2.0"></script>
+  <script src="patches/cardiopoly_script_patches.js?v=2.2.0"></script>
+  <script src="patches/cardiopoly_mcp_runtime_bridge.js?v=2.2.0"></script>
+  <script src="script.js?v=2.2.0"></script>
 </body>
 </html>
