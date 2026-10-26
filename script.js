@@ -858,9 +858,11 @@ function renderThumbnailBoard() {
     tokenEl.className = `board-token player-token ${player.colorClass} ${player.id === 0 ? "token-user" : ""}`;
     
     // Phase 2: Render inline SVG medical token
-    if (typeof CardiopolyPatches !== "undefined") {
-      const fKey = CardiopolyPatches.resolveFactionKey(player.factionId || player.faction || player.role);
-      const meta = CardiopolyPatches.FACTION_METADATA[fKey];
+    if (typeof CardiopolyPatches !== "undefined" && CardiopolyPatches.FACTION_METADATA) {
+      const fKey = typeof CardiopolyPatches.resolveFactionKey === "function"
+        ? CardiopolyPatches.resolveFactionKey(player.factionId || player.faction || player.role)
+        : (player.factionId || 'ACADEMIC');
+      const meta = CardiopolyPatches.FACTION_METADATA[fKey] || CardiopolyPatches.FACTION_METADATA['ACADEMIC'];
       if (meta && meta.tokenSvg) {
         tokenEl.innerHTML = meta.tokenSvg;
       }
@@ -2254,11 +2256,10 @@ function resetGameToRules() {
   const die2 = document.getElementById("die-2");
   if (die1) renderDieFace(die1, 1);
   if (die2) renderDieFace(die2, 1);
-  // Load MCP Live World Feed & initialize Macro Shock Engine
+  // Reset MCP Live World Engine for new game
   if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine) {
     try {
-      await CardiopolyMcpBridge.macroShockEngine.loadMcpFeed("data/liveWorldFeed.json");
-      CardiopolyMcpBridge.macroShockEngine.advanceTurn(gameState.turnNumber || 1);
+      CardiopolyMcpBridge.macroShockEngine.advanceTurn(1);
     } catch (_) {}
   }
 
@@ -3641,51 +3642,6 @@ function wireEventListeners() {
 }
 
 async function initGame() {
-  initTelemetryController();
-  initCenterConsole();
-  initSetupModal();
-  initializePlayerFactions(gameState.players);
-  initDieElement(document.getElementById("die-1"));
-  initDieElement(document.getElementById("die-2"));
-  renderDieFace(document.getElementById("die-1"), 1);
-  renderDieFace(document.getElementById("die-2"), 1);
-
-  wireEventListeners();
-
-  // Animate splash screen progress bar at one-third speed while loading assets
-  const progressBar = document.getElementById("splash-progress-bar");
-  const statusText = document.getElementById("splash-status-text");
-
-  const [propsText, cardsText, milestonesText] = await Promise.all([
-    fetchTextWithFallback("Properties.csv", FALLBACK_PROPERTIES_CSV),
-    fetchTextWithFallback("Cards.csv", FALLBACK_CARDS_CSV),
-    fetchTextWithFallback("Milestones.csv", FALLBACK_MILESTONES_CSV)
-  ]);
-
-  const propertiesMap = parsePropertiesCSV(propsText);
-  gameState.tiles = buildBoardTiles(propertiesMap);
-  const parsedCards = parseCardsCSV(cardsText);
-  gameState.cards.chance = parsedCards.chance;
-  gameState.cards.communityChest = parsedCards.communityChest;
-  gameState.milestonesData = parseMilestonesCSV(milestonesText);
-
-  // Load dynamic clinical vignettes if available
-  try {
-    const vignRes = await fetch("data/vignettes.json", { cache: "no-store" });
-    if (vignRes.ok) {
-      const data = await vignRes.json();
-      window.__CARDIOPOLY_VIGNETTES__ = Array.isArray(data) ? data : (data.vignettes || []);
-      if (typeof CardiopolyVignettes !== "undefined" && typeof CardiopolyVignettes.loadVignettes === "function") {
-        CardiopolyVignettes.loadVignettes();
-      }
-    }
-  } catch (err) {
-    // Falls back to embedded vignettes
-  }
-
-  renderThumbnailBoard();
-  refreshAllViews();
-
   let splashDismissed = false;
   function skipSplash() {
     if (splashDismissed) return;
@@ -3700,30 +3656,90 @@ async function initGame() {
     gameState.phase = "RULES";
   }
 
+  // Bind skip handlers immediately so title screen never hangs on user interaction
   const splashScreenEl = document.getElementById("splash-screen");
   if (splashScreenEl) {
     splashScreenEl.onclick = skipSplash;
+    splashScreenEl.addEventListener("pointerdown", skipSplash, { once: true });
+    splashScreenEl.addEventListener("keydown", skipSplash, { once: true });
   }
 
-  // Fill progress bar steadily over SPLASH_DURATION_MS
-  const steps = 20;
-  const stepWait = Math.round(SPLASH_DURATION_MS / steps);
-  for (let i = 1; i <= steps; i++) {
-    if (splashDismissed) break;
-    const pct = Math.round((i / steps) * 100);
-    if (progressBar) progressBar.style.width = `${pct}%`;
-    if (statusText) {
-      if (pct === 40) {
-        statusText.textContent = "Stocking Wegovy & Oculostenotic Stents...";
-      } else if (pct === 85) {
-        statusText.textContent = "Ready for Admission!";
+  try {
+    initTelemetryController();
+    initCenterConsole();
+    initSetupModal();
+    initializePlayerFactions(gameState.players);
+    initDieElement(document.getElementById("die-1"));
+    initDieElement(document.getElementById("die-2"));
+    renderDieFace(document.getElementById("die-1"), 1);
+    renderDieFace(document.getElementById("die-2"), 1);
+
+    wireEventListeners();
+
+    // Animate splash screen progress bar while loading assets
+    const progressBar = document.getElementById("splash-progress-bar");
+    const statusText = document.getElementById("splash-status-text");
+
+    const [propsText, cardsText, milestonesText] = await Promise.all([
+      fetchTextWithFallback("Properties.csv", FALLBACK_PROPERTIES_CSV),
+      fetchTextWithFallback("Cards.csv", FALLBACK_CARDS_CSV),
+      fetchTextWithFallback("Milestones.csv", FALLBACK_MILESTONES_CSV)
+    ]);
+
+    const propertiesMap = parsePropertiesCSV(propsText);
+    gameState.tiles = buildBoardTiles(propertiesMap);
+    const parsedCards = parseCardsCSV(cardsText);
+    gameState.cards.chance = parsedCards.chance;
+    gameState.cards.communityChest = parsedCards.communityChest;
+    gameState.milestonesData = parseMilestonesCSV(milestonesText);
+
+    // Load dynamic clinical vignettes if available
+    try {
+      const vignRes = await fetch("data/vignettes.json", { cache: "no-store" });
+      if (vignRes.ok) {
+        const data = await vignRes.json();
+        window.__CARDIOPOLY_VIGNETTES__ = Array.isArray(data) ? data : (data.vignettes || []);
+        if (typeof CardiopolyVignettes !== "undefined" && typeof CardiopolyVignettes.loadVignettes === "function") {
+          CardiopolyVignettes.loadVignettes();
+        }
       }
+    } catch (_) {
+      // Falls back to embedded vignettes
     }
-    await sleep(stepWait);
-  }
 
-  if (!splashDismissed) {
-    skipSplash();
+    // Load MCP Live World Feed & initialize Macro Shock Engine
+    if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine) {
+      try {
+        await CardiopolyMcpBridge.macroShockEngine.loadMcpFeed("data/liveWorldFeed.json");
+        CardiopolyMcpBridge.macroShockEngine.advanceTurn(gameState.turnNumber || 1);
+      } catch (_) {}
+    }
+
+    renderThumbnailBoard();
+    refreshAllViews();
+
+    // Fill progress bar steadily over SPLASH_DURATION_MS
+    const steps = 20;
+    const stepWait = Math.round(SPLASH_DURATION_MS / steps);
+    for (let i = 1; i <= steps; i++) {
+      if (splashDismissed) break;
+      const pct = Math.round((i / steps) * 100);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (statusText) {
+        if (pct === 40) {
+          statusText.textContent = "Stocking Wegovy & Oculostenotic Stents...";
+        } else if (pct === 85) {
+          statusText.textContent = "Ready for Admission!";
+        }
+      }
+      await sleep(stepWait);
+    }
+  } catch (err) {
+    console.error("[Cardiopoly Init Warning]", err);
+  } finally {
+    if (!splashDismissed) {
+      skipSplash();
+    }
   }
 }
 

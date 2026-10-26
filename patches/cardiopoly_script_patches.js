@@ -449,6 +449,7 @@ window.CardiopolyPatches = {
   CARDIOPOLY_REGIMES_PATCH,
   formatRegimeRuleText,
   FACTION_METADATA,
+  resolveFactionKey,
   sanitizePlayerNames,
   computePlayerFactionProgress,
   renderFactionRacePatched,
