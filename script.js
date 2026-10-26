@@ -1640,6 +1640,14 @@ async function resolveLandedTile(player, tile) {
   }
 
   if (tile.type === "TAX" || tile.type === "AUDIT") {
+    if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
+      CardiopolyMcpBridge.cutInOverlay.playCutIn({
+        id: 'regulatory_audit',
+        title: 'REGULATORY CLAWBACK & AUDIT',
+        subtitle: `${player.name} flagged for hospital billing review!`,
+        accentColor: '#f59e0b'
+      });
+    }
     let auditMultiplier = 1.0;
     let auditNote = "";
     if (typeof CardiopolyPolicies !== "undefined" && typeof CardiopolyPolicies.getRegimeMultiplier === "function") {
@@ -3109,40 +3117,75 @@ function updateRegimePreviewCard(countryKey) {
 
 // --- 2. CENTER CARDIOLOGY COMMAND CONSOLE ---
 function initCenterConsole() {
-  const tabTelemetryBtn = document.getElementById("tab-telemetry-btn");
+  const tabCenterpieceBtn = document.getElementById("tab-centerpiece-btn");
   const tabRaceBtn = document.getElementById("tab-race-btn");
   const tabTickerBtn = document.getElementById("tab-ticker-btn");
+  const tabTelemetryBtn = document.getElementById("tab-telemetry-btn");
 
-  const viewTelemetry = document.getElementById("console-telemetry-view");
+  const viewCenterpiece = document.getElementById("console-centerpiece-view");
   const viewRace = document.getElementById("console-race-view");
   const viewTicker = document.getElementById("console-ticker-view");
+  const viewTelemetry = document.getElementById("console-telemetry-view");
 
-  if (!tabTelemetryBtn || !tabRaceBtn || !tabTickerBtn) return;
+  const allTabs = [
+    { btn: tabCenterpieceBtn, view: viewCenterpiece, name: "centerpiece" },
+    { btn: tabRaceBtn, view: viewRace, name: "race" },
+    { btn: tabTickerBtn, view: viewTicker, name: "ticker" },
+    { btn: tabTelemetryBtn, view: viewTelemetry, name: "telemetry" }
+  ];
 
   const setConsoleTab = (tabName) => {
-    [tabTelemetryBtn, tabRaceBtn, tabTickerBtn].forEach((b) => b.classList.remove("active"));
-    [viewTelemetry, viewRace, viewTicker].forEach((v) => v && v.classList.remove("active"));
+    allTabs.forEach((t) => {
+      if (t.btn) t.btn.classList.toggle("active", t.name === tabName);
+      if (t.view) t.view.classList.toggle("active", t.name === tabName);
+    });
 
-    if (tabName === "telemetry") {
-      tabTelemetryBtn.classList.add("active");
-      if (viewTelemetry) viewTelemetry.classList.add("active");
+    if (tabName === "centerpiece") {
+      updateCenterpieceHud();
     } else if (tabName === "race") {
-      tabRaceBtn.classList.add("active");
-      if (viewRace) viewRace.classList.add("active");
       updateCenterConsoleFactionRace();
-    } else if (tabName === "ticker") {
-      tabTickerBtn.classList.add("active");
-      if (viewTicker) viewTicker.classList.add("active");
+    } else if (tabName === "telemetry") {
+      updateCenterConsoleTelemetry();
     }
   };
 
-  tabTelemetryBtn.addEventListener("click", () => setConsoleTab("telemetry"));
-  tabRaceBtn.addEventListener("click", () => setConsoleTab("race"));
-  tabTickerBtn.addEventListener("click", () => setConsoleTab("ticker"));
+  allTabs.forEach((t) => {
+    if (t.btn) {
+      t.btn.addEventListener("click", () => setConsoleTab(t.name));
+    }
+  });
 
   const consoleCanvas = document.getElementById("console-ecg-canvas");
   if (consoleCanvas && typeof CardiopolyTelemetry !== "undefined" && typeof CardiopolyTelemetry.initTelemetryCanvas === "function") {
     window.consoleTelemetryController = CardiopolyTelemetry.initTelemetryCanvas(consoleCanvas, { sbp: 120, dbp: 80 });
+  }
+
+  updateCenterpieceHud();
+}
+
+function updateCenterpieceHud() {
+  const regimeBadge = document.getElementById("centerpiece-regime-badge");
+  const turnBadge = document.getElementById("centerpiece-turn-badge");
+  const playerBadge = document.getElementById("centerpiece-player-badge");
+  const shockBadge = document.getElementById("centerpiece-shock-badge");
+
+  if (regimeBadge && typeof gameState !== "undefined") {
+    regimeBadge.textContent = gameState.currentRegime || "Singapore (3M)";
+  }
+
+  if (turnBadge && typeof gameState !== "undefined") {
+    turnBadge.textContent = `Turn ${gameState.turnNumber || 1}`;
+  }
+
+  if (playerBadge && typeof gameState !== "undefined" && gameState.players && gameState.players[gameState.currentPlayerIndex]) {
+    const curP = gameState.players[gameState.currentPlayerIndex];
+    playerBadge.textContent = `${curP.name || 'Dr. Guidelines'}`;
+  }
+
+  if (shockBadge && typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.macroShockEngine?.activeShock) {
+    shockBadge.textContent = CardiopolyMcpBridge.macroShockEngine.activeShock.headline || "Policy Active";
+  } else if (shockBadge) {
+    shockBadge.textContent = "Standard Protocol";
   }
 }
 

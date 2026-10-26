@@ -3823,3 +3823,224 @@ html, body {
   from { opacity: 0; transform: scale(0.94); }
   to { opacity: 1; transform: scale(1); }
 }
+
+
+/* ========================================================
+   CARDIOPOLY CENTERPIECE & CUT-IN VIDEO UPGRADE (GRADIENT-BOOST V2)
+   ======================================================== */
+
+/* Centerpiece Art View */
+#console-centerpiece-view {
+  width: 100%;
+  height: 100%;
+  display: none;
+  position: relative;
+  overflow: hidden;
+}
+
+#console-centerpiece-view.active {
+  display: flex !important;
+}
+
+.centerpiece-art-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.7);
+}
+
+.centerpiece-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  filter: contrast(1.05) saturate(1.1);
+}
+
+.centerpiece-art-card:hover .centerpiece-img {
+  transform: scale(1.03);
+}
+
+.centerpiece-overlay-hud {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 8px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.75) 0%, transparent 30%, transparent 70%, rgba(3, 7, 18, 0.85) 100%);
+}
+
+.centerpiece-top-row,
+.centerpiece-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.centerpiece-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+
+.centerpiece-badge.regime {
+  background: rgba(6, 182, 212, 0.25);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+}
+
+.centerpiece-badge.turn {
+  background: rgba(148, 163, 184, 0.2);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.centerpiece-badge.player {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.centerpiece-badge.shock {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* CUT-IN OVERLAY SYSTEM */
+.cutin-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cutinFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  cursor: pointer;
+}
+
+.cutin-overlay-backdrop.hidden {
+  display: none !important;
+}
+
+.cutin-banner-card {
+  position: relative;
+  width: 92%;
+  max-width: 680px;
+  background: #090e1a;
+  border: 2px solid var(--cutin-accent, #06b6d4);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 32px var(--cutin-accent, rgba(6, 182, 212, 0.4)), 0 20px 40px rgba(0, 0, 0, 0.8);
+  animation: cutinSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cutin-media-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+}
+
+.cutin-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cutin-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: cutinKenBurns 5.5s linear forwards;
+}
+
+.cutin-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+}
+
+.cutin-procedural {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #0f172a 0%, #030712 100%);
+}
+
+.cutin-text-block {
+  padding: 14px 20px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.98) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cutin-kicker {
+  font-size: 0.65rem;
+  font-family: monospace;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--cutin-accent, #38bdf8);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.cutin-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.cutin-subtitle {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.35;
+}
+
+@keyframes cutinFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cutinSlideUp {
+  from { transform: scale(0.92) translateY(24px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes cutinKenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}

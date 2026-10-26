@@ -592,6 +592,14 @@ class CardiopolyAudioEngineV2 {
     return this.musicEnabled;
   }
 
+  duckSoundtrack(durationMs = 4500) {
+    this.soundtrackDucked = true;
+    if (this.duckTimer) clearTimeout(this.duckTimer);
+    this.duckTimer = setTimeout(() => {
+      this.soundtrackDucked = false;
+    }, durationMs);
+  }
+
   startClinicalLoFiSoundtrack() {
     this.stopClinicalLoFiSoundtrack();
     if (!this.ctx) return;
@@ -631,25 +639,26 @@ class CardiopolyAudioEngineV2 {
       const isTension = sbp >= 145;
       const chordSet = isTension ? tensionChords : normalChords;
       const currentChord = chordSet[chordIndex];
+      const duckMultiplier = this.soundtrackDucked ? 0.25 : 1.0;
 
       // 1. Beat 1: Warm Rhodes Piano Chord (ADSR with lowpass warmth)
       if (measureStep === 0) {
         currentChord.forEach((freq, idx) => {
-          this.playEnvelopedTone(freq, beatInterval * 3.6, 'triangle', 0.032, idx * 0.022);
+          this.playEnvelopedTone(freq, beatInterval * 3.6, 'triangle', 0.032 * duckMultiplier, idx * 0.022);
         });
       }
 
       // 2. Cardiac Heartbeat Sub-Bass ("Lub-Dub" at beats 0 and 2.5)
       if (measureStep === 0 || measureStep === 10) {
         const bassFreq = measureStep === 0 ? 55 : 44;
-        this.playEnvelopedTone(bassFreq, 0.16, 'sine', 0.055, 0);
+        this.playEnvelopedTone(bassFreq, 0.16, 'sine', 0.055 * duckMultiplier, 0);
       }
 
       // 3. Subtle Syncopated Arpeggio Lead (clinical telemetry vibe)
       if (measureStep === 4 || measureStep === 8 || measureStep === 14) {
         const motif = leadMotifs[chordIndex % leadMotifs.length];
         const note = motif[Math.floor(Math.random() * motif.length)];
-        this.playEnvelopedTone(note, 0.22, 'sine', 0.018, 0);
+        this.playEnvelopedTone(note, 0.22, 'sine', 0.018 * duckMultiplier, 0);
       }
 
       this.musicStep++;

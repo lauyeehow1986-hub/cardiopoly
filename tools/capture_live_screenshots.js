@@ -14,7 +14,8 @@ const MIME_TYPES = {
   '.csv': 'text/csv; charset=utf-8',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
-  '.svg': 'image/svg+xml'
+  '.svg': 'image/svg+xml',
+  '.webm': 'video/webm'
 };
 
 const server = http.createServer((req, res) => {
@@ -61,10 +62,10 @@ async function run() {
     for (let i = 0; i < 40; i++) {
       try {
         const res = await new Promise((resolve, reject) => {
-          http.get(`http://127.0.0.1:${CDP_PORT}/json`, (res) => {
+          http.get(`http://127.0.0.1:${CDP_PORT}/json`, (r) => {
             let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => resolve(JSON.parse(data)));
+            r.on('data', chunk => data += chunk);
+            r.on('end', () => resolve(JSON.parse(data)));
           }).on('error', reject);
         });
         if (res && res.length > 0 && res[0].webSocketDebuggerUrl) {
@@ -99,7 +100,7 @@ async function run() {
         const timer = setTimeout(() => {
           pending.delete(id);
           resolve(null);
-        }, 10000);
+        }, 12000);
         pending.set(id, (val) => {
           clearTimeout(timer);
           resolve(val);
@@ -116,7 +117,7 @@ async function run() {
     console.log('Navigating to:', appUrl);
     await send('Page.navigate', { url: appUrl });
 
-    // Wait 400ms to capture animated splash
+    // 1. Splash Screen
     await sleep(400);
     const shotSplash = await send('Page.captureScreenshot', { format: 'png' });
     if (shotSplash?.result?.data) {
@@ -124,11 +125,16 @@ async function run() {
       console.log('✓ Captured updated screenshot_01_splash.png');
     }
 
-    // Wait 1.6s for splash to complete and show rules screen
-    await sleep(1600);
+    // 2. Rules Screen
+    await sleep(1500);
+    const shotRules = await send('Page.captureScreenshot', { format: 'png' });
+    if (shotRules?.result?.data) {
+      fs.writeFileSync('screenshot_02_rules.png', Buffer.from(shotRules.result.data, 'base64'));
+      console.log('✓ Captured updated screenshot_02_rules.png');
+    }
 
-    // Bypass setup modal directly into active match and test Music
-    console.log('Launching active match and testing Music button...');
+    // 3. Active Board with Remastered Centerpiece Art & Music
+    console.log('Launching active match and testing Centerpiece & Music button...');
     const matchState = await send('Runtime.evaluate', {
       expression: `(function() {
         if (typeof window.__dismissCardiopolySplash === 'function') {
@@ -151,18 +157,42 @@ async function run() {
           phase: window.gameState?.phase,
           hasMusicBtn: !!document.getElementById('audio-music-btn'),
           musicBtnText: document.getElementById('audio-music-btn')?.textContent,
-          musicEnabled: window.CardiopolyPatches?.cardiopolyAudioV2?.musicEnabled
+          musicEnabled: window.CardiopolyPatches?.cardiopolyAudioV2?.musicEnabled,
+          isCenterpieceActive: document.getElementById('tab-centerpiece-btn')?.classList.contains('active'),
+          centerpieceImg: document.getElementById('centerpiece-main-img')?.getAttribute('src')
         };
       })()`,
       returnByValue: true
     });
-    console.log('Match State after Music toggle:', matchState?.result?.value);
+    console.log('Match State & Centerpiece:', matchState?.result?.value);
 
     await sleep(800);
     const shotBoard = await send('Page.captureScreenshot', { format: 'png' });
     if (shotBoard?.result?.data) {
       fs.writeFileSync('screenshot_03_active_board.png', Buffer.from(shotBoard.result.data, 'base64'));
       console.log('✓ Captured updated screenshot_03_active_board.png');
+    }
+
+    // 4. Trigger Live Cut-In (Code Blue / Cath Lab / Audit)
+    console.log('Triggering dramatic live Cut-In overlay...');
+    await send('Runtime.evaluate', {
+      expression: `(function() {
+        if (window.CardiopolyMcpBridge?.cutInOverlay) {
+          window.CardiopolyMcpBridge.cutInOverlay.playCutIn({
+            id: 'code_blue',
+            title: 'CODE BLUE HOSPITALIZATION',
+            subtitle: 'Ventricular Fibrillation & Emergency CCU Resuscitation',
+            accentColor: '#ef4444'
+          });
+        }
+      })()`,
+      returnByValue: true
+    });
+    await sleep(700);
+    const shotCutIn = await send('Page.captureScreenshot', { format: 'png' });
+    if (shotCutIn?.result?.data) {
+      fs.writeFileSync('screenshot_04_stress_tested_board.png', Buffer.from(shotCutIn.result.data, 'base64'));
+      console.log('✓ Captured updated screenshot_04_stress_tested_board.png (Live Cut-In)');
     }
 
     ws.close();

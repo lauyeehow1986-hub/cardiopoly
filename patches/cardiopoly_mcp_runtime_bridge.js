@@ -113,6 +113,51 @@ class MacroShockEngine {
   }
 }
 
+const CUTIN_PRESETS = {
+  code_blue: {
+    videoSrc: 'assets/video/cutins/code_blue.webm',
+    posterSrc: 'assets/images/cutins/code_blue.jpg',
+    accentColor: '#ef4444',
+    title: 'CODE BLUE HOSPITALIZATION',
+    subtitle: 'Emergency Ventricular Fibrillation Resuscitation'
+  },
+  cath_lab: {
+    videoSrc: 'assets/video/cutins/cath_lab.webm',
+    posterSrc: 'assets/images/cutins/cath_lab.jpg',
+    accentColor: '#06b6d4',
+    title: 'HIGH-RISK CATH / STENT DEPLOYED',
+    subtitle: 'Percutaneous Coronary Intervention in Progress'
+  },
+  regulatory_audit: {
+    videoSrc: 'assets/video/cutins/regulatory_audit.webm',
+    posterSrc: 'assets/images/cutins/regulatory_audit.jpg',
+    accentColor: '#f59e0b',
+    title: 'REGULATORY CLAWBACK & CLINICAL AUDIT',
+    subtitle: 'Ministry of Health Billing Clawback Enforced'
+  },
+  audit: {
+    videoSrc: 'assets/video/cutins/regulatory_audit.webm',
+    posterSrc: 'assets/images/cutins/regulatory_audit.jpg',
+    accentColor: '#f59e0b',
+    title: 'REGULATORY CLAWBACK & CLINICAL AUDIT',
+    subtitle: 'Ministry of Health Billing Clawback Enforced'
+  },
+  monopoly_complete: {
+    videoSrc: null,
+    posterSrc: 'assets/images/cardiopoly_centerpiece_remastered.jpg',
+    accentColor: '#10b981',
+    title: 'DEPARTMENT MONOPOLY FORMED',
+    subtitle: 'Full Clinical Department Consolidation Achieved'
+  },
+  macro_shock: {
+    videoSrc: null,
+    posterSrc: null,
+    accentColor: '#38bdf8',
+    title: 'MACRO POLICY SHIFT',
+    subtitle: 'Global Healthcare Economic Intervention'
+  }
+};
+
 class CutInOverlayManager {
   constructor() {
     this.overlayEl = null;
@@ -134,24 +179,53 @@ class CutInOverlayManager {
     return el;
   }
 
-  playCutIn({ id = 'code_blue', title = 'CODE BLUE HOSPITALIZATION', subtitle = 'Emergency Telemetry Alert', accentColor = '#ef4444', videoSrc = null, voiceoverSrc = null }) {
+  playCutIn(options = {}) {
     const el = this.ensureOverlay();
     if (!el) return;
 
+    const id = options.id || 'code_blue';
+    const preset = CUTIN_PRESETS[id] || {};
+    const title = options.title || preset.title || 'CLINICAL ENCOUNTER';
+    const subtitle = options.subtitle || preset.subtitle || 'Hospital Telemetry Alert';
+    const accentColor = options.accentColor || preset.accentColor || '#06b6d4';
+    const videoSrc = options.videoSrc !== undefined ? options.videoSrc : preset.videoSrc;
+    const posterSrc = options.posterSrc !== undefined ? options.posterSrc : preset.posterSrc;
+    const voiceoverSrc = options.voiceoverSrc || null;
+
     el.style.setProperty('--cutin-accent', accentColor);
 
-    const videoMarkup = videoSrc
-      ? `<video class="cutin-video" src="${videoSrc}" autoplay muted playsinline onerror="this.style.display='none'"></video>`
-      : `<div class="cutin-procedural-graphic">
-           <svg viewBox="0 0 320 90" width="100%" height="90">
-             <polyline fill="none" stroke="${accentColor}" stroke-width="3.5"
-               points="0,45 55,45 70,20 85,75 102,10 120,82 138,38 155,45 320,45" />
-           </svg>
-         </div>`;
+    let mediaMarkup = '';
+    if (videoSrc) {
+      mediaMarkup = `
+        <div class="cutin-media-container">
+          <video class="cutin-video" src="${videoSrc}" autoplay muted loop playsinline
+                 onerror="this.style.display='none'; const p=this.nextElementSibling; if(p) p.style.display='block';"></video>
+          ${posterSrc ? `<img class="cutin-poster" src="${posterSrc}" alt="${title}" style="display:none;" />` : ''}
+          <div class="cutin-scanlines"></div>
+        </div>
+      `;
+    } else if (posterSrc) {
+      mediaMarkup = `
+        <div class="cutin-media-container">
+          <img class="cutin-poster" src="${posterSrc}" alt="${title}" />
+          <div class="cutin-scanlines"></div>
+        </div>
+      `;
+    } else {
+      mediaMarkup = `
+        <div class="cutin-media-container cutin-procedural">
+          <svg viewBox="0 0 320 90" width="100%" height="90">
+            <polyline fill="none" stroke="${accentColor}" stroke-width="3.5"
+              points="0,45 55,45 70,20 85,75 102,10 120,82 138,38 155,45 320,45" />
+          </svg>
+          <div class="cutin-scanlines"></div>
+        </div>
+      `;
+    }
 
     el.innerHTML = `
-      <div class="cutin-banner-card">
-        ${videoMarkup}
+      <div class="cutin-banner-card" role="dialog" aria-modal="true" aria-label="${title}">
+        ${mediaMarkup}
         <div class="cutin-text-block">
           <div class="cutin-kicker">LIVE CLINICAL CUT-IN // TAP TO DISMISS</div>
           <h2 class="cutin-title">${title}</h2>
@@ -161,6 +235,11 @@ class CutInOverlayManager {
     `;
     el.classList.remove('hidden');
 
+    // Duck soundtrack for drama
+    if (typeof window !== 'undefined' && window.CardiopolyAudioSynth && typeof window.CardiopolyAudioSynth.duckSoundtrack === 'function') {
+      window.CardiopolyAudioSynth.duckSoundtrack(5000);
+    }
+
     if (voiceoverSrc && typeof Audio !== 'undefined') {
       try {
         const vo = new Audio(voiceoverSrc);
@@ -168,19 +247,24 @@ class CutInOverlayManager {
         vo.play().catch(() => {});
       } catch (_) {}
     } else if (typeof window !== 'undefined' && window.CardiopolyPatches?.cardiopolyAudioV2) {
-      window.CardiopolyPatches.cardiopolyAudioV2.playCue(id === 'code_blue' ? 'codeBlueAlert' : 'invasiveCath');
+      const cue = id === 'code_blue' ? 'codeBlueAlert' : (id === 'cath_lab' ? 'invasiveCath' : 'monopolyAcquired');
+      window.CardiopolyPatches.cardiopolyAudioV2.playCue(cue);
     }
 
     if (this.hideTimer) clearTimeout(this.hideTimer);
-    this.hideTimer = setTimeout(() => this.hide(), 2800);
+    this.hideTimer = setTimeout(() => this.hide(), 5200);
   }
 
   hide() {
     if (this.overlayEl) {
       this.overlayEl.classList.add('hidden');
     }
+    if (this.hideTimer) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = null;
+    }
   }
-}
+  }
 
 const macroShockEngineInstance = new MacroShockEngine();
 const cutInOverlayInstance = new CutInOverlayManager();

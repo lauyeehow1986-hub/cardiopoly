@@ -411,21 +411,30 @@
       <div class="board-wrapper" id="thumbnail-board">
         <!-- 40 perimeter tiles injected via JS on 11x11 CSS grid -->
 
-        <!-- LIVE INTERACTIVE CARDIOLOGY CENTER CONSOLE (Replaces static image) -->
+        <!-- LIVE INTERACTIVE CARDIOLOGY CENTER CONSOLE -->
         <div class="board-center-console" id="board-center-console">
           <div class="console-tab-bar">
-            <button id="tab-telemetry-btn" class="console-tab active" type="button">Telemetry</button>
+            <button id="tab-centerpiece-btn" class="console-tab active" type="button">Centerpiece</button>
             <button id="tab-race-btn" class="console-tab" type="button">Faction Race</button>
             <button id="tab-ticker-btn" class="console-tab" type="button">Action Feed</button>
+            <button id="tab-telemetry-btn" class="console-tab" type="button">Telemetry</button>
           </div>
 
           <div class="console-tab-content">
-            <!-- Tab 1: Live Animated Telemetry Waveform & Rhythm Readout -->
-            <div id="console-telemetry-view" class="console-view active">
-              <canvas id="console-ecg-canvas" width="230" height="56" class="console-ecg-canvas"></canvas>
-              <div class="console-rhythm-bar">
-                <span id="console-rhythm-badge" class="rhythm-badge sinus">NORMAL SINUS RHYTHM</span>
-                <span id="console-vital-hr" class="rhythm-hr">72 BPM</span>
+            <!-- Tab 1: Remastered Game Board Centerpiece Art -->
+            <div id="console-centerpiece-view" class="console-view active">
+              <div class="centerpiece-art-card">
+                <img src="assets/images/cardiopoly_centerpiece_remastered.jpg" alt="Cardiopoly Centerpiece Art" class="centerpiece-img" id="centerpiece-main-img" onerror="this.src='Monopoly_board_center.png'" />
+                <div class="centerpiece-overlay-hud">
+                  <div class="centerpiece-top-row">
+                    <span id="centerpiece-regime-badge" class="centerpiece-badge regime">Singapore (3M)</span>
+                    <span id="centerpiece-turn-badge" class="centerpiece-badge turn">Turn 1</span>
+                  </div>
+                  <div class="centerpiece-bottom-row">
+                    <span id="centerpiece-player-badge" class="centerpiece-badge player">Dr. Guidelines</span>
+                    <span id="centerpiece-shock-badge" class="centerpiece-badge shock">Standard Policy</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -440,6 +449,15 @@
             <div id="console-ticker-view" class="console-view">
               <div id="board-ticker-text" class="board-ticker-text">Welcome to Cardiopoly Command. Tap dice box to roll!</div>
               <div id="console-action-log" class="console-action-log"></div>
+            </div>
+
+            <!-- Tab 4: Live Animated Telemetry Waveform & Rhythm Readout -->
+            <div id="console-telemetry-view" class="console-view">
+              <canvas id="console-ecg-canvas" width="230" height="56" class="console-ecg-canvas"></canvas>
+              <div class="console-rhythm-bar">
+                <span id="console-rhythm-badge" class="rhythm-badge sinus">NORMAL SINUS RHYTHM</span>
+                <span id="console-vital-hr" class="rhythm-hr">72 BPM</span>
+              </div>
             </div>
           </div>
         </div>
