@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-26T13:44:19.139Z",
+  "timestamp": "2026-10-26T14:20:58.282Z",
   "reportTitle": "Cardiopoly Remastered - Visual DOM & System Integration Verification Report",
   "branch": "feat/cardiopoly-remastered",
   "overallStatus": "PASS",
@@ -295,39 +295,39 @@
     },
     "scriptLoadOrder": {
       "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js": {
-        "orderIndex": 41415,
+        "orderIndex": 41425,
         "status": "VERIFIED"
       },
       "src/components/telemetry.js": {
-        "orderIndex": 41548,
+        "orderIndex": 41558,
         "status": "VERIFIED"
       },
       "src/engine/factions.js": {
-        "orderIndex": 41603,
+        "orderIndex": 41613,
         "status": "VERIFIED"
       },
       "src/engine/policies.js": {
-        "orderIndex": 41653,
+        "orderIndex": 41663,
         "status": "VERIFIED"
       },
       "src/components/toasts.js": {
-        "orderIndex": 41703,
+        "orderIndex": 41713,
         "status": "VERIFIED"
       },
       "src/components/vignetteModal.js": {
-        "orderIndex": 41869,
+        "orderIndex": 41879,
         "status": "VERIFIED"
       },
       "src/network/supabaseClient.js": {
-        "orderIndex": 41928,
+        "orderIndex": 41938,
         "status": "VERIFIED"
       },
       "src/network/p2pSync.js": {
-        "orderIndex": 41985,
+        "orderIndex": 41995,
         "status": "VERIFIED"
       },
       "script.js": {
-        "orderIndex": 42099,
+        "orderIndex": 42109,
         "status": "VERIFIED"
       }
     }
@@ -363,28 +363,6 @@
       "status": "PASS",
       "winnerFaction": "REGULATORY_AUDITOR",
       "clawbackWP": 15500
-    }
-  },
-  "antigravityPackVerification": {
-    "gate1_healthcareRegimes": {
-      "status": "PASS",
-      "details": "All 9 regimes normalized; zero undefinedx instances; specialRule active hooks present."
-    },
-    "gate2_factionRaceTab": {
-      "status": "PASS",
-      "details": "Thematic AI personas (Dr. Guidelines, Dr. Cath-A-Lot, V.P. Margin, Inspector Clawback); clean badges (ACAD, IC, CEO, AUDIT); 0-100% bars."
-    },
-    "gate3_modalErgonomics": {
-      "status": "PASS",
-      "details": "88vh height ceiling; sticky patient vitals banner; 3-column responsive choices grid."
-    },
-    "gate4_boardTilesAndSvgTokens": {
-      "status": "PASS",
-      "details": "Perimeter tiles render cost badges (300-650 WP), .is-owned borders, upgrade pips, SVG medical tokens, and 90ms hopping animation."
-    },
-    "gate5_telemetryAndCareerCompendium": {
-      "status": "PASS",
-      "details": "Vital-linked dynamic ECG color shifting (#10b981 / #f59e0b / #ef4444); floating resource deltas; localStorage cardiopoly_career_v1 persistence."
     }
   }
 }

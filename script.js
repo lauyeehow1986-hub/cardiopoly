@@ -3973,3 +3973,62 @@ function renderLeaderboardsTable() {
 
   tbody.innerHTML = rowsHtml;
 }
+
+
+function renderCareerCompendiumModal() {
+  const modal = document.getElementById("multiplayer-modal");
+  if (!modal) return;
+  const data = (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.loadCareerCompendium === "function")
+    ? CardiopolyPatches.loadCareerCompendium()
+    : { matchesPlayed: 0, winsByFaction: { ACADEMIC: 0, INTERVENTIONALIST: 0, CEO: 0, AUDITOR: 0 }, trialsEncountered: ["CURE", "PLATO"], lifetimeGdmtChoices: 0, lifetimeTotalChoices: 0 };
+
+  const trialsList = ["CURE", "PLATO", "COURAGE", "ISCHEMIA", "PARADIGM-HF", "MADIT-II"];
+  const trialCardsHtml = trialsList.map((trial) => {
+    const isUnlocked = data.trialsEncountered && data.trialsEncountered.includes(trial);
+    const descriptions = {
+      CURE: "Dual antiplatelet therapy in UA/NSTEMI reduces cardiovascular death and MI.",
+      PLATO: "Ticagrelor reduces mortality compared to clopidogrel across acute coronary syndromes.",
+      COURAGE: "Optimal medical therapy is non-inferior to initial PCI in stable ischemic heart disease.",
+      ISCHEMIA: "Routine invasive therapy does not reduce overall ischemic events in stable CAD.",
+      "PARADIGM-HF": "ARNI (Sacubitril/Valsartan) reduces cardiovascular death and hospitalization in HFrEF.",
+      "MADIT-II": "Prophylactic ICD implantation improves survival in patients with prior MI and LVEF <= 30%."
+    };
+    return `
+      <div style="background:${isUnlocked ? 'rgba(16,185,129,0.12)' : 'rgba(30,41,59,0.6)'}; border:1px solid ${isUnlocked ? 'rgba(52,211,153,0.5)' : 'rgba(148,163,184,0.2)'}; border-radius:8px; padding:10px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:${isUnlocked ? '#34d399' : '#94a3b8'}; font-size:0.95rem;">${isUnlocked ? '⭐ ' : '🔒 '}${trial}</strong>
+          <span style="font-size:0.75rem; color:${isUnlocked ? '#34d399' : '#64748b'}; font-weight:700;">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</span>
+        </div>
+        <p style="font-size:0.78rem; color:#cbd5e1; margin-top:4px; line-height:1.4;">${descriptions[trial] || "Cardiology Landmark Clinical Trial"}</p>
+      </div>
+    `;
+  }).join("");
+
+  const hostSection = document.getElementById("tab-host");
+  if (hostSection) {
+    hostSection.innerHTML = `
+      <div class="career-compendium-panel">
+        <h3 style="color:#f8fafc; font-size:1.1rem; margin-bottom:8px;">🏆 Career Compendium & Landmark Trial Registry</h3>
+        <p style="color:#94a3b8; font-size:0.8rem; margin-bottom:12px;">Persistent career history and landmark trials unlocked across your matches.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:14px;">
+          <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.25); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:1.4rem; font-weight:700; color:#38bdf8;">${data.matchesPlayed || 0}</div>
+            <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Matches Played</div>
+          </div>
+          <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.25); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:1.4rem; font-weight:700; color:#34d399;">${data.trialsEncountered ? data.trialsEncountered.length : 0} / 6</div>
+            <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Trials Unlocked</div>
+          </div>
+          <div style="background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.25); border-radius:8px; padding:10px; text-align:center;">
+            <div style="font-size:1.4rem; font-weight:700; color:#facc15;">${data.lifetimeTotalChoices > 0 ? Math.round((data.lifetimeGdmtChoices / data.lifetimeTotalChoices) * 100) : 0}%</div>
+            <div style="font-size:0.7rem; color:#94a3b8; text-transform:uppercase;">Lifetime GDMT %</div>
+          </div>
+        </div>
+        <h4 style="color:#38bdf8; font-size:0.88rem; margin-bottom:8px;">Landmark Trials Unlocked</h4>
+        <div style="max-height:260px; overflow-y:auto; padding-right:4px;">
+          ${trialCardsHtml}
+        </div>
+      </div>
+    `;
+  }
+}

@@ -168,11 +168,10 @@ function sanitizePlayerNames(players = []) {
   const legacyNames = new Set(['Fat Slob', 'Lazy Larry', 'Sloppy Susan']);
   players.forEach((p, idx) => {
     const fKey = resolveFactionKey(p.faction || p.factionId || p.role);
-    const meta = FACTION_METADATA[fKey] || FACTION_METADATA.ACADEMIC;
+    const meta = FACTION_METADATA[fKey];
     p.factionBadge = meta.badge;
     if (!p.isHuman && (!p.name || legacyNames.has(p.name))) {
       p.name = meta.aiDefaultName || `Attending AI #${idx}`;
-      p.shortName = p.name;
     }
   });
 }
@@ -181,28 +180,27 @@ function sanitizePlayerNames(players = []) {
 // 3. FIXED FACTION RACE RENDERER (Eliminates `undefined (undefined%)`)
 // ============================================================================
 function computePlayerFactionProgress(player, gameState = {}) {
-  const mode = (gameState.mode || gameState.gameMode || 'clinical_mastery').toLowerCase();
+  const mode = gameState.mode || 'clinical_mastery';
   const fKey = resolveFactionKey(player.faction || player.factionId || player.role);
 
   // Extract safe numerical stats from player object
+  const gdmtPoints = Number(player.gdmtPoints ?? player.gdmt ?? 0);
   const encounters = Math.max(0, Number(player.encounters ?? player.vignettesCompleted ?? 0));
-  const gdmtPoints = Number(player.gdmtPoints ?? player.gdmt ?? player.gdmtScore ?? 0);
   const gdmtRate = Number(
     player.gdmtAdherence ??
-    player.gdmtScore ??
     (encounters > 0 ? Math.min(100, Math.round((gdmtPoints / (encounters * 15)) * 100)) : 0)
   );
   const complications = Number(player.complications ?? 0);
-  const rvu = Number(player.rvu ?? player.rvus ?? player.rvuPoints ?? 0);
+  const rvu = Number(player.rvu ?? player.rvus ?? 0);
   const sanctions = Number(player.sanctions ?? 0);
-  const monopolies = Number(player.monopolies ?? player.colorMonopolies ?? player.fullDepartmentGroups ?? 0);
-  const wp = Number(player.wp ?? player.margin ?? player.departmentMargin ?? player.money ?? 0);
-  const clawback = Number(player.auditClawback ?? player.clawback ?? player.clawbackWP ?? 0);
+  const monopolies = Number(player.monopolies ?? player.colorMonopolies ?? 0);
+  const wp = Number(player.wp ?? player.margin ?? player.money ?? 0);
+  const clawback = Number(player.auditClawback ?? player.clawback ?? 0);
   const sbp = Number(player.sbp ?? 120);
   const bmi = Number(player.bmi ?? 24.0);
 
   // Mode 2: Bureaucratic Satire (Classic Escalation Mode)
-  if (mode.includes('satire')) {
+  if (mode === 'bureaucratic_satire' || mode === 'satire') {
     const sbpPct = Math.max(0, ((sbp - 120) / (200 - 120)) * 100);
     const wpPct = Math.max(0, (wp / 10000) * 100);
     const bmiPct = Math.max(0, ((bmi - 24) / (70 - 24)) * 100);
@@ -261,9 +259,9 @@ function renderFactionRacePatched(containerEl, players = [], gameState = {}) {
   const rowsHtml = players
     .map((player) => {
       const fKey = resolveFactionKey(player.faction || player.factionId || player.role);
-      const meta = FACTION_METADATA[fKey] || FACTION_METADATA.ACADEMIC;
+      const meta = FACTION_METADATA[fKey];
       const { pct, statusText } = computePlayerFactionProgress(player, gameState);
-      const barColor = player.hex || player.color || '#22d3ee';
+      const barColor = player.color || '#22d3ee';
 
       return `
         <div class="faction-race-row" style="margin-bottom: 10px;">
@@ -445,26 +443,164 @@ function recordVignetteTrialInCompendium(trialCode, isGdmtChoice) {
   return data;
 }
 
-// Export API on window/global and module.exports for immediate integration into existing `script.js` & tests
-const rootScope = typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this);
-const CardiopolyPatches = {
+const rootScope = typeof window !== "undefined" ? window : (typeof global !== "undefined" ? global : this);
+if (typeof window === "undefined") { global.window = rootScope; }
+window.CardiopolyPatches = {
   CARDIOPOLY_REGIMES_PATCH,
   formatRegimeRuleText,
   FACTION_METADATA,
-  resolveFactionKey,
   sanitizePlayerNames,
   computePlayerFactionProgress,
   renderFactionRacePatched,
   updateTelemetryFromActivePlayer,
   spawnFloatingResourceDelta,
-  SUITE_SYNERGY_RULES,
   evaluateVignetteWithSynergies,
   loadCareerCompendium,
   recordVignetteTrialInCompendium
 };
 
-rootScope.CardiopolyPatches = CardiopolyPatches;
 
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = CardiopolyPatches;
+// ============================================================================
+// 7. WEB AUDIO ADSR SYNTH, ADAPTIVE SOUNDSCAPE & MULTIMODAL ENGINE (V2)
+// ============================================================================
+class CardiopolyAudioEngineV2 {
+  constructor() {
+    this.ctx = null;
+    this.enabled = false;
+    this.ambienceTimer = null;
+    this.currentSbp = 120;
+  }
+
+  initContext() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  toggleSound(forceState) {
+    this.initContext();
+    this.enabled = typeof forceState === 'boolean' ? forceState : !this.enabled;
+    if (this.enabled) {
+      this.playChord([523.25, 659.25, 783.99], 0.18, 'triangle', 0.08);
+      this.startAdaptiveHospitalAmbience();
+    } else {
+      this.stopAdaptiveHospitalAmbience();
+    }
+    return this.enabled;
+  }
+
+  playEnvelopedTone(freq = 440, duration = 0.15, type = 'sine', peakGain = 0.08, delaySec = 0) {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime + delaySec;
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, now);
+
+    // Low-pass filter prevents harsh square/sawtooth digital clicking artifacts
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2400, now);
+
+    // Click-free ADSR envelope
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(peakGain, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peakGain * 0.4), now + duration * 0.65);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration + 0.02);
+  }
+
+  playChord(freqs = [], duration = 0.25, type = 'triangle', peakGain = 0.06) {
+    freqs.forEach((f, idx) => {
+      this.playEnvelopedTone(f, duration, type, peakGain, idx * 0.035);
+    });
+  }
+
+  playCue(cueName, stepIndex = 0) {
+    if (!this.enabled) return;
+    this.initContext();
+    switch (cueName) {
+      case 'diceRoll':
+        [320, 420, 540, 680].forEach((f, i) => this.playEnvelopedTone(f, 0.07, 'triangle', 0.07, i * 0.045));
+        break;
+      case 'tokenStep':
+        this.playEnvelopedTone(280 + (stepIndex % 12) * 22, 0.055, 'sine', 0.05, 0);
+        break;
+      case 'suitePurchase':
+        this.playChord([523.25, 659.25, 783.99, 1046.5], 0.28, 'triangle', 0.07);
+        break;
+      case 'gdmtSelected':
+        this.playChord([349.23, 440.0, 523.25, 659.25], 0.32, 'sine', 0.08);
+        break;
+      case 'invasiveCath':
+        this.playChord([392.0, 493.88, 587.33, 783.99], 0.26, 'sawtooth', 0.055);
+        break;
+      case 'auditClawback':
+      case 'codeBlueAlert':
+        [880, 659.25, 880, 659.25].forEach((f, i) => this.playEnvelopedTone(f, 0.14, 'square', 0.06, i * 0.16));
+        break;
+      default:
+        this.playEnvelopedTone(440, 0.1, 'sine', 0.05, 0);
+    }
+  }
+
+  startAdaptiveHospitalAmbience() {
+    this.stopAdaptiveHospitalAmbience();
+    if (!this.enabled) return;
+    const scheduleNextPulse = () => {
+      if (!this.enabled) return;
+      const sbp = this.currentSbp || 120;
+      const bpm = Math.min(156, Math.round(72 + Math.max(0, sbp - 120) * 0.85));
+      const intervalMs = Math.max(380, Math.round((60 / bpm) * 1000));
+      const pulseFreq = sbp >= 175 ? 987.77 : sbp >= 145 ? 783.99 : 659.25;
+      this.playEnvelopedTone(pulseFreq, 0.065, 'sine', 0.022, 0);
+      this.ambienceTimer = setTimeout(scheduleNextPulse, intervalMs);
+    };
+    scheduleNextPulse();
+  }
+
+  stopAdaptiveHospitalAmbience() {
+    if (this.ambienceTimer) {
+      clearTimeout(this.ambienceTimer);
+      this.ambienceTimer = null;
+    }
+  }
+}
+
+const cardiopolyAudioV2 = new CardiopolyAudioEngineV2();
+
+function triggerMultimodalEvent({ player, cueName, anchorSelector, deltaText, deltaTone = 'positive' }) {
+  if (player) {
+    cardiopolyAudioV2.currentSbp = Number(player.sbp ?? 120);
+    updateTelemetryFromActivePlayer(player);
+  }
+  if (cueName) {
+    cardiopolyAudioV2.playCue(cueName);
+  }
+  if (anchorSelector && deltaText) {
+    spawnFloatingResourceDelta(anchorSelector, deltaText, deltaTone);
+  }
+  if (player && (Number(player.sbp ?? 120) >= 200 || Number(player.bmi ?? 24) >= 70)) {
+    document.body.classList.add('code-blue-screen-shake');
+    setTimeout(() => document.body.classList.remove('code-blue-screen-shake'), 450);
+  }
+}
+
+window.CardiopolyPatches.cardiopolyAudioV2 = cardiopolyAudioV2;
+window.CardiopolyPatches.triggerMultimodalEvent = triggerMultimodalEvent;
+
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = window.CardiopolyPatches;
 }

@@ -215,3 +215,16 @@
     padding: 14px 16px;
   }
 }
+
+/* 6. Multimodal Code Blue Screen Shake & Active Telemetry Pulse */
+@keyframes codeBlueShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-5px, 3px); }
+  40% { transform: translate(5px, -3px); }
+  60% { transform: translate(-4px, -2px); }
+  80% { transform: translate(4px, 2px); }
+}
+
+.code-blue-screen-shake {
+  animation: codeBlueShake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
