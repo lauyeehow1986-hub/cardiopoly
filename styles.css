@@ -4122,3 +4122,52 @@ html, body {
   transform: translateY(1px);
   box-shadow: 0 2px 8px rgba(6, 182, 212, 0.35);
 }
+
+/* --- CODE BLUE EMERGENCY CRISIS STROBE & V-FIB CANVAS (EPAP-15 S09) --- */
+@keyframes crisisRoomStrobe {
+  0%, 100% {
+    box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.45), inset 0 0 40px rgba(239, 68, 68, 0.6);
+  }
+  50% {
+    box-shadow: inset 0 0 180px rgba(239, 68, 68, 0.8), inset 0 0 80px rgba(220, 38, 38, 0.95);
+  }
+}
+
+body.code-blue-crisis-strobe {
+  animation: crisisRoomStrobe 0.55s ease-in-out infinite alternate !important;
+}
+
+body.emergency-interaction-lock #roll-btn,
+body.emergency-interaction-lock .board-tile {
+  pointer-events: none !important;
+  filter: brightness(0.85);
+}
+
+.cutin-banner-card.code-blue-card {
+  border-color: #ef4444;
+  box-shadow: 0 0 50px rgba(239, 68, 68, 0.65), 0 20px 40px rgba(0, 0, 0, 0.9);
+}
+
+.cutin-vfib-canvas {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.auction-paused-warning {
+  margin: 10px 0;
+  padding: 8px 14px;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  animation: pulse 1s infinite alternate;
+}

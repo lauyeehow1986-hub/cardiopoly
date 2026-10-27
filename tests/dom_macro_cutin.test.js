@@ -6,7 +6,13 @@ global.document = {
     children: [],
     prepend(el) { this.children.unshift(el); },
     appendChild(el) { this.children.push(el); },
-    contains(el) { return this.children.includes(el); }
+    contains(el) { return this.children.includes(el); },
+    classList: {
+      classes: new Set(),
+      add(c) { this.classes.add(c); },
+      remove(c) { this.classes.delete(c); },
+      contains(c) { return this.classes.has(c); }
+    }
   },
   getElementById(id) {
     return this.body.children.find(c => c.id === id) || null;
@@ -64,10 +70,13 @@ const overlay = document.getElementById('cardiopoly-cutin-overlay');
 assert(overlay !== null, 'Cut-In overlay DOM element must exist in body');
 assert(!overlay.classList.contains('hidden'), 'Cut-In overlay must not be hidden when active');
 assert(overlay.innerHTML.includes('CODE BLUE HOSPITALIZATION'), 'Cut-In overlay must render title');
+assert(overlay.innerHTML.includes('cutin-vfib-canvas'), 'Cut-In overlay must include V-Fib canvas for code_blue');
+assert(document.body.classList.contains('code-blue-crisis-strobe'), 'Body must receive code-blue-crisis-strobe class');
 
 // Simulate dismissal click
 cutIn.hide();
 assert(overlay.classList.contains('hidden'), 'Cut-In overlay must add hidden class on hide()');
+assert(!document.body.classList.contains('code-blue-crisis-strobe'), 'Body must remove crisis strobe class on hide()');
 console.log('  -> Passed: Cut-In overlay DOM lifecycle verified.');
 
 console.log('=== ALL DOM INTEGRATION VERIFICATIONS PASSED ===\n');
