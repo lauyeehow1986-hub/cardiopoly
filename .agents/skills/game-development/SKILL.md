@@ -659,9 +659,36 @@ Emergent in-game Quick-Time Events (such as the Code Blue Ventricular Fibrillati
   $$C_{human\_participation} = 100.0\%$$
 - The human player races concurrently against computer bots (Dr. Cath-A-Lot, Inspector Clawback, V.P. Margin) in real-time under the 5-second countdown.
 
+---
+
+### 20. Interactive Real-Time Playthrough & Zero-Dismiss Defect Benchmark (ZDDB)
+
+Interactive Quick-Time Events (QTEs), emergency mini-games, and competitive hospital drills must function as genuine, high-agency interactive experiences and must NEVER degenerate into passive alert dialogs or dismiss boxes.
+
+#### 1. Zero-Dismiss Box Defect Law
+- An emergent challenge must NEVER present to the user as a passive dismiss dialog (e.g. an alert containing only an "Acknowledge" or "OK" button) without preceding interactive gameplay, dynamic telemetry, and real-time competitor progress.
+- Dismissal/acknowledgement buttons (`#qte-close-btn`) are strictly sequestered to the post-challenge resolution phase following an interactive outcome (Victory, Bot Claim, or Timeout).
+
+#### 2. Persistent DOM Node & Anti-Thrashing Invariant
+- High-frequency tick loops (e.g., $50\text{ms}$ timer intervals updating countdown clocks and competitor progress bars) must NEVER destroy or rewrite the outer container via `modal.innerHTML = ...` during active gameplay.
+- Rewriting `innerHTML` during user clicks destroys the target element before `mouseup` fires, causing the browser to discard user clicks and drop input events.
+- Interactive action buttons (`#qte-mash-btn`) must be instantiated once and remain persistent throughout the challenge. Dynamic updates must exclusively mutate targeted leaf attributes (`textContent`, `style.width`, `className`):
+  $$\text{Input Drop Rate } D_{\text{input}} = \frac{N_{\text{dropped\_inputs}}}{N_{\text{attempted\_inputs}}} = 0.00\%$$
+
+#### 3. Instantaneous Tactile Input Binding & Multi-Modal Controls
+- Action buttons must bind directly to `pointerdown` in addition to `click` to trigger on immediate touch/downstroke without waiting for finger release or mouseup latency.
+- Desktop keyboard controls (`Space` and `Enter` keydown listeners) must be simultaneously wired to the action trigger with an anti-bounce debounce of $30\text{--}40\text{ms}$ (supporting rapid tapping up to $25\text{--}30\text{ inputs/sec}$).
+
+#### 4. Multi-Branch Playthrough Automation Standard
+- Automated QA test suites (`tests/code_blue_playthrough_qa.test.js`) must simulate and verify all four operational game states:
+  1. **Branch 1 (Human Victory):** Rapid input mashing advances CPR compressions, triggers defibrillation shock, awards clinical bounty ($+\text{WP}, +\text{GDMT}, +\text{RVU}$), and normalizes vitals ($120/80$).
+  2. **Branch 2 (Bot Victory):** AI bots advance along faction-specific velocity vectors; the fastest bot claims the bounty if the player is idle, sparing the player from malpractice penalty.
+  3. **Branch 3 (Asystole Timeout):** Failure to achieve ROSC before time expiration triggers CCU lockup quarantine and malpractice fee deductions.
+  4. **Branch 4 (State Resumption):** Post-resolution acknowledgement cleanly closes the modal, clears crisis strobes, unfreezes background auction/turn loops, and advances gameplay.
+
 ## QA Verification Checklist
 
-Before completing any game optimization task, verify all 22 gates:
+Before completing any game optimization task, verify all 23 gates:
 
 - [ ] **Gate 1 (Stability & Data Binding)**: All setup and HUD selectors display valid numbers and strings; zero instances of `undefined`, `NaN`, or truncated labels.
 - [ ] **Gate 2 (Audio & Music)**: Clicking sound toggles resumes `AudioContext` without error, plays click-free ADSR polyphonic chimes, and starts the adaptive tension ambient loop.
@@ -685,4 +712,5 @@ Before completing any game optimization task, verify all 22 gates:
 - [ ] **Gate 20 (Perimeter Board Text Non-Truncation Gate - PBTNB)**: Verifies that all board tile cost badges and labels fit within tile inner boundaries ($W_{text} \le 0.82 \cdot W_{tile}$, $m_{edge} \ge 2.5\text{px}$) with proportional condensed typography, zero lateral border clipping, and $T_{defect} = 0.00\%$ across $320\text{px}$ to $1920\text{px}$ viewports.
 - [ ] **Gate 21 (Modal Viewport Ergonomics & Entry Accessibility Gate - MVEAB)**: Verifies that all modal overlays use top-anchored alignment (`justify-content: flex-start`), single-scroll architecture without nested traps, and atomic `scrollTop = 0` reset on entry ($V_{entry} = 100.0\%$, $y_{top} \ge 0$).
 - [ ] **Gate 22 (Code Blue Emergent Reliability & Activation Gate - CBERB)**: Verifies that Code Blue evaluates canonical engine properties (`gameState.turnNumber`), guarantees early-game emergence on Turn 2/3 ($P_{early} = 100.0\%$), enforces DOM modal visibility (`modal.classList.contains('active')`, `display: flex`), and engages the human player during all hospital emergencies ($C_{human\_participation} = 100.0\%$).
+- [ ] **Gate 23 (Interactive Real-Time Playthrough & Zero-Dismiss Gate - ZDDB)**: Verifies that emergent challenges maintain persistent DOM nodes during tick loops ($D_{input} = 0.00\%$), respond instantaneously to pointerdown and Spacebar mashing, resolve across all four playthrough branches (Human Victory, Bot Victory, Timeout Failure, State Resumption), and never degenerate into passive dismiss boxes.
 
