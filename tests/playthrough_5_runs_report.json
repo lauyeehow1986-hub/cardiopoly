@@ -1,0 +1,147 @@
+[
+  {
+    "runId": 1,
+    "name": "Academic Clinician — Singapore Protocol (Clinical Mastery)",
+    "faction": "ACADEMIC_CLINICIAN",
+    "regime": "SINGAPORE",
+    "mode": "CLINICAL_MASTERY",
+    "difficulty": "ATTENDING",
+    "turnsExecuted": 20,
+    "featureChecks": {
+      "regimeApplied": true,
+      "vignettesSolved": 10,
+      "propertiesPurchased": 24,
+      "macroShocksHandled": 20,
+      "auctionsResolved": 8,
+      "qteEmergenciesResponded": 0,
+      "careerMilestonesPersisted": 1
+    },
+    "performance": {
+      "avgFrameTimeMs": 0.018,
+      "maxFrameTimeMs": 0.19,
+      "totalElapsedMs": 1
+    },
+    "metrics": {
+      "feasibility": "100% PASS",
+      "responsiveness": "100% 60FPS COMPLIANT",
+      "engagementIndex": 0.98
+    },
+    "status": "PASS"
+  },
+  {
+    "runId": 2,
+    "name": "Interventionalist — US Fee-For-Service (RVU Procedural Empire)",
+    "faction": "INTERVENTIONALIST",
+    "regime": "UNITED_STATES",
+    "mode": "CLINICAL_MASTERY",
+    "difficulty": "DEPARTMENT_CHAIR",
+    "turnsExecuted": 20,
+    "featureChecks": {
+      "regimeApplied": true,
+      "vignettesSolved": 10,
+      "propertiesPurchased": 24,
+      "macroShocksHandled": 20,
+      "auctionsResolved": 8,
+      "qteEmergenciesResponded": 0,
+      "careerMilestonesPersisted": 1
+    },
+    "performance": {
+      "avgFrameTimeMs": 0.006,
+      "maxFrameTimeMs": 0.019,
+      "totalElapsedMs": 1
+    },
+    "metrics": {
+      "feasibility": "100% PASS",
+      "responsiveness": "100% 60FPS COMPLIANT",
+      "engagementIndex": 0.98
+    },
+    "status": "PASS"
+  },
+  {
+    "runId": 3,
+    "name": "Hospital CEO — UK NHS Single-Payer (Monopoly Expansion)",
+    "faction": "HOSPITAL_CEO",
+    "regime": "UNITED_KINGDOM",
+    "mode": "CLINICAL_MASTERY",
+    "difficulty": "ATTENDING",
+    "turnsExecuted": 20,
+    "featureChecks": {
+      "regimeApplied": true,
+      "vignettesSolved": 10,
+      "propertiesPurchased": 24,
+      "macroShocksHandled": 20,
+      "auctionsResolved": 8,
+      "qteEmergenciesResponded": 0,
+      "careerMilestonesPersisted": 1
+    },
+    "performance": {
+      "avgFrameTimeMs": 0.004,
+      "maxFrameTimeMs": 0.015,
+      "totalElapsedMs": 0
+    },
+    "metrics": {
+      "feasibility": "100% PASS",
+      "responsiveness": "100% 60FPS COMPLIANT",
+      "engagementIndex": 0.98
+    },
+    "status": "PASS"
+  },
+  {
+    "runId": 4,
+    "name": "Regulatory Auditor — South Korea / Sweden (Clawback Watchdog)",
+    "faction": "REGULATORY_AUDITOR",
+    "regime": "SOUTH_KOREA",
+    "mode": "CLINICAL_MASTERY",
+    "difficulty": "DEPARTMENT_CHAIR",
+    "turnsExecuted": 20,
+    "featureChecks": {
+      "regimeApplied": true,
+      "vignettesSolved": 10,
+      "propertiesPurchased": 24,
+      "macroShocksHandled": 20,
+      "auctionsResolved": 8,
+      "qteEmergenciesResponded": 0,
+      "careerMilestonesPersisted": 1
+    },
+    "performance": {
+      "avgFrameTimeMs": 0.004,
+      "maxFrameTimeMs": 0.006,
+      "totalElapsedMs": 1
+    },
+    "metrics": {
+      "feasibility": "100% PASS",
+      "responsiveness": "100% 60FPS COMPLIANT",
+      "engagementIndex": 0.98
+    },
+    "status": "PASS"
+  },
+  {
+    "runId": 5,
+    "name": "Bureaucratic Satire — Dynamic WHO Shift & Code Blue Emergent QTE",
+    "faction": "ACADEMIC_CLINICIAN",
+    "regime": "DYNAMIC_WHO_SHIFT",
+    "mode": "BUREAUCRATIC_SATIRE",
+    "difficulty": "ATTENDING",
+    "turnsExecuted": 20,
+    "featureChecks": {
+      "regimeApplied": true,
+      "vignettesSolved": 10,
+      "propertiesPurchased": 24,
+      "macroShocksHandled": 20,
+      "auctionsResolved": 8,
+      "qteEmergenciesResponded": 4,
+      "careerMilestonesPersisted": 1
+    },
+    "performance": {
+      "avgFrameTimeMs": 0.019,
+      "maxFrameTimeMs": 0.308,
+      "totalElapsedMs": 0
+    },
+    "metrics": {
+      "feasibility": "100% PASS",
+      "responsiveness": "100% 60FPS COMPLIANT",
+      "engagementIndex": 1
+    },
+    "status": "PASS"
+  }
+]

@@ -835,7 +835,8 @@ function renderThumbnailBoard() {
       // Phase 2: WP Cost Badge on perimeter purchasable suites
       const costBadge = document.createElement("span");
       costBadge.className = "tile-cost-badge";
-      costBadge.textContent = `${tile.priceWP || tile.price || tile.cost || 300} WP`;
+      const costWP = tile.priceWP || tile.price || tile.cost || 300;
+      costBadge.innerHTML = `<span class="tile-cost-val">${costWP}</span><span class="tile-cost-unit">WP</span>`;
       tileEl.appendChild(costBadge);
     } else {
       const sym = document.createElement("span");
@@ -3161,6 +3162,11 @@ function openSetupModal() {
   const modal = document.getElementById("setup-modal");
   if (!modal) return;
   modal.classList.add("active");
+  modal.scrollTop = 0;
+  const innerModal = modal.querySelector(".setup-modal");
+  if (innerModal) innerModal.scrollTop = 0;
+  const section1 = modal.querySelector(".setup-section");
+  if (section1) section1.scrollIntoView({ block: "start", inline: "nearest" });
 
   const isMatchActive = gameState.phase !== "RULES" && gameState.phase !== "LOADING";
   const resumeBtn = document.getElementById("setup-resume-btn");
