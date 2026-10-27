@@ -2507,6 +2507,75 @@ async function checkFactionWins() {
   return false;
 }
 
+// --- EMERGENCY INTERACTION FREEZE & RESUMPTION (EPAP-15 S07/S09) ---
+function freezeEmergencyState(reason = "CODE_BLUE") {
+  gameState.isEmergencyPaused = true;
+  if (typeof document !== "undefined") {
+    document.body.classList.add("emergency-interaction-lock");
+    const rollBtn = document.getElementById("roll-btn");
+    if (rollBtn) rollBtn.disabled = true;
+  }
+
+  // 1. Freeze active unowned property auction if running
+  if (gameState.activeAuction) {
+    if (typeof gameState.activeAuction.pauseAuction === "function") {
+      gameState.activeAuction.pauseAuction();
+    } else {
+      if (gameState.activeAuction.clockIntervalId) {
+        clearInterval(gameState.activeAuction.clockIntervalId);
+        gameState.activeAuction.clockIntervalId = null;
+      }
+      if (gameState.activeAuction.botBidIntervalId) {
+        clearInterval(gameState.activeAuction.botBidIntervalId);
+        gameState.activeAuction.botBidIntervalId = null;
+      }
+      gameState.activeAuction.isEmergencyFrozen = true;
+    }
+  }
+
+  // 2. Freeze bot turns
+  if (gameState.botTurnTimeout) {
+    clearTimeout(gameState.botTurnTimeout);
+    gameState.botTurnTimeout = null;
+    gameState.botTurnPending = true;
+  }
+}
+
+function unfreezeEmergencyState(reason = "CODE_BLUE") {
+  gameState.isEmergencyPaused = false;
+  if (typeof document !== "undefined") {
+    document.body.classList.remove("emergency-interaction-lock");
+    const rollBtn = document.getElementById("roll-btn");
+    if (rollBtn) rollBtn.disabled = false;
+  }
+
+  // 1. Resume active auction if frozen
+  if (gameState.activeAuction) {
+    if (typeof gameState.activeAuction.resumeAuction === "function") {
+      gameState.activeAuction.resumeAuction();
+    } else {
+      gameState.activeAuction.isEmergencyFrozen = false;
+    }
+  }
+
+  // 2. Resume pending bot turn
+  if (gameState.botTurnPending) {
+    gameState.botTurnPending = false;
+    clearTimeout(gameState.botTurnTimeout);
+    const curPlayer = gameState.players[gameState.currentPlayerIndex];
+    if (curPlayer && curPlayer.isBot && gameState.phase === "WAIT_FOR_ROLL") {
+      gameState.botTurnTimeout = setTimeout(() => {
+        rollDiceAndMove(curPlayer);
+      }, 450);
+    }
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.freezeEmergencyState = freezeEmergencyState;
+  window.unfreezeEmergencyState = unfreezeEmergencyState;
+}
+
 async function finishPlayerTurn() {
   const curPlayer = gameState.players[gameState.currentPlayerIndex];
 
@@ -2514,6 +2583,17 @@ async function finishPlayerTurn() {
   if (gameState.gameMode === "CLINICAL_MASTERY" && typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.checkCodeBlueHospitalization === "function") {
     const codeBlue = CardiopolyFactions.checkCodeBlueHospitalization(curPlayer, gameState.gameMode);
     if (codeBlue.triggered) {
+      // SUSPEND ALL BACKGROUND ACTIONS (AUCTIONS & BOT DECISIONS) IMMEDIATELY
+      freezeEmergencyState("CODE_BLUE");
+
+      // Play GMSBS Layer 4 procedural defibrillator sound chain + ducking
+      if (typeof window !== "undefined" && window.CardiopolyPatches && typeof window.CardiopolyPatches.playDefibrillatorSequence === "function") {
+        window.CardiopolyPatches.playDefibrillatorSequence();
+      } else {
+        playAudio("DEFIB");
+        playAudio("ALARM");
+      }
+
       if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
         CardiopolyMcpBridge.cutInOverlay.playCutIn({
           id: 'code_blue',
@@ -2522,8 +2602,6 @@ async function finishPlayerTurn() {
           accentColor: '#ef4444'
         });
       }
-      playAudio("DEFIB");
-      playAudio("ALARM");
       setBoardTicker(`🚨 ${codeBlue.message}`);
       appendCenterConsoleActionLog(codeBlue.message);
       refreshAllViews();
@@ -2537,6 +2615,9 @@ async function finishPlayerTurn() {
             durationMs: 4000
           });
         }
+        setTimeout(() => {
+          unfreezeEmergencyState("CODE_BLUE");
+        }, 4000);
       } else {
         await showEventPopupModal(
           "CODE BLUE HOSPITALIZATION",
@@ -2546,6 +2627,7 @@ async function finishPlayerTurn() {
           "game-end-theme",
           "Acknowledge Resuscitation"
         );
+        unfreezeEmergencyState("CODE_BLUE");
       }
     }
   }
@@ -3339,7 +3421,7 @@ function runCompetitiveAuction(tile, originalLander) {
     };
 
     const handlePlayerBid = (increment) => {
-      if (settled) return;
+      if (settled || (gameState.activeAuction && gameState.activeAuction.isEmergencyFrozen)) return;
       const human = gameState.players[0];
       currentBid += increment;
       highBidder = human;
@@ -3372,8 +3454,8 @@ function runCompetitiveAuction(tile, originalLander) {
       };
     }
 
-    const botBidIntervalId = setInterval(() => {
-      if (settled) return;
+    const runBotBids = () => {
+      if (settled || (gameState.activeAuction && gameState.activeAuction.isEmergencyFrozen)) return;
       const bots = gameState.players.filter((p) => p.isBot && !withdrawnPlayers.has(p.id));
       if (bots.length === 0 && withdrawnPlayers.has(0)) {
         conclude();
@@ -3407,18 +3489,77 @@ function runCompetitiveAuction(tile, originalLander) {
           }
         }
       }
-    }, 1200);
+    };
 
-    const clockIntervalId = setInterval(() => {
-      if (settled) return;
+    const tickClock = () => {
+      if (settled || (gameState.activeAuction && gameState.activeAuction.isEmergencyFrozen)) return;
       clockSeconds -= 0.1;
       updateDisplay();
       if (clockSeconds <= 0) {
         conclude();
       }
-    }, 100);
+    };
 
-    gameState.activeAuction = { tile, clockIntervalId, botBidIntervalId, conclude };
+    let botBidIntervalId = setInterval(runBotBids, 1200);
+    let clockIntervalId = setInterval(tickClock, 100);
+
+    const pauseAuction = () => {
+      if (settled) return;
+      if (clockIntervalId) {
+        clearInterval(clockIntervalId);
+        clockIntervalId = null;
+      }
+      if (botBidIntervalId) {
+        clearInterval(botBidIntervalId);
+        botBidIntervalId = null;
+      }
+      if (gameState.activeAuction) {
+        gameState.activeAuction.isEmergencyFrozen = true;
+        gameState.activeAuction.preservedSeconds = clockSeconds;
+      }
+      const auctionModal = document.getElementById("auction-modal");
+      if (auctionModal) {
+        let banner = document.getElementById("auction-paused-banner");
+        if (!banner) {
+          banner = document.createElement("div");
+          banner.id = "auction-paused-banner";
+          banner.className = "auction-paused-warning";
+          banner.textContent = "⚠️ AUCTION PAUSED // CODE BLUE EMERGENCY IN PROGRESS";
+          auctionModal.appendChild(banner);
+        }
+        banner.classList.remove("hidden");
+      }
+    };
+
+    const resumeAuction = () => {
+      if (settled) return;
+      if (gameState.activeAuction) {
+        gameState.activeAuction.isEmergencyFrozen = false;
+      }
+      const banner = document.getElementById("auction-paused-banner");
+      if (banner) banner.classList.add("hidden");
+
+      if (!botBidIntervalId) {
+        botBidIntervalId = setInterval(runBotBids, 1200);
+        if (gameState.activeAuction) gameState.activeAuction.botBidIntervalId = botBidIntervalId;
+      }
+      if (!clockIntervalId) {
+        clockIntervalId = setInterval(tickClock, 100);
+        if (gameState.activeAuction) gameState.activeAuction.clockIntervalId = clockIntervalId;
+      }
+      updateDisplay();
+    };
+
+    gameState.activeAuction = {
+      tile,
+      clockIntervalId,
+      botBidIntervalId,
+      conclude,
+      pauseAuction,
+      resumeAuction,
+      getRemainingSeconds: () => clockSeconds,
+      isEmergencyFrozen: false
+    };
   });
 }
 
