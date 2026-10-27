@@ -8,8 +8,8 @@
   <meta http-equiv="Expires" content="0" />
   <title>CARDIOPOLY — Hospital Command Center &amp; Clinical Strategy Simulation</title>
   <link rel="preload" as="image" href="assets/images/cardiopoly_centerpiece_remastered.jpg" fetchpriority="high" />
-  <link rel="stylesheet" href="styles.css?v=2.4.0" />
-  <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css?v=2.4.0" />
+  <link rel="stylesheet" href="styles.css?v=2.5.0" />
+  <link rel="stylesheet" href="patches/cardiopoly_styles_patches.css?v=2.5.0" />
 </head>
 <body>
   <!-- ====================================================================
@@ -489,6 +489,7 @@
             <!-- Tab 4: Live Animated Telemetry Waveform & Rhythm Readout -->
             <div id="console-telemetry-view" class="console-view">
               <canvas id="console-ecg-canvas" width="230" height="56" class="console-ecg-canvas"></canvas>
+              <button id="in-game-code-blue-drill-btn" class="btn btn-danger" style="margin-top:6px; width:100%; font-size:0.68rem; padding:4px 8px; border-radius:4px; font-weight:700;" type="button">⚡ Emergency Code Blue QTE Drill</button>
               <div class="console-rhythm-bar">
                 <span id="console-rhythm-badge" class="rhythm-badge sinus">NORMAL SINUS RHYTHM</span>
                 <span id="console-vital-hr" class="rhythm-hr">72 BPM</span>
@@ -897,18 +898,18 @@
        6. SCRIPTS IN CANONICAL ARCHITECTURAL DEPENDENCY ORDER
        ==================================================================== -->
   <script defer src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-  <script src="src/components/audioSynth.js?v=2.4.0"></script>
-  <script src="src/components/telemetry.js?v=2.4.0"></script>
-  <script src="src/engine/factions.js?v=2.4.0"></script>
-  <script src="src/engine/policies.js?v=2.4.0"></script>
-  <script src="src/components/toasts.js?v=2.4.0"></script>
-  <script src="src/engine/aiController.js?v=2.4.0"></script>
-  <script src="src/engine/departmentUpgrades.js?v=2.4.0"></script>
-  <script src="src/components/vignetteModal.js?v=2.4.0"></script>
-  <script src="src/network/supabaseClient.js?v=2.4.0"></script>
-  <script src="src/network/p2pSync.js?v=2.4.0"></script>
-  <script src="patches/cardiopoly_script_patches.js?v=2.4.0"></script>
-  <script src="patches/cardiopoly_mcp_runtime_bridge.js?v=2.4.0"></script>
-  <script src="script.js?v=2.4.0"></script>
+  <script src="src/components/audioSynth.js?v=2.5.0"></script>
+  <script src="src/components/telemetry.js?v=2.5.0"></script>
+  <script src="src/engine/factions.js?v=2.5.0"></script>
+  <script src="src/engine/policies.js?v=2.5.0"></script>
+  <script src="src/components/toasts.js?v=2.5.0"></script>
+  <script src="src/engine/aiController.js?v=2.5.0"></script>
+  <script src="src/engine/departmentUpgrades.js?v=2.5.0"></script>
+  <script src="src/components/vignetteModal.js?v=2.5.0"></script>
+  <script src="src/network/supabaseClient.js?v=2.5.0"></script>
+  <script src="src/network/p2pSync.js?v=2.5.0"></script>
+  <script src="patches/cardiopoly_script_patches.js?v=2.5.0"></script>
+  <script src="patches/cardiopoly_mcp_runtime_bridge.js?v=2.5.0"></script>
+  <script src="script.js?v=2.5.0"></script>
 </body>
 </html>

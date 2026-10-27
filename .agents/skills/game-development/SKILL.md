@@ -623,9 +623,45 @@ Full-screen overlay dialogs and pre-game setup lobbies must provide flawless, im
   ```
 - Visual Entry Completeness: The header and Section 1 must exhibit $100\%$ viewport presence upon modal activation ($V_{entry} = 100.0\%$, $y_{top} \ge 0$).
 
+---
+
+### 19. Code Blue Emergent Reliability & Activation Benchmark (CBERB)
+
+Emergent in-game Quick-Time Events (such as the Code Blue Ventricular Fibrillation resuscitation challenge) must reliably activate, render, and engage human players during live matches, eliminating silent trigger failures, canonical property binding mismatches, and modal display suppression.
+
+#### 1. Canonical State Property Safety Invariant
+- Challenge triggers (`shouldTriggerEmergentChallenge`) must only evaluate authenticated, canonical engine properties:
+  ```javascript
+  const turn = Number(gameState.turnNumber ?? gameState.turnCount ?? gameState.turnCounter ?? 1);
+  ```
+- Using unverified or renamed properties (e.g. `gameState.turnCount` when the engine tracks `gameState.turnNumber`) is strictly prohibited. Automated contract audits must verify non-undefined evaluation across all game turns.
+
+#### 2. Guaranteed Early-Game Induction Metric (100% Session Discovery)
+- To guarantee that every player discovers and experiences the competitive resuscitation challenge during their match without waiting dozens of turns, the engine enforces a guaranteed early-game induction threshold:
+  $$P(\text{Code Blue in Turns 2--3}) = 100.0\%$$
+- On Turn 2 or Turn 3 (first match experience), if the challenge has not yet occurred, the engine guarantees an emergent hospital cardiac arrest broadcast.
+- Post-induction dynamic emergence continues at a high pacing cadence ($P_{emergent} \ge 0.20$ per turn cycle, or whenever SBP $\ge 195\text{ mmHg}$ / Complications $ge 1$).
+
+#### 3. Modal Display & DOM Visibility Invariant
+- Challenge overlay containers must be visibly instantiated with `.active` and explicit flex rendering:
+  ```javascript
+  modal.className = 'screen-overlay active';
+  modal.classList.add('active');
+  modal.style.display = 'flex';
+  modal.style.zIndex = '10050';
+  ```
+- Overlays must never remain hidden behind `display: none` when emergency audio or alarms trigger:
+  $$\text{Visibility Rate } V_{modal} = 100.0\%$$
+
+#### 4. All-Agent Hospital-Wide Contention Invariant
+- Hospital cardiac arrest emergencies are hospital-wide events that summon all available clinicians.
+- The interactive QTE resuscitation modal must ALWAYS present to the active human player, regardless of whether the crisis was triggered during a human turn or an AI bot's turn:
+  $$C_{human\_participation} = 100.0\%$$
+- The human player races concurrently against computer bots (Dr. Cath-A-Lot, Inspector Clawback, V.P. Margin) in real-time under the 5-second countdown.
+
 ## QA Verification Checklist
 
-Before completing any game optimization task, verify all 21 gates:
+Before completing any game optimization task, verify all 22 gates:
 
 - [ ] **Gate 1 (Stability & Data Binding)**: All setup and HUD selectors display valid numbers and strings; zero instances of `undefined`, `NaN`, or truncated labels.
 - [ ] **Gate 2 (Audio & Music)**: Clicking sound toggles resumes `AudioContext` without error, plays click-free ADSR polyphonic chimes, and starts the adaptive tension ambient loop.
@@ -648,4 +684,5 @@ Before completing any game optimization task, verify all 21 gates:
 - [ ] **Gate 19 (Monopoly Economic Tiering & Property Price Variance Gate - METPB)**: Verifies progressive price scaling ($\sigma_{price} \ge 80\text{ WP}$, spread $300\text{ WP}$ to $650\text{ WP}$, max single price frequency $\le 50\%$) and 100% model-to-DOM price binding fidelity.
 - [ ] **Gate 20 (Perimeter Board Text Non-Truncation Gate - PBTNB)**: Verifies that all board tile cost badges and labels fit within tile inner boundaries ($W_{text} \le 0.82 \cdot W_{tile}$, $m_{edge} \ge 2.5\text{px}$) with proportional condensed typography, zero lateral border clipping, and $T_{defect} = 0.00\%$ across $320\text{px}$ to $1920\text{px}$ viewports.
 - [ ] **Gate 21 (Modal Viewport Ergonomics & Entry Accessibility Gate - MVEAB)**: Verifies that all modal overlays use top-anchored alignment (`justify-content: flex-start`), single-scroll architecture without nested traps, and atomic `scrollTop = 0` reset on entry ($V_{entry} = 100.0\%$, $y_{top} \ge 0$).
+- [ ] **Gate 22 (Code Blue Emergent Reliability & Activation Gate - CBERB)**: Verifies that Code Blue evaluates canonical engine properties (`gameState.turnNumber`), guarantees early-game emergence on Turn 2/3 ($P_{early} = 100.0\%$), enforces DOM modal visibility (`modal.classList.contains('active')`, `display: flex`), and engages the human player during all hospital emergencies ($C_{human\_participation} = 100.0\%$).
 

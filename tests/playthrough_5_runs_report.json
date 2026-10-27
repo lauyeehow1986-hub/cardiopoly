@@ -13,18 +13,18 @@
       "propertiesPurchased": 24,
       "macroShocksHandled": 20,
       "auctionsResolved": 8,
-      "qteEmergenciesResponded": 0,
+      "qteEmergenciesResponded": 16,
       "careerMilestonesPersisted": 1
     },
     "performance": {
-      "avgFrameTimeMs": 0.018,
-      "maxFrameTimeMs": 0.19,
+      "avgFrameTimeMs": 0.031,
+      "maxFrameTimeMs": 0.2,
       "totalElapsedMs": 1
     },
     "metrics": {
       "feasibility": "100% PASS",
       "responsiveness": "100% 60FPS COMPLIANT",
-      "engagementIndex": 0.98
+      "engagementIndex": 1
     },
     "status": "PASS"
   },
@@ -42,18 +42,18 @@
       "propertiesPurchased": 24,
       "macroShocksHandled": 20,
       "auctionsResolved": 8,
-      "qteEmergenciesResponded": 0,
+      "qteEmergenciesResponded": 18,
       "careerMilestonesPersisted": 1
     },
     "performance": {
-      "avgFrameTimeMs": 0.006,
-      "maxFrameTimeMs": 0.019,
-      "totalElapsedMs": 1
+      "avgFrameTimeMs": 0.01,
+      "maxFrameTimeMs": 0.029,
+      "totalElapsedMs": 0
     },
     "metrics": {
       "feasibility": "100% PASS",
       "responsiveness": "100% 60FPS COMPLIANT",
-      "engagementIndex": 0.98
+      "engagementIndex": 1
     },
     "status": "PASS"
   },
@@ -71,18 +71,18 @@
       "propertiesPurchased": 24,
       "macroShocksHandled": 20,
       "auctionsResolved": 8,
-      "qteEmergenciesResponded": 0,
+      "qteEmergenciesResponded": 21,
       "careerMilestonesPersisted": 1
     },
     "performance": {
-      "avgFrameTimeMs": 0.004,
-      "maxFrameTimeMs": 0.015,
-      "totalElapsedMs": 0
+      "avgFrameTimeMs": 0.007,
+      "maxFrameTimeMs": 0.012,
+      "totalElapsedMs": 1
     },
     "metrics": {
       "feasibility": "100% PASS",
       "responsiveness": "100% 60FPS COMPLIANT",
-      "engagementIndex": 0.98
+      "engagementIndex": 1
     },
     "status": "PASS"
   },
@@ -100,18 +100,18 @@
       "propertiesPurchased": 24,
       "macroShocksHandled": 20,
       "auctionsResolved": 8,
-      "qteEmergenciesResponded": 0,
+      "qteEmergenciesResponded": 13,
       "careerMilestonesPersisted": 1
     },
     "performance": {
-      "avgFrameTimeMs": 0.004,
-      "maxFrameTimeMs": 0.006,
-      "totalElapsedMs": 1
+      "avgFrameTimeMs": 0.005,
+      "maxFrameTimeMs": 0.011,
+      "totalElapsedMs": 0
     },
     "metrics": {
       "feasibility": "100% PASS",
       "responsiveness": "100% 60FPS COMPLIANT",
-      "engagementIndex": 0.98
+      "engagementIndex": 1
     },
     "status": "PASS"
   },
@@ -129,12 +129,12 @@
       "propertiesPurchased": 24,
       "macroShocksHandled": 20,
       "auctionsResolved": 8,
-      "qteEmergenciesResponded": 4,
+      "qteEmergenciesResponded": 25,
       "careerMilestonesPersisted": 1
     },
     "performance": {
-      "avgFrameTimeMs": 0.019,
-      "maxFrameTimeMs": 0.308,
+      "avgFrameTimeMs": 0.007,
+      "maxFrameTimeMs": 0.012,
       "totalElapsedMs": 0
     },
     "metrics": {

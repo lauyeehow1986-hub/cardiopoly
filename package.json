@@ -5,7 +5,7 @@
   "main": "tools/mcp-guideline-server.js",
   "scripts": {
     "start": "node tools/server.js",
-    "test": "node tests/telemetry.test.js && node tests/ui_command_center.test.js && node tests/factions.test.js && node tests/toasts.test.js && node tests/policies.test.js && node tests/vignettes.test.js && node tests/mcp-server.test.js && node tests/board_pricing_and_layout.test.js && node tests/board_text_and_modal_entry.test.js && node tests/data_binding_integrity.test.js && node tests/code_blue_competitive_qte.test.js && node -c script.js",
+    "test": "node tests/telemetry.test.js && node tests/ui_command_center.test.js && node tests/factions.test.js && node tests/toasts.test.js && node tests/policies.test.js && node tests/vignettes.test.js && node tests/mcp-server.test.js && node tests/board_pricing_and_layout.test.js && node tests/board_text_and_modal_entry.test.js && node tests/data_binding_integrity.test.js && node tests/code_blue_competitive_qte.test.js && node tests/code_blue_activation_benchmark.test.js && node -c script.js",
     "test:telemetry": "node tests/telemetry.test.js",
     "test:ui": "node tests/ui_command_center.test.js",
     "test:factions": "node tests/factions.test.js",

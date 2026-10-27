@@ -858,14 +858,21 @@ const ResuscitationEngine = {
     return rates;
   },
 
-  shouldTriggerEmergentChallenge(gameState, curPlayer, roll = Math.random()) {
+    shouldTriggerEmergentChallenge(gameState, curPlayer, roll = Math.random()) {
     if (!gameState || gameState.isEmergencyFrozen) return false;
-    // Condition A: Severe physiological distress
+    const turn = Number(gameState.turnNumber ?? gameState.turnCount ?? gameState.turnCounter ?? 1);
+
+    // Condition A: Severe physiological distress (clinical threshold for crisis arrest)
     if (curPlayer && (Number(curPlayer.sbp ?? 120) >= 195 || Number(curPlayer.complications ?? 0) >= 2)) {
       return true;
     }
-    // Condition B: Emergent hospital cardiac arrest (after turn 1)
-    if (Number(gameState.turnCount ?? 0) >= 2 && roll < 0.10) {
+    // Condition B: Guaranteed early-game introduction on Turn 2 or Turn 3 (first match experience)
+    if ((turn === 2 || turn === 3) && !gameState.hasExperiencedCodeBlue) {
+      gameState.hasExperiencedCodeBlue = true;
+      return true;
+    }
+    // Condition C: High dynamic in-game emergence (22% per turn after turn 1)
+    if (turn >= 2 && roll < 0.22) {
       return true;
     }
     return false;
@@ -945,9 +952,14 @@ const ResuscitationEngine = {
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'code-blue-qte-modal';
-      modal.className = 'screen-overlay';
+      modal.className = 'screen-overlay active';
       document.body.appendChild(modal);
     }
+    modal.classList.add('active');
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    modal.style.zIndex = '10050';
+    modal.scrollTop = 0;
 
     let currentStepIdx = 0;
     let compressionsDone = 0;
@@ -1134,7 +1146,9 @@ const ResuscitationEngine = {
       const closeBtn = document.getElementById('qte-close-btn');
       if (closeBtn) {
         closeBtn.onclick = () => {
+          modal.classList.remove('active');
           modal.classList.add('hidden');
+          modal.style.display = 'none';
           if (document.body?.classList) {
             document.body.classList.remove('code-blue-crisis-strobe');
           }

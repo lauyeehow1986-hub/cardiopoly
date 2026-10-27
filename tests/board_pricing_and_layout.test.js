@@ -79,8 +79,8 @@ console.log("✓ Mobile HTTP cache-busting meta headers present in <head>");
 
 // 1.4: Verify asset cache-busting query strings are updated to ?v=2.3.0
 assert.ok(
-  /styles\.css\?v=2\.[34]\.0/.test(htmlSource) && /script\.js\?v=2\.[34]\.0/.test(htmlSource),
-  "Asset references in index.html must use active cache buster (?v=2.3.0 or ?v=2.4.0)"
+  /styles\.css\?v=2\.[3-5]\.0/.test(htmlSource) && /script\.js\?v=2\.[3-5]\.0/.test(htmlSource),
+  "Asset references in index.html must use active cache buster (?v=2.3.0 to ?v=2.5.0)"
 );
 console.log("✓ Asset query strings synchronized to active cache buster\n");
 

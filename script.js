@@ -2606,47 +2606,18 @@ async function finishPlayerTurn() {
     appendCenterConsoleActionLog(`🚨 CODE BLUE ALERT: ${curPlayer.name} suffered acute arrest. Multi-clinician resuscitation active!`);
     refreshAllViews();
 
-    if (curPlayer.isBot) {
-      // For bots, run the multi-agent race simulation directly
-      if (typeof CardiopolyPatches?.ResuscitationEngine === 'object') {
-        const diff = Math.min(5, (gameState.codeBlueDifficulty || 0) + 1);
-        gameState.codeBlueDifficulty = diff;
-        const bots = (gameState.players || []).filter(p => p.isBot);
-        const botRates = CardiopolyPatches.ResuscitationEngine.computeBotRates(bots, diff);
-        const fastestBot = bots.sort((a, b) => (botRates[a.id]?.finishTimeSec || 99) - (botRates[b.id]?.finishTimeSec || 99))[0];
-        
-        const outcome = CardiopolyPatches.ResuscitationEngine.resolveOutcome({
-          winner: 'BOT',
-          winnerId: fastestBot ? fastestBot.id : curPlayer.id,
-          player: curPlayer,
-          gameState,
-          elapsedSec: botRates[fastestBot?.id]?.finishTimeSec || 4.2,
-          difficulty: diff
-        });
-
-        if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
-          CardiopolyToasts.showToast({
-            title: "CODE BLUE RESUSCITATION",
-            message: outcome.message,
-            theme: "danger",
-            durationMs: 4000
-          });
-        }
-        appendCenterConsoleActionLog(outcome.message);
-      }
-    } else {
-      // For human player, launch the real-time interactive QTE modal!
-      await new Promise((resolve) => {
-        if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === 'function') {
-          CardiopolyPatches.ResuscitationEngine.openChallengeModal(curPlayer, gameState, (res) => {
-            appendCenterConsoleActionLog(res.message);
-            resolve();
-          });
-        } else {
+        // Hospital-wide CCU cardiac arrest: Alert all physicians, human player always competes in real-time QTE!
+    const humanPlayer = (gameState.players || []).find(p => !p.isBot) || curPlayer;
+    await new Promise((resolve) => {
+      if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === 'function') {
+        CardiopolyPatches.ResuscitationEngine.openChallengeModal(humanPlayer, gameState, (res) => {
+          appendCenterConsoleActionLog(res.message);
           resolve();
-        }
-      });
-    }
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   // 2. Dual-Mode Victory: Check Global Systemic Collapse (Mode A)
@@ -3823,6 +3794,17 @@ function roundOneDecimal(val) {
 }
 
 function wireEventListeners() {
+  const ccuDrillBtn = document.getElementById("in-game-code-blue-drill-btn");
+  if (ccuDrillBtn) {
+    ccuDrillBtn.addEventListener("click", () => {
+      if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === "function") {
+        const humanP = (gameState.players || []).find((p) => !p.isBot) || gameState.players[0];
+        CardiopolyPatches.ResuscitationEngine.openChallengeModal(humanP, gameState, (res) => {
+          appendCenterConsoleActionLog(res.message);
+        });
+      }
+    });
+  }
   // Start Game button on Rules screen
   document.getElementById("start-game-btn").addEventListener("click", () => {
     document.getElementById("rules-screen").classList.remove("active");
