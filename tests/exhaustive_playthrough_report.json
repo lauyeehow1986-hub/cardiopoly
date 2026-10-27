@@ -55,9 +55,9 @@
   },
   {
     "sceneId": 7,
-    "sceneName": "Live Clinical Auctions",
+    "sceneName": "Live Clinical Auctions & Emergency Suspension",
     "status": "PASS",
-    "observation": "Live competitive auction modal with quick-increment bids (+50, +100 WP), countdown timer bar, and AI heuristic bidding.",
+    "observation": "Live competitive auction modal with anti-sniping timer, AI bidding, and atomic emergency suspension/resumption on Code Blue.",
     "recommendations": [
       "Add urgent cardiac monitor ticking sound effect during the final 3 seconds of auction countdown"
     ]
@@ -75,9 +75,9 @@
     "sceneId": 9,
     "sceneName": "Emergency Code Blue Hospitalization",
     "status": "PASS",
-    "observation": "Critical vitals (SBP >= 175 or BMI >= 60) trigger emergency CCU transfer, fee deduction, and vitals reset.",
+    "observation": "Critical vitals trigger multimodal emergency: room red perimeter strobe, dynamic V-Fib ECG canvas, GMSBS -8 LUFS procedural defib audio chain, and CCU transfer.",
     "recommendations": [
-      "Trigger screen-wide emergency red perimeter strobe animation on Code Blue activation"
+      "Provide interactive defibrillator paddle shock button for manual user defibrillation"
     ]
   },
   {
