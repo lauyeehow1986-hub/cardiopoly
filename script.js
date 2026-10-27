@@ -2612,13 +2612,32 @@ async function finishPlayerTurn() {
         // Hospital-wide CCU cardiac arrest: Alert all physicians, human player always competes in real-time QTE!
     const humanPlayer = (gameState.players || []).find(p => !p.isBot) || curPlayer;
     await new Promise((resolve) => {
-      if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === 'function') {
-        CardiopolyPatches.ResuscitationEngine.openChallengeModal(humanPlayer, gameState, (res) => {
+      let resolved = false;
+      const safeResolve = (res) => {
+        if (resolved) return;
+        resolved = true;
+        if (safetyTimer) clearTimeout(safetyTimer);
+        if (res && res.message) {
           appendCenterConsoleActionLog(res.message);
-          resolve();
-        });
-      } else {
+        }
         resolve();
+      };
+
+      // 12-second total fail-safe timeout prevents permanent turn freeze under ANY circumstances
+      const safetyTimer = setTimeout(() => {
+        console.warn("[CodeBlue] Safety timeout reached (12s), resolving turn cleanly");
+        safeResolve({ status: 'SAFETY_TIMEOUT', message: 'Resuscitation challenge cycle concluded.' });
+      }, 12000);
+
+      try {
+        if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === 'function') {
+          CardiopolyPatches.ResuscitationEngine.openChallengeModal(humanPlayer, gameState, safeResolve);
+        } else {
+          safeResolve();
+        }
+      } catch (err) {
+        console.error("[CodeBlue] Exception in openChallengeModal:", err);
+        safeResolve();
       }
     });
   }

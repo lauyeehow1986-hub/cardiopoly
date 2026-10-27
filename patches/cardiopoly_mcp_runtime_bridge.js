@@ -254,6 +254,8 @@ class CutInOverlayManager {
       </div>
     `;
     el.classList.remove('hidden');
+    el.style.display = 'flex';
+    el.style.pointerEvents = 'auto';
 
     // Assure video autoplay in all modern browsers (mobile & desktop)
     if (typeof document !== 'undefined') {
@@ -430,6 +432,8 @@ class CutInOverlayManager {
   hide() {
     if (this.overlayEl) {
       this.overlayEl.classList.add('hidden');
+      this.overlayEl.style.display = 'none';
+      this.overlayEl.style.pointerEvents = 'none';
     }
     if (this.hideTimer) {
       clearTimeout(this.hideTimer);

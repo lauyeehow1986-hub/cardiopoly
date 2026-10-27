@@ -944,9 +944,11 @@ const ResuscitationEngine = {
     }
 
     // Play alarm audio
-    if (typeof window.CardiopolyPatches?.playDefibrillatorSequence === 'function') {
-      window.CardiopolyPatches.playDefibrillatorSequence();
-    }
+    try {
+      if (typeof window.CardiopolyPatches?.playDefibrillatorSequence === 'function') {
+        window.CardiopolyPatches.playDefibrillatorSequence();
+      }
+    } catch (_) {}
 
     let modal = document.getElementById('code-blue-qte-modal');
     if (!modal) {
@@ -958,7 +960,8 @@ const ResuscitationEngine = {
     modal.classList.add('active');
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
-    modal.style.zIndex = '10050';
+    modal.style.zIndex = '100050';
+    modal.style.pointerEvents = 'auto';
     modal.scrollTop = 0;
 
     let currentStepIdx = 0;
@@ -1209,22 +1212,59 @@ const ResuscitationEngine = {
       `;
 
       const closeBtn = document.getElementById('qte-close-btn');
+      let countdownSec = 5;
+      let autoCloseTimer = null;
+      let isClosed = false;
+
+      const doClose = () => {
+        if (isClosed) return;
+        isClosed = true;
+        if (autoCloseTimer) clearInterval(autoCloseTimer);
+        if (typeof window !== 'undefined' && window.removeEventListener) {
+          window.removeEventListener('keydown', handleResultKeydown);
+        }
+        modal.classList.remove('active');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        modal.style.pointerEvents = 'none';
+        if (document.body?.classList) {
+          document.body.classList.remove('code-blue-crisis-strobe');
+        }
+        if (typeof window.unfreezeEmergencyState === 'function') {
+          window.unfreezeEmergencyState('CODE_BLUE_QTE');
+        }
+        if (typeof refreshAllViews === 'function') {
+          try { refreshAllViews(); } catch (_) {}
+        }
+        if (onComplete) onComplete(result);
+      };
+
+      const handleResultKeydown = (e) => {
+        if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter' || e.key === 'Enter') {
+          if (e.preventDefault) e.preventDefault();
+          doClose();
+        }
+      };
+      if (typeof window !== 'undefined' && window.addEventListener) {
+        window.addEventListener('keydown', handleResultKeydown);
+      }
+
       if (closeBtn) {
-        closeBtn.onclick = () => {
-          modal.classList.remove('active');
-          modal.classList.add('hidden');
-          modal.style.display = 'none';
-          if (document.body?.classList) {
-            document.body.classList.remove('code-blue-crisis-strobe');
+        closeBtn.onclick = doClose;
+        closeBtn.addEventListener('pointerdown', doClose);
+        closeBtn.textContent = `Acknowledge & Resume Simulation (${countdownSec}s)`;
+
+        autoCloseTimer = setInterval(() => {
+          countdownSec--;
+          if (closeBtn && !isClosed) {
+            closeBtn.textContent = `Acknowledge & Resume Simulation (${countdownSec}s)`;
           }
-          if (typeof window.unfreezeEmergencyState === 'function') {
-            window.unfreezeEmergencyState('CODE_BLUE_QTE');
+          if (countdownSec <= 0) {
+            doClose();
           }
-          if (typeof refreshAllViews === 'function') {
-            refreshAllViews();
-          }
-          if (onComplete) onComplete(result);
-        };
+        }, 1000);
+      } else {
+        setTimeout(doClose, 1000);
       }
     };
 

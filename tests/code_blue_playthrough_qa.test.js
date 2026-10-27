@@ -287,6 +287,44 @@ async function runAllPlaythroughAudits() {
 
   console.log('✓ Timeout playthrough verified: severe malpractice penalty and CCU lockup enforced');
 
+  // -------------------------------------------------------------
+  // TEST 5: Fail-Safe Anti-Freeze & Static Container Architecture
+  // -------------------------------------------------------------
+  console.log('\n--- TEST 5: Fail-Safe Anti-Freeze & Static Container Architecture ---');
+
+  const htmlContent = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8');
+  const cssContent = fs.readFileSync(path.resolve(__dirname, '../styles.css'), 'utf8');
+  const mainScriptContent = fs.readFileSync(path.resolve(__dirname, '../script.js'), 'utf8');
+
+  // 1. Static container in index.html
+  assert.ok(
+    htmlContent.includes('id="code-blue-qte-modal"'),
+    'index.html must statically declare #code-blue-qte-modal container'
+  );
+  assert.ok(
+    htmlContent.includes('class="screen-overlay hidden"'),
+    '#code-blue-qte-modal must start as hidden screen-overlay'
+  );
+  console.log('✓ Static HTML container architecture verified in index.html');
+
+  // 2. High z-index in styles.css
+  assert.ok(
+    /#code-blue-qte-modal\.screen-overlay\s*\{[^}]*z-index:\s*100050/i.test(cssContent),
+    'styles.css must declare z-index: 100050 on #code-blue-qte-modal to sit above all game elements'
+  );
+  console.log('✓ Topmost emergency z-index (100050) verified in styles.css');
+
+  // 3. Fail-safe timeout in script.js
+  assert.ok(
+    mainScriptContent.includes('safetyTimer') && mainScriptContent.includes('12000'),
+    'script.js must enforce 12s fail-safe safety timeout around openChallengeModal'
+  );
+  assert.ok(
+    mainScriptContent.includes('try {') && mainScriptContent.includes('safeResolve'),
+    'script.js must protect openChallengeModal in try/catch with safeResolve'
+  );
+  console.log('✓ Fail-safe 12s anti-freeze execution wrapper verified in script.js');
+
   console.log('\n================================================================');
   console.log('   ALL CODE BLUE PLAYTHROUGH & INTERACTION QA AUDITS PASSED!    ');
   console.log('================================================================');

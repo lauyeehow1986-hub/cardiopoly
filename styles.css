@@ -4469,3 +4469,33 @@ body.emergency-interaction-lock .board-tile {
   transform: scale(0.96);
   filter: brightness(1.3);
 }
+
+/* ============================================================================
+   EMERGENT CODE BLUE RESUSCITATION QTE MODAL (TOPMOST EMERGENCY LAYER)
+   ============================================================================ */
+#code-blue-qte-modal.screen-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100050 !important;
+  background: rgba(3, 7, 18, 0.94) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 10px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#code-blue-qte-modal.screen-overlay.active {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#code-blue-qte-modal.screen-overlay.hidden {
+  display: none !important;
+}
+

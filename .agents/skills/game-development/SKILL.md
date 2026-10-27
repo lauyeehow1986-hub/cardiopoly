@@ -686,9 +686,55 @@ Interactive Quick-Time Events (QTEs), emergency mini-games, and competitive hosp
   3. **Branch 3 (Asystole Timeout):** Failure to achieve ROSC before time expiration triggers CCU lockup quarantine and malpractice fee deductions.
   4. **Branch 4 (State Resumption):** Post-resolution acknowledgement cleanly closes the modal, clears crisis strobes, unfreezes background auction/turn loops, and advances gameplay.
 
+---
+
+### 21. Modal Container Isolation & Fail-Safe Resumption Benchmark (MCFRB)
+
+High-stakes emergent modals (such as Code Blue Resuscitation) that interrupt the core game turn loop must maintain absolute container visibility, z-index immunity over video cut-ins, and deterministic turn resumption to prevent game freezes.
+
+#### 1. Static HTML Container & Z-Index Stacking Hierarchy
+- High-priority emergency overlays must be declared statically in `index.html` alongside canonical modals rather than appended dynamically to `document.body` at runtime.
+- The modal overlay must enforce an absolute emergency stacking context:
+  $$z_{\text{emergency\_modal}} \ge 100050 > z_{\text{cutin\_overlay}} (99999) > z_{\text{standard\_overlay}} (1000)$$
+- CSS rules must declare explicit `!important` display toggling:
+  ```css
+  #code-blue-qte-modal.screen-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 100050 !important;
+    background: rgba(3, 7, 18, 0.94) !important;
+    display: none;
+  }
+  #code-blue-qte-modal.screen-overlay.active {
+    display: flex !important;
+  }
+  #code-blue-qte-modal.screen-overlay.hidden {
+    display: none !important;
+  }
+  ```
+
+#### 2. Bounded Promise Execution & Anti-Freeze Timeout
+- When the game turn loop halts via `await new Promise(...)` to await player interaction during a modal encounter, the promise MUST NOT rely solely on an unhandled callback.
+- The promise execution must be wrapped in:
+  1. A strict fail-safe safety timeout ($t_{\text{safety}} \le 12\text{s}$) that automatically resolves the turn if the modal is hidden, discarded, or tab-throttled.
+  2. A top-level `try...catch` boundary that intercepts any runtime exception and safely advances the turn.
+  3. An idempotent `safeResolve()` function ensuring `resolve()` is called exactly once:
+     $$\text{Freeze Defect Rate } F_{\text{loop}} = 0.00\%$$
+
+#### 3. Dual-Mode Resolution Dismissal & Auto-Resume
+- Upon challenge conclusion (Heroic Victory, Bot Claim, or Asystole Failure), the modal resolution screen must provide:
+  1. Instantaneous tactile button dismissal (`#qte-close-btn` wired to `pointerdown` and `click`).
+  2. Keyboard shortcut support (`Space` and `Enter` keydown listeners).
+  3. An automatic countdown timer ($t_{\text{countdown}} \le 5\text{--}6\text{s}$) with live UI label feedback (`Acknowledge & Resume Simulation (5s)`) that guarantees automatic turn resumption even if the user is hands-off or distracted.
+
+#### 4. Multi-Layer Asset Cache-Busting Synchronization
+- On every release modifying CSS or JS logic, all asset query parameters in `index.html` must be bumped synchronously across both `<link>` and `<script>` tags:
+  $$\Delta_{\text{version\_skew}} = 0$$
+- Prevents stale mobile browser caching of old scripts where cut-in overlays or modal handlers had conflicting z-indices.
+
 ## QA Verification Checklist
 
-Before completing any game optimization task, verify all 23 gates:
+Before completing any game optimization task, verify all 24 gates:
 
 - [ ] **Gate 1 (Stability & Data Binding)**: All setup and HUD selectors display valid numbers and strings; zero instances of `undefined`, `NaN`, or truncated labels.
 - [ ] **Gate 2 (Audio & Music)**: Clicking sound toggles resumes `AudioContext` without error, plays click-free ADSR polyphonic chimes, and starts the adaptive tension ambient loop.
@@ -713,4 +759,6 @@ Before completing any game optimization task, verify all 23 gates:
 - [ ] **Gate 21 (Modal Viewport Ergonomics & Entry Accessibility Gate - MVEAB)**: Verifies that all modal overlays use top-anchored alignment (`justify-content: flex-start`), single-scroll architecture without nested traps, and atomic `scrollTop = 0` reset on entry ($V_{entry} = 100.0\%$, $y_{top} \ge 0$).
 - [ ] **Gate 22 (Code Blue Emergent Reliability & Activation Gate - CBERB)**: Verifies that Code Blue evaluates canonical engine properties (`gameState.turnNumber`), guarantees early-game emergence on Turn 2/3 ($P_{early} = 100.0\%$), enforces DOM modal visibility (`modal.classList.contains('active')`, `display: flex`), and engages the human player during all hospital emergencies ($C_{human\_participation} = 100.0\%$).
 - [ ] **Gate 23 (Interactive Real-Time Playthrough & Zero-Dismiss Gate - ZDDB)**: Verifies that emergent challenges maintain persistent DOM nodes during tick loops ($D_{input} = 0.00\%$), respond instantaneously to pointerdown and Spacebar mashing, resolve across all four playthrough branches (Human Victory, Bot Victory, Timeout Failure, State Resumption), and never degenerate into passive dismiss boxes.
+- [ ] **Gate 24 (Modal Container Isolation & Fail-Safe Resumption Gate - MCFRB)**: Verifies static HTML container declaration, topmost emergency $z\text{-index} \ge 100050$, fail-safe $12\text{s}$ promise timeout in turn lifecycle, countdown auto-resume on challenge conclusion, and cache-busting synchronization across all asset tags.
+
 
