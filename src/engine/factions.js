@@ -409,6 +409,8 @@
       isWin: isWin,
       percent: percent,
       percentComplete: percent,
+      progressPct: percent,
+      label: isWin ? 'Victory Target Achieved' : (percent + '% Target Progress'),
       summary: summary
     };
   }

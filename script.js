@@ -2579,56 +2579,69 @@ if (typeof window !== "undefined") {
 async function finishPlayerTurn() {
   const curPlayer = gameState.players[gameState.currentPlayerIndex];
 
-  // 1. Dual-Mode Victory: Check Code Blue Hospitalization (Mode A: Clinical Mastery)
-  if (gameState.gameMode === "CLINICAL_MASTERY" && typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.checkCodeBlueHospitalization === "function") {
-    const codeBlue = CardiopolyFactions.checkCodeBlueHospitalization(curPlayer, gameState.gameMode);
-    if (codeBlue.triggered) {
-      // SUSPEND ALL BACKGROUND ACTIONS (AUCTIONS & BOT DECISIONS) IMMEDIATELY
-      freezeEmergencyState("CODE_BLUE");
+  // 1. Emergent Code Blue Resuscitation Quick-Time Event (Competitive Multi-Player)
+  const isPhysiologicalCrisis = typeof CardiopolyFactions !== "undefined" &&
+                               typeof CardiopolyFactions.checkCodeBlueHospitalization === "function" &&
+                               CardiopolyFactions.checkCodeBlueHospitalization(curPlayer, gameState.gameMode).triggered;
 
-      // Play GMSBS Layer 4 procedural defibrillator sound chain + ducking
-      if (typeof window !== "undefined" && window.CardiopolyPatches && typeof window.CardiopolyPatches.playDefibrillatorSequence === "function") {
-        window.CardiopolyPatches.playDefibrillatorSequence();
-      } else {
-        playAudio("DEFIB");
-        playAudio("ALARM");
-      }
+  const isEmergentCrisis = typeof CardiopolyPatches !== "undefined" &&
+                          CardiopolyPatches.ResuscitationEngine &&
+                          CardiopolyPatches.ResuscitationEngine.shouldTriggerEmergentChallenge(gameState, curPlayer);
 
-      if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
-        CardiopolyMcpBridge.cutInOverlay.playCutIn({
-          id: 'code_blue',
-          title: 'CODE BLUE HOSPITALIZATION',
-          subtitle: `${curPlayer.name} admitted to CCU (SBP: ${curPlayer.sbp} mmHg)`,
-          accentColor: '#ef4444'
+  if ((isPhysiologicalCrisis || isEmergentCrisis) && !gameState.isEmergencyFrozen) {
+    if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
+      CardiopolyMcpBridge.cutInOverlay.playCutIn({
+        id: 'code_blue',
+        title: 'CODE BLUE: CARDIAC ARREST DETECTED',
+        subtitle: `Rapid Response Activated for ${curPlayer.name}! Multi-Physician Resuscitation In Progress`,
+        accentColor: '#ef4444'
+      });
+    }
+
+    setBoardTicker(`🚨 CODE BLUE: Cardiac arrest alert! Resuscitation team responding!`);
+    appendCenterConsoleActionLog(`🚨 CODE BLUE ALERT: ${curPlayer.name} suffered acute arrest. Multi-clinician resuscitation active!`);
+    refreshAllViews();
+
+    if (curPlayer.isBot) {
+      // For bots, run the multi-agent race simulation directly
+      if (typeof CardiopolyPatches?.ResuscitationEngine === 'object') {
+        const diff = Math.min(5, (gameState.codeBlueDifficulty || 0) + 1);
+        gameState.codeBlueDifficulty = diff;
+        const bots = (gameState.players || []).filter(p => p.isBot);
+        const botRates = CardiopolyPatches.ResuscitationEngine.computeBotRates(bots, diff);
+        const fastestBot = bots.sort((a, b) => (botRates[a.id]?.finishTimeSec || 99) - (botRates[b.id]?.finishTimeSec || 99))[0];
+        
+        const outcome = CardiopolyPatches.ResuscitationEngine.resolveOutcome({
+          winner: 'BOT',
+          winnerId: fastestBot ? fastestBot.id : curPlayer.id,
+          player: curPlayer,
+          gameState,
+          elapsedSec: botRates[fastestBot?.id]?.finishTimeSec || 4.2,
+          difficulty: diff
         });
-      }
-      setBoardTicker(`🚨 ${codeBlue.message}`);
-      appendCenterConsoleActionLog(codeBlue.message);
-      refreshAllViews();
 
-      if (curPlayer.isBot) {
         if (typeof CardiopolyToasts !== "undefined" && CardiopolyToasts.showToast) {
           CardiopolyToasts.showToast({
-            title: "CODE BLUE HOSPITALIZATION",
-            message: codeBlue.message,
+            title: "CODE BLUE RESUSCITATION",
+            message: outcome.message,
             theme: "danger",
             durationMs: 4000
           });
         }
-        setTimeout(() => {
-          unfreezeEmergencyState("CODE_BLUE");
-        }, 4000);
-      } else {
-        await showEventPopupModal(
-          "CODE BLUE HOSPITALIZATION",
-          curPlayer,
-          codeBlue.message,
-          "Vitals stabilized at SBP 140 mmHg, BMI 35. 1,500 WP deducted for CCU resuscitation.",
-          "game-end-theme",
-          "Acknowledge Resuscitation"
-        );
-        unfreezeEmergencyState("CODE_BLUE");
+        appendCenterConsoleActionLog(outcome.message);
       }
+    } else {
+      // For human player, launch the real-time interactive QTE modal!
+      await new Promise((resolve) => {
+        if (typeof CardiopolyPatches?.ResuscitationEngine?.openChallengeModal === 'function') {
+          CardiopolyPatches.ResuscitationEngine.openChallengeModal(curPlayer, gameState, (res) => {
+            appendCenterConsoleActionLog(res.message);
+            resolve();
+          });
+        } else {
+          resolve();
+        }
+      });
     }
   }
 
@@ -3124,15 +3137,7 @@ function openSetupModal() {
   const resumeBtn = document.getElementById("setup-resume-btn");
   const quickStartBtn = document.getElementById("setup-quick-start-btn");
   const launchBtn = document.getElementById("setup-launch-match-btn");
-  const testCodeBlueBtn = document.getElementById("test-code-blue-btn");
-  if (testCodeBlueBtn) {
-    testCodeBlueBtn.onclick = () => {
-      closeSetupModal();
-      const p = gameState.players[0];
-      p.sbp = 202;
-      finishPlayerTurn();
-    };
-  }
+
 
   if (isMatchActive) {
     gameState.isPaused = true;
@@ -3701,10 +3706,14 @@ function openFactionDossierModal() {
     const card = document.createElement("div");
     card.className = `dossier-card ${isUser ? "active-user-faction" : ""}`;
 
-    let progressText = "";
-    if (typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.getFactionProgress === "function") {
+    let progressText = "0% Target Progress";
+    if (typeof CardiopolyPatches !== "undefined" && typeof CardiopolyPatches.computePlayerFactionProgress === "function") {
+      const p = CardiopolyPatches.computePlayerFactionProgress(player, gameState);
+      progressText = `${p.pct}% Target Progress`;
+    } else if (typeof CardiopolyFactions !== "undefined" && typeof CardiopolyFactions.getFactionProgress === "function") {
       const prog = CardiopolyFactions.getFactionProgress(player, gameState);
-      progressText = `${prog.label} (${prog.progressPct}%)`;
+      const pct = prog.progressPct ?? prog.percentComplete ?? prog.percent ?? 0;
+      progressText = prog.label || `${pct}% Target Progress`;
     }
 
     card.innerHTML = `
