@@ -3124,6 +3124,15 @@ function openSetupModal() {
   const resumeBtn = document.getElementById("setup-resume-btn");
   const quickStartBtn = document.getElementById("setup-quick-start-btn");
   const launchBtn = document.getElementById("setup-launch-match-btn");
+  const testCodeBlueBtn = document.getElementById("test-code-blue-btn");
+  if (testCodeBlueBtn) {
+    testCodeBlueBtn.onclick = () => {
+      closeSetupModal();
+      const p = gameState.players[0];
+      p.sbp = 202;
+      finishPlayerTurn();
+    };
+  }
 
   if (isMatchActive) {
     gameState.isPaused = true;

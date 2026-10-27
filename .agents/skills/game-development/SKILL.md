@@ -7,7 +7,8 @@ description: >-
   code deduplication, core gameplay synergies & long-term retention loops, runtime stability/data-binding,
   the Iteration 2 MCP ecosystem (real-world macro shocks, voiceovers, character art, and video cut-ins),
   the Comprehensive Game Music & Sound Benchmarking Standard (GMSBS / PSDPBS-5),
-  and the Exhaustive Playthrough & Edge-Case Audit Protocol (EPAP-15).
+  the Exhaustive Playthrough & Edge-Case Audit Protocol (EPAP-15),
+  and the Cut-In, Multimodal & Interaction Flow Robustness Standard (CMIFRS).
 ---
 
 # Gradient-Boosted Game Development Framework
@@ -16,7 +17,7 @@ description: >-
 
 The **Gradient-Boosted Game Development Framework** is an iterative engineering and design methodology for transforming web, board, canvas, and simulation games from rough prototypes ($I_0$) through production grade ($I_1 \ge 90/100$) to multimodal, live-world integrated masterworks ($I_2 \ge 95/100$).
 
-Game quality is optimized across **6 core dimensions**, prioritizing the highest residual deficits ($P_k = w_k \cdot \Delta_k$) through systematic phase-based implementation, exhaustive 15-scene automated audits, audio benchmarking, and test-driven verification gates.
+Game quality is optimized across **6 core dimensions**, prioritizing the highest residual deficits ($P_k = w_k \cdot \Delta_k$) through systematic phase-based implementation, exhaustive 15-scene automated audits, audio benchmarking, cut-in media resilience, interaction flow suspension, and test-driven verification gates.
 
 ```
        [Live Baseline Game I0 (Score ~51.9)]
@@ -63,7 +64,13 @@ Game quality is optimized across **6 core dimensions**, prioritizing the highest
      └─ Zero Deadlock, Zero NaN/Undefined Invariant Enforcement
                          │
                          ▼
-       [Masterwork Game I2 (Target >= 95.6)] ──► QA & Verification Gates (Gates 1-10)
+   [Phase 9: Cut-In, Multimodal & Interaction Flow Robustness (CMIFRS)]
+     ├─ Video Cut-In & Media Resilience Benchmark (VC-MRB: Faststart MP4 + Layered Posters)
+     ├─ Multimodal Audio-Visual-Haptic Triad Benchmark (MAVHT-B: 1.8Hz CPR Strobe + Δt <= 16.7ms)
+     └─ Interaction Flow & Suspension Robustness Standard (IFSRS: Atomic Auction & Bot Freezing)
+                         │
+                         ▼
+       [Masterwork Game I2 (Target >= 95.6)] ──► QA & Verification Gates (Gates 1-12)
 ```
 
 ---
@@ -76,10 +83,10 @@ When evaluating or upgrading any web game, score the baseline across these 6 wei
 | :--- | :---: | :---: | :---: | :---: | :--- |
 | **1. Visual Polish & Layout Integrity** | `0.20` | `58` | `90` | `95` | Modals fit within `88vh`; perimeter tiles show prices, owner glow, upgrade pips; custom SVG tokens; live macro ticker & bespoke character portrait frames. |
 | **2. Audio, Music & Sound Design** | `0.15` | `35` | `88` | `95` | Adheres to GMSBS / PSDPBS-5: click-free ADSR envelopes; EBU R128 LUFS loudness isolation; adaptive ambient tension pulse; dynamic sub-bass morphing; voiceover & sound stems. |
-| **3. Multimodal Feedback & Juice** | `0.15` | `42` | `89` | `96` | Synchronized audio cue + floating resource badge + HUD/telemetry reaction within $\le 16.7\text{ms}$ + 2.8s broadcast video cut-in overlay with procedural fallback. |
+| **3. Multimodal Feedback & Juice** | `0.15` | `42` | `89` | `96` | Synchronized audio cue + floating resource badge + HUD/telemetry reaction within $\le 16.7\text{ms}$ + 5.5s broadcast video cut-in overlay with zero-blank dual-plane fallback. |
 | **4. Deduplication & Code Hygiene** | `0.15` | `54` | `88` | `93` | Single-source formatters; clean architectural separation; schema-validated news/shock engine (`data/liveWorldFeed.json`); zero duplicate helpers. |
 | **5. Core Gameplay & Long-Term Engagement** | `0.25` | `62` | `92` | `97` | Cross-system synergies; longitudinal consequence queues; active regime rule hooks; dynamic real-world macro shocks (epidemic, shortage, CPI, guideline revisions). |
-| **6. Runtime Stability & Data Binding** | `0.10` | `45` | `96` | `98` | Zero `undefined` or clipped strings; in-game Options pauses timers cleanly; 100% offline fallback cache for zero 404s/rejections on static GitHub Pages; passes EPAP-15 all-scene audit. |
+| **6. Runtime Stability & Data Binding** | `0.10` | `45` | `96` | `98` | Zero `undefined` or clipped strings; in-game Options pauses timers cleanly; atomic interaction freeze on emergencies; passes EPAP-15 and CMIFRS audits. |
 
 **Composite Quality Formula:**
 $$S = \sum_{k=1}^6 w_k \cdot s_k, \qquad P_k = w_k \cdot (100 - s_k)$$
@@ -263,26 +270,14 @@ function triggerMultimodalEvent({ player, cueName, anchorSelector, deltaText, de
                                 ▼
          [patches/cardiopoly_mcp_runtime_bridge.js]
          ├── MacroShockEngine  ──► #cardiopoly-macro-ticker (Turn % 4)
-         └── CutInOverlayManager ──► 2.8s Broadcast Video / SVG Fallback
+         └── CutInOverlayManager ──► 5.5s Broadcast Video / Dual-Plane Fallback
 ```
-
-#### Macro Shock Engine Pattern
-- Rotates macro incidents every 4 turns (turn 1, turn 4, turn 8, etc.).
-- Modifies patient volume multiplier, cath surcharges, co-pay rates, and GDMT bonuses.
-- Uses `DEFAULT_MACRO_SHOCK_DECK` as a 100% offline fallback when `data/liveWorldFeed.json` is unreachable.
-
-#### In-Game Video Cut-In & Voiceover Overlay Pattern
-- Triggers on Code Blue hospitalization, high-risk cath stenting, monopoly completion, and breaking macro shocks.
-- Displays a skewed broadcast-style banner across the viewport (`2.8s` duration, skippable on click/key).
-- If video or voiceover media is absent, seamlessly falls back to inline SVG cardiac vector animations and procedural Web Audio API cues (`playCue('codeBlueAlert')`).
 
 ---
 
 ### 8. Exhaustive Playthrough & Edge-Case Audit Protocol (EPAP-15)
 
 Production game engines must be resilient against edge-case state permutations, asynchronous race conditions, and catastrophic lockups. The **EPAP-15 Protocol** defines an automated, programmatic 15-scene matrix verifying zero gameplay deadlocks, data corruptions, or visual desyncs.
-
-#### The 15-Scene Comprehensive Audit Matrix
 
 | Scene ID | Scene Name | Critical Triggers & Edge Conditions | Invariants & Expected Output | Failure Heuristics & Red Flags |
 | :---: | :--- | :--- | :--- | :--- |
@@ -292,88 +287,59 @@ Production game engines must be resilient against edge-case state permutations, 
 | **S04** | **Clinical Encounters & Vignettes** | Landing on clinical/patient tile; 88vh viewport constraint; option selection under high-fatigue state; consequence triggers. | Sticky header remains visible; choices grid wraps responsively; GDMT/RVU outcomes apply; hospital suite synergies trigger toast. | Modal buttons obscured below fold; selection does nothing; null patient object; text overlapping in patient history. |
 | **S05** | **Center Console & Tile Inspector** | Inspecting unowned, owned, and mortgaged properties; purchasing upgrades (pips 1–4); toggling mortgage status. | Inspector modal renders full tier pricing; mortgage status toggles hazard striping; upgrade pips render in color bar; unmortgage fee accurate. | Upgrading beyond tier 4; negative rent calculations; mortgaged property charging rent; broken SVG color swatch. |
 | **S06** | **Telemetry & Hemodynamic HUD** | Active player turn switch; fluctuating SBP/HR; arterial line waveform canvas animation; audio pitch matching vitals. | Real-time ECG trace redraws at 60 FPS; SBP badge reflects player health; sub-bass audio morphs wave type cleanly; canvas resizes on DPR. | Canvas stretching/distortion; memory leak from uncleared `requestAnimationFrame`; audio oscillator runaway; NaN pulse. |
-| **S07** | **Live Property Auctions** | Declining tile purchase; multi-bot bidding war; auction countdown timer; anti-sniping extension rule; zero-cash player. | Timer ticks smoothly; bots place rational bids within valuation ceiling; winning bidder debited and tile awarded; state unpauses. | Timer freezing at 0s; infinite auction loop; negative bids; bankruptcy crash during auction; orphaned auction interval. |
+| **S07** | **Live Property Auctions** | Declining tile purchase; multi-bot bidding war; auction countdown timer; anti-sniping extension rule; zero-cash player. | Timer ticks smoothly; bots place rational bids within valuation ceiling; winning bidder debited and tile awarded; atomic emergency suspension. | Timer freezing at 0s; infinite auction loop; negative bids; bankruptcy crash during auction; orphaned auction interval. |
 | **S08** | **Strategic Trading & Asset Transfers** | Player-to-player trade proposal; unequal property bundles; cash considerations; bot valuation evaluation; rejection/acceptance. | Bot accepts fair trades ($> 1.05\times$ valuation) and rejects unfair ones; property ownership arrays update atomically; cash transfers cleanly. | Duplicate property assignment; negative cash balances; trading mortgaged property without tag; trade modal getting stuck open. |
-| **S09** | **Code Blue & Emergency Incidents** | Patient vitals crossing critical threshold (SBP $\ge 200$, BMI $\ge 70$); screen-shake trigger; emergency audio alarm synthesis. | Screen shake animation fires for 450ms; dual-tone alarm plays; ICU transfer penalty debited; emergency cut-in overlay presents option. | Permanent screen shake lock; audio alarm looping indefinitely without decay; player teleporting off-board; game stall. |
+| **S09** | **Code Blue & Emergency Incidents** | Patient vitals crossing critical threshold (SBP $\ge 200$, BMI $\ge 70$); screen-shake trigger; emergency audio alarm synthesis. | Screen shake animation fires for 450ms; room red perimeter strobe; V-Fib canvas animation; defib audio chain; ICU transfer penalty debited. | Permanent screen shake lock; audio alarm looping indefinitely without decay; player teleporting off-board; game stall. |
 | **S10** | **Longitudinal Consequence Queue** | Multi-turn deferred outcomes (`followUpQueue`); premature discharge readmission; clinical trial publication delay. | Events queue on turn $T$ and fire precisely at turn $T + N$; readmission penalties applied; compendium updates trial discovery. | Event executing on wrong turn; duplicate event execution; queue array mutation during iteration causing skipped events. |
 | **S11** | **MCP Live-World Macro Shocks** | Turn modulo 4 boundary (`turn % 4 == 0`); drug shortages; epidemic surge; reimbursement cuts; PubMed guideline updates. | Macro ticker scrolls breaking incident; dynamic multipliers apply to clinic revenue and cath lab surcharges; offline deck fallback works. | Undefined ticker text; game freezing on turn 4; missing offline deck; unhandled network fetch timeout. |
-| **S12** | **Cut-In Overlays & Media Fallbacks** | Triggering Code Blue, Cath Lab, or Regulatory Audit; missing MP4 video file; missing voiceover audio; skip on click/keypress. | 2.8s broadcast banner renders with skewed perspective; graceful procedural SVG/canvas fallback if media 404s; audio ducks $-12\text{dB}$. | Broken video icon in viewport; unhandled promise rejection on `video.play()`; overlay blocking clicks indefinitely after dismiss. |
+| **S12** | **Cut-In Overlays & Media Fallbacks** | Triggering Code Blue, Cath Lab, or Regulatory Audit; missing MP4 video file; missing voiceover audio; skip on click/keypress. | 5.5s broadcast banner renders with skewed perspective; graceful procedural CRT/canvas fallback if media 404s; audio ducks $-18\text{dB}$. | Broken video icon in viewport; unhandled promise rejection on `video.play()`; overlay blocking clicks indefinitely after dismiss. |
 | **S13** | **Pause, Options & State Suspension** | Opening settings dialog during active bot turn or live auction; volume mute toggles; closing settings and resuming. | All active timeouts and auction intervals pause; sound stops immediately on mute; resuming restores exact turn and timer state. | Bot executing move behind open modal; auction expiring while paused; audio resuming in muted state; duplicate timers on resume. |
 | **S14** | **Career Compendium & Persistence** | Unlocking clinical trials; winning a match; browser localStorage quota exceeded; corrupted or legacy save state schema. | Saves serialize with version tag (`v1`); unlocked trials and achievements display in Compendium; legacy schema migrations succeed. | `localStorage` quota crash; JSON parse crash on corrupted string; stats resetting to 0 on refresh; missing trial descriptions. |
 | **S15** | **Game Over & Victory Resolution** | Player bankruptcy (cash < 0 and no unmortgaged assets); GDMT victory threshold reached; monopoly on all hospital suites. | Eliminated players removed from turn queue; assets liquidated or transferred to creditor; victory splash reveals final RVU leaderboard. | Turn passing to bankrupt player; game crashing when active player eliminated; restart button failing to reset full gameState. |
 
-#### Automated Headless Audit Harness Pattern
-Every project adhering to this framework must maintain a zero-dependency headless node audit script (`tools/playthrough_audit_all_scenes.js`) that simulates all 15 scenes:
+---
 
-```javascript
-// tools/playthrough_audit_all_scenes.js
-const fs = require('fs');
-const path = require('path');
+### 9. Cut-In, Multimodal & Interaction Flow Robustness Standard (CMIFRS)
 
-// 1. Mock DOM and Web Audio API environment
-function createMockEnvironment() {
-  const elements = new Map();
-  const mockDoc = {
-    createElement: (tag) => ({
-      tagName: tag.toUpperCase(),
-      classList: { add: () => {}, remove: () => {}, contains: () => false },
-      style: {},
-      setAttribute: () => {},
-      appendChild: () => {},
-      addEventListener: () => {}
-    }),
-    getElementById: (id) => elements.get(id) || null,
-    querySelector: (sel) => null,
-    querySelectorAll: () => []
-  };
-  global.document = mockDoc;
-  global.window = {
-    AudioContext: class {
-      createGain() { return { gain: { setValueAtTime: () => {}, linearRampToValueAtTime: () => {}, cancelScheduledValues: () => {} }, connect: () => {} }; }
-      createOscillator() { return { frequency: { setValueAtTime: () => {} }, start: () => {}, stop: () => {}, connect: () => {} }; }
-    },
-    localStorage: {
-      _data: {},
-      getItem(k) { return this._data[k] || null; },
-      setItem(k, v) { this._data[k] = String(v); }
-    }
-  };
-}
+Web game engines with rich multimodal cut-ins must guarantee 100% visual and interactive reliability across cellular mobile devices, low-spec tablets, and high-DPI desktop viewports. Adhere to the **3 Core Robustness Benchmarks**:
 
-// 2. Scene Traversal Runner
-async function runEPAP15Audit() {
-  const auditReport = { timestamp: new Date().toISOString(), passedScenes: 0, totalScenes: 15, results: [] };
-  const scenes = [
-    { id: 'S01', name: 'Boot & Splash Screen', test: async () => /* test logic */ },
-    // ... all 15 scenes
-  ];
+#### 1. Video Cut-In Performance & Resilience Benchmark (VC-PRB)
+1. **Container & Codec Precedence:**
+   - **Primary**: H.264 High/Baseline MP4 with `-movflags +faststart`, yuv420p, 16:9 aspect ratio ($640 \times 360$ or $1280 \times 720$). Moving the `moov` atom to the file head guarantees instant playback without downloading the whole file.
+   - **Secondary**: VP8/VP9 WebM for lightweight desktop Chromium rendering.
+   - **Layered Dual-Plane Stacking**: Never hide poster images with `display: none` while video buffers. Stack keyframe posters at `z-index: 1` directly under the video at `z-index: 2` (with initial `opacity: 0` transitioning to `1` on `video.onplaying`). If cellular data saver or mobile Low Power Mode restricts autoplay, the poster is rendered with zero visual latency ($\tau_{visual} \le 50\text{ms}$).
+2. **Mobile Autoplay Invariants:**
+   - Always enforce 5 mandatory attributes: `autoplay`, `muted`, `loop`, `playsinline`, `webkit-playsinline`.
+   - Explicit Programmatic Activation: Call `video.muted = true`, `video.load()`, and `video.play().catch(...)`.
+   - Error Isolation: Never rely on `<video onerror>` when child `<source>` tags are present, because standard HTML5 specifies source load errors do not bubble to the parent video.
+3. **Zero-Empty-Placeholder Guarantee:**
+   - No cut-in preset (`code_blue`, `cath_lab`, `regulatory_audit`, `macro_shock`, `monopoly`) may ever fall back to a bare static vector line.
+   - Every procedural fallback must render a rich 60 FPS CRT Phosphor Oscilloscope Canvas with scanline sweeps, live vital/financial waveforms, and phosphor glow.
 
-  for (const scene of scenes) {
-    try {
-      await scene.test();
-      auditReport.passedScenes++;
-      auditReport.results.push({ id: scene.id, name: scene.name, status: 'PASSED' });
-    } catch (err) {
-      auditReport.results.push({ id: scene.id, name: scene.name, status: 'FAILED', error: err.message });
-    }
-  }
+#### 2. Multimodal Audio-Visual-Haptic Triad Benchmark (MAVHT-B)
+1. **Audio-Visual-DOM Transient Latency Bound ($\Delta t_{AVH}$):**
+   - Transients (floating DOM delta badge, audio stinger onset, and screen shake/strobe) must fire within a strict frame bound:
+     $$\Delta t_{AVH} \le 16.7\text{ ms} \quad (\text{1 video frame at 60 FPS})$$
+2. **Emergency Room Illumination Law ($E_{strobe}$):**
+   - Critical clinical emergencies (`code_blue`, ICU arrest) must project ambient room illumination (`.code-blue-crisis-strobe`) pulsing at $1.8\text{ Hz}$ ($108\text{ BPM}$, matching AHA/ERC CPR chest compression standards) via a radial perimeter vignette.
+3. **Dynamic Physiological Telemetry Coupling:**
+   - ECG color, sub-bass oscillator waveshape (sine $\to$ triangle $\to$ sawtooth), and vital badges must update synchronously from active player physiological metrics.
 
-  fs.writeFileSync('tests/exhaustive_playthrough_report.json', JSON.stringify(auditReport, null, 2));
-  if (auditReport.passedScenes < 15) throw new Error(`Audit failed: ${15 - auditReport.passedScenes} scenes failed.`);
-}
-```
-
-#### Verification Gate Integration
-When running audits, check:
-1. `tests/exhaustive_playthrough_report.json` must report `15/15` scenes `PASSED`.
-2. Total audit execution time must be under $5.0\text{s}$ for continuous CI/CD integration.
-3. Zero warnings or unhandled promise rejections.
+#### 3. Interaction Flow & State Suspension Robustness Standard (IFSRS)
+1. **Atomic Interaction Lockout:**
+   - When an emergency or cut-in activates, all background timers (live auction clocks, bot decision timeouts, trading intervals) must atomically freeze.
+   - User inputs (`#roll-btn`, property inspection, trade modal) must be locked via `pointer-events: none` and state flags (`isEmergencyPaused = true`).
+2. **Temporal Preservation Invariant:**
+   - Auction clocks must preserve remaining seconds with floating-point precision ($\Delta \tau = 0$ while frozen).
+   - Zero bot bids or timer decrements may execute while `isEmergencyFrozen` is true.
+3. **Clean Resumption without Desync:**
+   - Resuming from an emergency must restore the exact remaining time, re-queue bot intervals, fade background music back up over $800\text{ ms}$, and clear all emergency CSS classes.
 
 ---
 
 ## QA Verification Checklist
 
-Before completing any game optimization task, verify all gates:
+Before completing any game optimization task, verify all 12 gates:
 
 - [ ] **Gate 1 (Stability & Data Binding)**: All setup and HUD selectors display valid numbers and strings; zero instances of `undefined`, `NaN`, or truncated labels.
 - [ ] **Gate 2 (Audio & Music)**: Clicking sound toggles resumes `AudioContext` without error, plays click-free ADSR polyphonic chimes, and starts the adaptive tension ambient loop.
@@ -382,6 +348,8 @@ Before completing any game optimization task, verify all gates:
 - [ ] **Gate 5 (Gameplay Synergies)**: Cross-system synergies and delayed consequence events fire reliably based on property ownership and prior decisions.
 - [ ] **Gate 6 (Persistence)**: Lifetime achievements, trials, and faction statistics load and persist cleanly in `localStorage`.
 - [ ] **Gate 7 (MCP Live World & Ticker)**: Top breaking-news macro ticker renders on turn 1 and rotates every 4 turns, applying real modifiers to costs and GDMT points.
-- [ ] **Gate 8 (Cut-In Overlay & Offline Fallback)**: High-stakes events trigger the 2.8s dramatic cut-in overlay with zero broken media icons or unhandled promise rejections on static GitHub Pages.
+- [ ] **Gate 8 (Cut-In Overlay & Offline Fallback)**: High-stakes events trigger the 5.5s dramatic cut-in overlay with zero broken media icons or unhandled promise rejections on static GitHub Pages.
 - [ ] **Gate 9 (Exhaustive All-Scene Audit Gate - EPAP-15)**: Automated 15-scene traversal script passes with 15/15 scenes verified, 0 assertions failed, 0 unhandled promise rejections, and emits `tests/exhaustive_playthrough_report.json`.
 - [ ] **Gate 10 (Sound & Music Benchmarking Gate - GMSBS)**: Audio architecture conforms to EBU R128 LUFS specifications (Ambience $-18\text{ LUFS}$, UI $-14\text{ LUFS}$, Stingers $-12\text{ LUFS}$, Alarms $-8\text{ LUFS}$), click-free ADSR anti-aliasing envelopes ($t_{attack} \ge 12\text{ms}$), dynamic acoustic ducking on cut-ins/modals, and adaptive harmonic tension scaling.
+- [ ] **Gate 11 (Cut-In Video Autoplay & Media Resilience Gate - VC-PRB)**: Verifies that all cut-in presets have valid video/poster sources, MP4 faststart headers, mobile playsinline attributes, and zero bare/static placeholders.
+- [ ] **Gate 12 (Interaction Flow & State Suspension Gate - IFSRS)**: Verifies that triggering high-severity events halts auction clocks and bot timers without race conditions, and resumes with 100% time integrity.
