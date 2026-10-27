@@ -242,6 +242,25 @@ assert.strictEqual(savedComp.lifetimeTotalChoices, 1, 'Total choices incremented
 assert.strictEqual(savedComp.lifetimeGdmtChoices, 1, 'GDMT choices incremented');
 console.log('✓ Career Compendium persistence verified in localStorage');
 
+console.log('--- TEST 7: GMSBS Layer 4 Procedural Defibrillator Audio Sequence ---');
+assert.strictEqual(typeof patches.playDefibrillatorSequence, 'function', 'playDefibrillatorSequence must be exported');
+
+// Mock Web Audio Context
+patches.cardiopolyAudioV2.ctx = {
+  currentTime: 0,
+  sampleRate: 44100,
+  destination: {},
+  createGain: () => ({ gain: { setValueAtTime: () => {}, linearRampToValueAtTime: () => {}, exponentialRampToValueAtTime: () => {}, cancelScheduledValues: () => {} }, connect: () => {} }),
+  createOscillator: () => ({ frequency: { setValueAtTime: () => {}, exponentialRampToValueAtTime: () => {} }, start: () => {}, stop: () => {}, connect: () => {} }),
+  createBuffer: () => ({ getChannelData: () => new Float32Array(100) }),
+  createBufferSource: () => ({ buffer: null, connect: () => {}, start: () => {} }),
+  createBiquadFilter: () => ({ frequency: { setValueAtTime: () => {} }, Q: { setValueAtTime: () => {} }, connect: () => {} })
+};
+
+patches.playDefibrillatorSequence();
+assert.strictEqual(patches.cardiopolyAudioV2.soundtrackDucked, true, 'Soundtrack must be ducked by playDefibrillatorSequence');
+console.log('✓ GMSBS Layer 4 Defibrillator Audio Sequence & sidechain ducking verified');
+
 console.log('\n================================================================');
 console.log('   ALL TDD VERIFICATION TESTS COMPLETED SUCCESSFULLY!           ');
 console.log('================================================================');
