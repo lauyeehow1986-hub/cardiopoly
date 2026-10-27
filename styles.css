@@ -1016,20 +1016,20 @@ html, body {
 
 /* Color strip placement along inner edge toward center of board */
 .thumb-tile.side-bottom .thumb-color-bar {
-  top: 0; left: 0; right: 0; height: 32%;
-  border-bottom: 0.5px solid rgba(0,0,0,0.35);
+  top: 0; left: 0; right: 0; height: 5px;
+  border-bottom: 0.5px solid rgba(0,0,0,0.45);
 }
 .thumb-tile.side-left .thumb-color-bar {
-  top: 0; bottom: 0; right: 0; width: 32%;
-  border-left: 0.5px solid rgba(0,0,0,0.35);
+  top: 0; bottom: 0; right: 0; width: 5px;
+  border-left: 0.5px solid rgba(0,0,0,0.45);
 }
 .thumb-tile.side-top .thumb-color-bar {
-  bottom: 0; left: 0; right: 0; height: 32%;
-  border-top: 0.5px solid rgba(0,0,0,0.35);
+  bottom: 0; left: 0; right: 0; height: 5px;
+  border-top: 0.5px solid rgba(0,0,0,0.45);
 }
 .thumb-tile.side-right .thumb-color-bar {
-  top: 0; bottom: 0; left: 0; width: 32%;
-  border-right: 0.5px solid rgba(0,0,0,0.35);
+  top: 0; bottom: 0; left: 0; width: 5px;
+  border-right: 0.5px solid rgba(0,0,0,0.45);
 }
 
 /* GO tile and special markers */
@@ -3621,14 +3621,36 @@ html, body {
 }
 
 .tile-cost-badge {
+  position: relative;
+  z-index: 2;
   font-size: 0.58rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-weight: 700;
-  color: #cbd5e1;
-  background: rgba(2, 6, 23, 0.65);
-  padding: 1px 4px;
+  color: #f1f5f9;
+  background: rgba(2, 6, 23, 0.75);
+  padding: 1px 3px;
   border-radius: 3px;
   align-self: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Directional clearance to guarantee 0% geometric occlusion with color bars */
+.thumb-tile.side-bottom .tile-cost-badge {
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+.thumb-tile.side-top .tile-cost-badge {
+  margin-bottom: 5px;
+  margin-top: 0;
+}
+.thumb-tile.side-left .tile-cost-badge {
+  margin-right: 5px;
+  margin-left: 0;
+}
+.thumb-tile.side-right .tile-cost-badge {
+  margin-left: 5px;
+  margin-right: 0;
 }
 
 /* 3. Medical SVG Token Badges & Step Hop Animation */

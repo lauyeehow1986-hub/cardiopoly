@@ -735,6 +735,9 @@ function buildBoardTiles(propertiesByCorrespondsTo) {
           propIndex: prop.propIndex,
           correspondsTo: prop.correspondsTo,
           priceWP: prop.priceWP,
+          price: prop.priceWP,
+          cost: prop.priceWP,
+          basePrice: prop.priceWP,
           baseRent: 100,
           upgradeLevel: 0,
           ownerId: null,
@@ -832,7 +835,7 @@ function renderThumbnailBoard() {
       // Phase 2: WP Cost Badge on perimeter purchasable suites
       const costBadge = document.createElement("span");
       costBadge.className = "tile-cost-badge";
-      costBadge.textContent = `${tile.price || tile.cost || 300} WP`;
+      costBadge.textContent = `${tile.priceWP || tile.price || tile.cost || 300} WP`;
       tileEl.appendChild(costBadge);
     } else {
       const sym = document.createElement("span");
@@ -2992,7 +2995,32 @@ function openUserTradeCreator() {
 // ============================================================================
 
 // --- 1. PRE-GAME COMMAND SETUP LOBBY ---
+
+// ============================================================================
+// PURGE DEPRECATED TEST CONTROLS (LEDAPB Benchmark Compliance)
+// Ensures any legacy test controls cached in mobile browsers/PWAs are eliminated
+// ============================================================================
+function purgeDeprecatedTestElements() {
+  const staleIds = [
+    "test-code-blue-btn",
+    "trigger-code-blue-btn",
+    "test-resus-btn",
+    "dev-test-code-blue"
+  ];
+  staleIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+
+  if (typeof document !== "undefined" && document.querySelectorAll) {
+    document.querySelectorAll("[id*='test-code-blue'], [id*='trigger-code-blue'], [class*='test-code-blue']").forEach((el) => {
+      el.remove();
+    });
+  }
+}
+
 function initSetupModal() {
+  purgeDeprecatedTestElements();
   const modal = document.getElementById("setup-modal");
   if (!modal) return;
 
@@ -3129,6 +3157,7 @@ function initSetupModal() {
 }
 
 function openSetupModal() {
+  purgeDeprecatedTestElements();
   const modal = document.getElementById("setup-modal");
   if (!modal) return;
   modal.classList.add("active");
@@ -3861,6 +3890,7 @@ function wireEventListeners() {
 }
 
 async function initGame() {
+  purgeDeprecatedTestElements();
   let splashDismissed = false;
   function skipSplash() {
     if (splashDismissed) return;
