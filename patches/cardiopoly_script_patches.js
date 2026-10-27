@@ -968,152 +968,199 @@ const ResuscitationEngine = {
     bots.forEach(b => botProgress[b.id] = 0);
 
     const startTime = performance.now();
+    let timerInterval = null;
+    let animFrame = null;
+    let isFinished = false;
+
+    const getStepDetails = (stepIdx, compDone) => {
+      const step = params.steps[stepIdx] || 'shock';
+      if (step === 'airway') {
+        return { text: '💨 SECURE AIRWAY (TAP)', cls: 'btn-primary' };
+      } else if (step === 'epinephrine') {
+        return { text: '💉 INJECT EPINEPHRINE 1mg (TAP)', cls: 'btn-warning' };
+      } else if (step === 'charge') {
+        return { text: '⚡ CHARGE DEFIBRILLATOR PADDLES (TAP)', cls: 'btn-warning' };
+      } else if (step === 'compress') {
+        return {
+          text: `❤️ DELIVER CHEST COMPRESSION (MASH!) [${compDone}/${params.requiredCompressions}]`,
+          cls: 'btn-danger pulse-action'
+        };
+      } else {
+        return { text: '⚡ CLEAR & DELIVER 200J BIPHASIC SHOCK (TAP)', cls: 'btn-success pulse-action' };
+      }
+    };
+
+    const initialDetails = getStepDetails(currentStepIdx, compressionsDone);
+
+    const botsMarkup = bots.map(b => {
+      return `
+        <div class="competitor-race-row">
+          <div class="competitor-info">
+            <span class="competitor-name">${b.name}</span>
+            <span id="qte-bot-pct-${b.id}" class="competitor-pct">0%</span>
+          </div>
+          <div class="competitor-progress-track">
+            <div id="qte-bot-fill-${b.id}" class="competitor-progress-fill bot" style="width: 0%;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Render modal shell ONCE to avoid DOM thrashing & dropped click inputs
+    modal.innerHTML = `
+      <div class="qte-modal-window" role="dialog" aria-modal="true" aria-label="Code Blue Resuscitation Challenge">
+        <div class="qte-header">
+          <span class="qte-level-badge">🚨 EMERGENCY CCU PROTOCOL // LEVEL ${diff}</span>
+          <h2>EMERGENT CODE BLUE RESUSCITATION</h2>
+          <p class="qte-subtitle">Patient in Ventricular Fibrillation! Compete against hospital physicians to resuscitate!</p>
+        </div>
+
+        <div class="qte-instructions-banner">
+          ⚡ RAPIDLY TAP / MASH THE ACTION BUTTON (OR PRESS SPACEBAR) TO RESUSCITATE BEFORE DR. CATH-A-LOT &amp; THE BOTS REACH 100%!
+        </div>
+
+        <div class="qte-timer-banner">
+          <div id="qte-timer-display" class="qte-timer-value">
+            ⏱️ ${params.durationSec.toFixed(2)}s REMAINING
+          </div>
+          <div class="qte-stakes-badge">
+            🏆 Reward: +$${params.rewardWP.toLocaleString()} WP | 💀 Fail: -$${params.penaltyWP.toLocaleString()} WP
+          </div>
+        </div>
+
+        <div class="qte-telemetry-box">
+          <canvas id="qte-ecg-canvas" width="560" height="60" aria-label="Dynamic V-Fib Telemetry"></canvas>
+        </div>
+
+        <div class="qte-competitors-panel">
+          <div class="competitor-race-row player-row">
+            <div class="competitor-info">
+              <span class="competitor-name">👤 YOU (${player.name || 'Academic Clinician'})</span>
+              <span id="qte-player-pct" class="competitor-pct" style="color:#22d3ee; font-weight:800;">0%</span>
+            </div>
+            <div class="competitor-progress-track">
+              <div id="qte-player-fill" class="competitor-progress-fill player" style="width: 0%;"></div>
+            </div>
+          </div>
+          ${botsMarkup}
+        </div>
+
+        <div class="qte-action-container">
+          <button id="qte-mash-btn" class="btn ${initialDetails.cls} btn-qte-action" type="button">
+            ${initialDetails.text}
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Elements lookup
+    const timerDisplay = document.getElementById('qte-timer-display');
+    const playerPctEl = document.getElementById('qte-player-pct');
+    const playerFill = document.getElementById('qte-player-fill');
+    const mashBtn = document.getElementById('qte-mash-btn');
+    const botFillEls = {};
+    const botPctEls = {};
+    bots.forEach(b => {
+      botFillEls[b.id] = document.getElementById(`qte-bot-fill-${b.id}`);
+      botPctEls[b.id] = document.getElementById(`qte-bot-pct-${b.id}`);
+    });
+
+    const updatePlayerUI = () => {
+      const stepDetails = getStepDetails(currentStepIdx, compressionsDone);
+      if (mashBtn) {
+        mashBtn.textContent = stepDetails.text;
+        mashBtn.className = `btn ${stepDetails.cls} btn-qte-action`;
+      }
+      if (playerFill) {
+        playerFill.style.width = `${playerPct}%`;
+      }
+      if (playerPctEl) {
+        playerPctEl.textContent = `${Math.round(playerPct)}%`;
+      }
+    };
+
+    updatePlayerUI();
+
+    let lastActionTime = 0;
+    const handlePlayerAction = (e) => {
+      if (isFinished) return;
+      const now = performance.now();
+      if (now - lastActionTime < 35) return; // 35ms debounce prevents hardware bounce while allowing ~25 mashes/sec
+      lastActionTime = now;
+
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
+
+      // Haptic screen shake
+      if (document.body?.classList) {
+        document.body.classList.add('code-blue-screen-shake');
+        setTimeout(() => document.body.classList.remove('code-blue-screen-shake'), 90);
+      }
+
+      const currentStep = params.steps[currentStepIdx] || 'shock';
+
+      // Audio feedback
+      if (typeof playAudio === 'function') {
+        if (currentStep === 'compress') {
+          playAudio('BEEP', 120 + compressionsDone * 5);
+        } else if (currentStep === 'charge') {
+          playAudio('DEFIB');
+        } else {
+          playAudio('BEEP', 140);
+        }
+      }
+
+      // Advance player step
+      if (currentStep === 'airway' || currentStep === 'epinephrine' || currentStep === 'charge') {
+        currentStepIdx++;
+      } else if (currentStep === 'compress') {
+        compressionsDone++;
+        if (compressionsDone >= params.requiredCompressions) {
+          currentStepIdx++;
+        }
+      } else if (currentStep === 'shock') {
+        // Player finishes & claims victory!
+        playerPct = 100;
+        updatePlayerUI();
+        finishChallenge('PLAYER', player.id);
+        return;
+      }
+
+      // Calculate player % progress
+      const totalSteps = params.steps.length;
+      const stepWeight = 100 / totalSteps;
+      let inStepProgress = 0;
+      if (currentStep === 'compress') {
+        inStepProgress = (compressionsDone / params.requiredCompressions) * stepWeight;
+      }
+      playerPct = Math.min(99, Math.round(currentStepIdx * stepWeight + inStepProgress));
+
+      updatePlayerUI();
+    };
+
+    // Attach high-performance pointerdown and click
+    if (mashBtn) {
+      mashBtn.addEventListener('pointerdown', handlePlayerAction);
+      mashBtn.addEventListener('click', handlePlayerAction);
+    }
+
+    // Keyboard Spacebar and Enter
     const handleKeydown = (e) => {
       if (isFinished) return;
       if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter' || e.key === 'Enter') {
-        e.preventDefault();
-        const btn = document.getElementById('qte-mash-btn');
-        if (btn) btn.click();
+        handlePlayerAction(e);
       }
     };
     if (typeof window !== 'undefined' && window.addEventListener) {
       window.addEventListener('keydown', handleKeydown);
     }
-    let timerInterval = null;
-    let animFrame = null;
-    let isFinished = false;
-
-    const render = () => {
-      const remainingSec = Math.max(0, params.durationSec - ((performance.now() - startTime) / 1000));
-      const currentStep = params.steps[currentStepIdx] || 'shock';
-
-      let actionBtnText = '';
-      let actionBtnClass = 'btn-danger';
-      if (currentStep === 'airway') {
-        actionBtnText = '💨 SECURE AIRWAY (TAP)';
-        actionBtnClass = 'btn-primary';
-      } else if (currentStep === 'epinephrine') {
-        actionBtnText = '💉 INJECT EPINEPHRINE 1mg (TAP)';
-        actionBtnClass = 'btn-warning';
-      } else if (currentStep === 'charge') {
-        actionBtnText = '⚡ CHARGE DEFIBRILLATOR PADDLES (TAP)';
-        actionBtnClass = 'btn-warning';
-      } else if (currentStep === 'compress') {
-        actionBtnText = `❤️ DELIVER CHEST COMPRESSION (MASH!) [${compressionsDone}/${params.requiredCompressions}]`;
-        actionBtnClass = 'btn-danger pulse-action';
-      } else {
-        actionBtnText = '⚡ CLEAR & DELIVER 200J BIPHASIC SHOCK (TAP)';
-        actionBtnClass = 'btn-success';
-      }
-
-      const botsMarkup = bots.map(b => {
-        const bp = Math.min(100, Math.round(botProgress[b.id] || 0));
-        return `
-          <div class="competitor-race-row">
-            <div class="competitor-info">
-              <span class="competitor-name">${b.name}</span>
-              <span class="competitor-pct">${bp}%</span>
-            </div>
-            <div class="competitor-progress-track">
-              <div class="competitor-progress-fill bot" style="width: ${bp}%;"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      modal.innerHTML = `
-        <div class="qte-modal-window" role="dialog" aria-modal="true" aria-label="Code Blue Resuscitation Challenge">
-          <div class="qte-header">
-            <span class="qte-level-badge">🚨 EMERGENCY CCU PROTOCOL // LEVEL ${diff}</span>
-            <h2>EMERGENT CODE BLUE RESUSCITATION</h2>
-            <p class="qte-subtitle">Patient in Ventricular Fibrillation! Compete against hospital physicians to resuscitate!</p>
-          </div>
-
-          <div class="qte-instructions-banner">
-            ⚡ RAPIDLY TAP / MASH THE ACTION BUTTON (OR PRESS SPACEBAR) TO RESUSCITATE BEFORE DR. CATH-A-LOT &amp; THE BOTS REACH 100%!
-          </div>
-
-          <div class="qte-timer-banner">
-            <div class="qte-timer-value ${remainingSec <= 1.5 ? 'urgent' : ''}">
-              ⏱️ ${remainingSec.toFixed(2)}s REMAINING
-            </div>
-            <div class="qte-stakes-badge">
-              🏆 Reward: +$${params.rewardWP.toLocaleString()} WP | 💀 Fail: -$${params.penaltyWP.toLocaleString()} WP
-            </div>
-          </div>
-
-          <div class="qte-telemetry-box">
-            <canvas id="qte-ecg-canvas" width="560" height="60" aria-label="Dynamic V-Fib Telemetry"></canvas>
-          </div>
-
-          <div class="qte-competitors-panel">
-            <div class="competitor-race-row player-row">
-              <div class="competitor-info">
-                <span class="competitor-name">👤 YOU (${player.name || 'Academic Clinician'})</span>
-                <span class="competitor-pct" style="color:#22d3ee; font-weight:800;">${Math.round(playerPct)}%</span>
-              </div>
-              <div class="competitor-progress-track">
-                <div class="competitor-progress-fill player" style="width: ${playerPct}%;"></div>
-              </div>
-            </div>
-            ${botsMarkup}
-          </div>
-
-          <div class="qte-action-container">
-            <button id="qte-mash-btn" class="btn ${actionBtnClass} btn-qte-action" type="button">
-              ${actionBtnText}
-            </button>
-          </div>
-        </div>
-      `;
-
-      modal.classList.remove('hidden');
-
-      // Wire up action button
-      const mashBtn = document.getElementById('qte-mash-btn');
-      if (mashBtn) {
-        mashBtn.onclick = () => {
-          if (isFinished) return;
-
-          // Haptic screen shake
-          if (document.body?.classList) {
-            document.body.classList.add('code-blue-screen-shake');
-            setTimeout(() => document.body.classList.remove('code-blue-screen-shake'), 120);
-          }
-
-          // Advance player step
-          if (currentStep === 'airway' || currentStep === 'epinephrine' || currentStep === 'charge') {
-            currentStepIdx++;
-          } else if (currentStep === 'compress') {
-            compressionsDone++;
-            if (compressionsDone >= params.requiredCompressions) {
-              currentStepIdx++;
-            }
-          } else if (currentStep === 'shock') {
-            // Player finishes!
-            finishChallenge('PLAYER', player.id);
-            return;
-          }
-
-          // Calculate player % progress
-          const totalSteps = params.steps.length;
-          const stepWeight = 100 / totalSteps;
-          let inStepProgress = 0;
-          if (currentStep === 'compress') {
-            inStepProgress = (compressionsDone / params.requiredCompressions) * stepWeight;
-          }
-          playerPct = Math.min(99, Math.round(currentStepIdx * stepWeight + inStepProgress));
-
-          render();
-        };
-      }
-    };
 
     const finishChallenge = (winner, winnerId) => {
       if (isFinished) return;
       isFinished = true;
       clearInterval(timerInterval);
-      if (typeof window !== 'undefined' && window.removeEventListener && typeof handleKeydown !== 'undefined') {
+      if (typeof window !== 'undefined' && window.removeEventListener) {
         window.removeEventListener('keydown', handleKeydown);
       }
       if (animFrame && typeof cancelAnimationFrame !== 'undefined') {
@@ -1181,8 +1228,6 @@ const ResuscitationEngine = {
       }
     };
 
-    render();
-
     // ECG Animated Canvas
     const canvas = document.getElementById('qte-ecg-canvas');
     if (canvas && typeof canvas.getContext === 'function') {
@@ -1213,13 +1258,30 @@ const ResuscitationEngine = {
     timerInterval = setInterval(() => {
       if (isFinished) return;
       const elapsed = (performance.now() - startTime) / 1000;
+      const remainingSec = Math.max(0, params.durationSec - elapsed);
+
+      if (timerDisplay) {
+        timerDisplay.textContent = `⏱️ ${remainingSec.toFixed(2)}s REMAINING`;
+        if (remainingSec <= 1.5) {
+          timerDisplay.classList.add('urgent');
+        } else {
+          timerDisplay.classList.remove('urgent');
+        }
+      }
 
       // Update bot progresses
       for (const b of bots) {
         const rateInfo = botRates[b.id];
         if (rateInfo) {
-          botProgress[b.id] = Math.min(100, elapsed * rateInfo.rate);
-          if (botProgress[b.id] >= 100) {
+          const bp = Math.min(100, Math.round(elapsed * rateInfo.rate));
+          botProgress[b.id] = bp;
+          if (botFillEls[b.id]) {
+            botFillEls[b.id].style.width = `${bp}%`;
+          }
+          if (botPctEls[b.id]) {
+            botPctEls[b.id].textContent = `${bp}%`;
+          }
+          if (bp >= 100) {
             finishChallenge('BOT', b.id);
             return;
           }
@@ -1231,8 +1293,6 @@ const ResuscitationEngine = {
         finishChallenge('NONE', null);
         return;
       }
-
-      render();
     }, 50);
   }
 };
