@@ -968,6 +968,17 @@ const ResuscitationEngine = {
     bots.forEach(b => botProgress[b.id] = 0);
 
     const startTime = performance.now();
+    const handleKeydown = (e) => {
+      if (isFinished) return;
+      if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter' || e.key === 'Enter') {
+        e.preventDefault();
+        const btn = document.getElementById('qte-mash-btn');
+        if (btn) btn.click();
+      }
+    };
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('keydown', handleKeydown);
+    }
     let timerInterval = null;
     let animFrame = null;
     let isFinished = false;
@@ -1016,6 +1027,10 @@ const ResuscitationEngine = {
             <span class="qte-level-badge">🚨 EMERGENCY CCU PROTOCOL // LEVEL ${diff}</span>
             <h2>EMERGENT CODE BLUE RESUSCITATION</h2>
             <p class="qte-subtitle">Patient in Ventricular Fibrillation! Compete against hospital physicians to resuscitate!</p>
+          </div>
+
+          <div class="qte-instructions-banner">
+            ⚡ RAPIDLY TAP / MASH THE ACTION BUTTON (OR PRESS SPACEBAR) TO RESUSCITATE BEFORE DR. CATH-A-LOT &amp; THE BOTS REACH 100%!
           </div>
 
           <div class="qte-timer-banner">
@@ -1098,6 +1113,9 @@ const ResuscitationEngine = {
       if (isFinished) return;
       isFinished = true;
       clearInterval(timerInterval);
+      if (typeof window !== 'undefined' && window.removeEventListener && typeof handleKeydown !== 'undefined') {
+        window.removeEventListener('keydown', handleKeydown);
+      }
       if (animFrame && typeof cancelAnimationFrame !== 'undefined') {
         cancelAnimationFrame(animFrame);
       }
