@@ -2593,18 +2593,6 @@ async function finishPlayerTurn() {
                           CardiopolyPatches.ResuscitationEngine.shouldTriggerEmergentChallenge(gameState, curPlayer);
 
   if ((isPhysiologicalCrisis || isEmergentCrisis) && !gameState.isEmergencyFrozen) {
-    // Stage 1: Play dramatic intro cut-in stinger for 1.8 seconds, then dismiss so QTE modal is 100% visible
-    if (typeof CardiopolyMcpBridge !== "undefined" && CardiopolyMcpBridge.cutInOverlay) {
-      CardiopolyMcpBridge.cutInOverlay.playCutIn({
-        id: 'code_blue',
-        title: 'CODE BLUE: CARDIAC ARREST DETECTED',
-        subtitle: `Rapid Response Activated for ${curPlayer.name}! Multi-Physician Resuscitation Challenge Starting...`,
-        accentColor: '#ef4444'
-      });
-      await new Promise((r) => setTimeout(r, 1800));
-      CardiopolyMcpBridge.cutInOverlay.hide();
-    }
-
     setBoardTicker(`🚨 CODE BLUE: Cardiac arrest alert! Resuscitation team responding!`);
     appendCenterConsoleActionLog(`🚨 CODE BLUE ALERT: ${curPlayer.name} suffered acute arrest. Multi-clinician resuscitation active!`);
     refreshAllViews();

@@ -325,6 +325,13 @@ async function runAllPlaythroughAudits() {
   );
   console.log('✓ Fail-safe 12s anti-freeze execution wrapper verified in script.js');
 
+  // 4. Zero Cut-In Latency Invariant: Code Blue cut-in removed for instant QTE modal entry
+  assert.ok(
+    !mainScriptContent.includes("id: 'code_blue'") && !mainScriptContent.includes('id: "code_blue"'),
+    'script.js must not invoke playCutIn for code_blue, ensuring immediate modal presentation'
+  );
+  console.log('✓ Code Blue cut-in removed: direct and instantaneous QTE modal transition verified');
+
   console.log('\n================================================================');
   console.log('   ALL CODE BLUE PLAYTHROUGH & INTERACTION QA AUDITS PASSED!    ');
   console.log('================================================================');
